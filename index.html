@@ -10,7 +10,7 @@
   <meta name="application-name" content="Ledgerly Pro" />
   <link rel="manifest" href="./manifest.json" />
   <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png" />
-  <link rel="apple-touch-icon" href="./icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="./icons/apple-touch-icon-180.png" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>Ledgerly Pro - Carteira & Notas de Corretagem</title>
@@ -310,35 +310,38 @@
         </button>
       </div>
 
-      <!-- Indicadores consolidados da custódia -->
-      <div id="positionsOverview" class="grid grid-cols-2 lg:grid-cols-4 gap-2"></div>
-      <div id="positionsAllocation" class="glass-card rounded-2xl p-3.5 space-y-3"></div>
-
-      <!-- Pesquisa, filtros e ordenação -->
-      <div class="glass-card rounded-2xl p-3.5 space-y-3">
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-          <input id="positionsSearch" type="search" placeholder="Buscar ticker ou ativo..." oninput="applyPositionsView()" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white placeholder:text-slate-500" />
-          <select id="positionsFilter" onchange="applyPositionsView()" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
-            <option value="all">Todas as posições</option>
-            <option value="active">Somente posições abertas</option>
-            <option value="positive">Resultado positivo</option>
-            <option value="negative">Resultado negativo</option>
-            <option value="closed">Posições encerradas</option>
-          </select>
-          <select id="positionsSort" onchange="applyPositionsView()" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
-            <option value="ticker">Ordenar: ticker</option>
+      <div id="positionsOverview" class="grid grid-cols-2 gap-2"></div>
+      <details class="glass-card rounded-2xl px-3.5 py-3 group">
+        <summary class="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden text-xs font-semibold text-slate-300">
+          <span>Ver distribuição da carteira</span>
+          <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transition group-open:rotate-180"></i>
+        </summary>
+        <div id="positionsAllocation" class="space-y-3 pt-3"></div>
+      </details>
+      <div class="space-y-2.5">
+        <div class="flex gap-2">
+          <input id="positionsSearch" type="search" placeholder="Buscar ativo..." aria-label="Buscar ativo" oninput="applyPositionsView()" class="flex-1 min-w-0 bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-3 py-2.5 text-sm text-white outline-none" />
+          <select id="positionsSort" aria-label="Ordenar posições" onchange="applyPositionsView()" class="w-36 text-xs bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-3 py-2.5 text-sm text-white outline-none">
+            <option value="ticker">Ticker (A–Z)</option>
             <option value="value">Maior posição</option>
-            <option value="profit">Maior resultado não realizado</option>
+            <option value="profit">Maior resultado</option>
             <option value="return">Maior rentabilidade</option>
             <option value="weight">Maior participação</option>
           </select>
         </div>
         <div class="flex items-center justify-between gap-2">
-          <span id="positionsResultCount" class="text-[11px] text-slate-400"></span>
-          <button type="button" onclick="clearPositionsFilters()" class="text-[11px] text-indigo-300 hover:text-indigo-200">Limpar filtros</button>
+          <div id="positionsChips" class="flex gap-1.5" role="group" aria-label="Filtrar posições">
+            <button type="button" data-f="active" onclick="setPositionsFilter('active')" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-300">Abertas</button>
+            <button type="button" data-f="all" onclick="setPositionsFilter('all')" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-300">Todas</button>
+            <button type="button" data-f="closed" onclick="setPositionsFilter('closed')" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-300">Encerradas</button>
+          </div>
+          <div id="positionsFilterInfo" class="hidden flex items-center gap-2 shrink-0">
+            <span id="positionsResultCount" class="text-xs text-slate-400"></span>
+            <button type="button" onclick="clearPositionsFilters()" class="text-xs text-indigo-300 hover:text-indigo-200">Limpar</button>
+          </div>
         </div>
+        <input type="hidden" id="positionsFilter" value="active" />
       </div>
-
       <!-- Lista de posições expansíveis -->
       <div id="positionsCardsContainer" class="space-y-3"></div>
     </section>
@@ -1631,12 +1634,11 @@
       const totalRealizado = latestPositionsData.reduce((a,p) => a + (p.resultadoRealizado || 0), 0);
       latestPositionsData.forEach(p => p.pesoCarteira = totalAtual > 0 ? (p.patrimonioAtual / totalAtual) * 100 : 0);
 
+      const resTotal = totalAberto + totalRealizado + latestPositionsData.reduce((a,p) => a + (p.proventosRecebidos || 0), 0);
       const overview = document.getElementById('positionsOverview');
       if (overview) overview.innerHTML = [
-        ['Valor investido', formatMoney(totalInvestido), 'text-white'],
         ['Patrimônio atual', formatMoney(totalAtual), 'text-white'],
-        ['Resultado em aberto', (totalAberto >= 0 ? '+' : '') + formatMoney(totalAberto), totalAberto >= 0 ? 'text-emerald-400' : 'text-rose-400'],
-        ['Resultado realizado', (totalRealizado >= 0 ? '+' : '') + formatMoney(totalRealizado), totalRealizado >= 0 ? 'text-emerald-400' : 'text-rose-400']
+        ['Resultado total', (resTotal >= 0 ? '+' : '') + formatMoney(resTotal), resTotal >= 0 ? 'text-emerald-400' : 'text-rose-400']
       ].map(([label,value,color]) => `<div class="glass-card rounded-xl p-3 min-w-0"><span class="block text-[10px] text-slate-400">${label}</span><strong class="block mt-1 text-sm font-mono ${color} break-words">${value}</strong></div>`).join('');
 
       const allocation = document.getElementById('positionsAllocation');
@@ -1656,7 +1658,7 @@
       const container = document.getElementById('positionsCardsContainer');
       if (!container) return;
       const search = (document.getElementById('positionsSearch')?.value || '').trim().toUpperCase();
-      const filter = document.getElementById('positionsFilter')?.value || 'all';
+      const filter = document.getElementById('positionsFilter')?.value || 'active';
       const sort = document.getElementById('positionsSort')?.value || 'ticker';
       let list = latestPositionsData.filter(p => {
         const match = !search || p.ticker.toUpperCase().includes(search) || (p.especificacao || '').toUpperCase().includes(search);
@@ -1670,56 +1672,64 @@
       list.sort((a,b) => sort === 'value' ? b.patrimonioAtual-a.patrimonioAtual : sort === 'profit' ? b.lucroPrejuizo-a.lucroPrejuizo : sort === 'return' ? b.rentabilidade-a.rentabilidade : sort === 'weight' ? b.pesoCarteira-a.pesoCarteira : a.ticker.localeCompare(b.ticker));
       const count = document.getElementById('positionsResultCount');
       if (count) count.textContent = `${list.length} de ${latestPositionsData.length} ativos`;
+      const info = document.getElementById('positionsFilterInfo');
+      if (info) info.classList.toggle('hidden', !(search || filter !== 'active'));
+      document.querySelectorAll('#positionsChips button').forEach(b => {
+        const on = b.dataset.f === filter;
+        b.className = 'px-3 py-1.5 rounded-full text-xs font-semibold transition ' + (on ? 'bg-emerald-500 text-slate-950' : 'bg-slate-800 text-slate-300 hover:bg-slate-700');
+        b.setAttribute('aria-pressed', String(on));
+      });
+      const closedCount = latestPositionsData.filter(p => p.qtdAtual <= 0).length;
+      const closedLink = (filter === 'active' && closedCount) ? `<button type="button" onclick="setPositionsFilter('closed')" class="w-full text-center text-xs text-slate-400 hover:text-slate-200 py-2">Mostrar ${closedCount} ${closedCount === 1 ? 'posição encerrada' : 'posições encerradas'}</button>` : '';
       if (!latestPositionsData.length) {
         container.innerHTML = `<div class="glass-card rounded-2xl p-8 text-center space-y-2"><p class="text-sm font-semibold text-slate-300">Nenhum ativo registrado ainda</p><p class="text-xs text-slate-500">Importe uma nota de corretagem ou adicione uma operação manual.</p></div>`;
         return;
       }
       if (!list.length) {
-        container.innerHTML = `<div class="glass-card rounded-2xl p-6 text-center"><p class="text-xs text-slate-400">Nenhum ativo corresponde à pesquisa ou aos filtros.</p></div>`;
+        container.innerHTML = `<div class="glass-card rounded-2xl p-6 text-center"><p class="text-xs text-slate-400">Nenhum ativo corresponde à pesquisa ou aos filtros.</p></div>${closedLink}`;
         return;
       }
       container.innerHTML = list.map((pos, idx) => {
-        const isPositive = pos.lucroPrejuizo >= 0;
+        const esc = escapeSavedNoteText;
         const hasPosition = pos.qtdAtual > 0;
+        const res = hasPosition ? pos.lucroPrejuizo : (pos.resultadoRealizado || 0);
+        const sgn = v => (v >= 0 ? '+' : '');
+        const tone = v => (v >= 0 ? 'text-emerald-400' : 'text-rose-400');
+        const badgeTone = res >= 0 ? 'bg-emerald-500/15 text-emerald-300' : 'bg-rose-500/15 text-rose-300';
+        const badgeText = `${sgn(res)}${formatMoney(res)}${hasPosition ? ` (${sgn(pos.rentabilidade)}${formatPercent(pos.rentabilidade)})` : ' realizado'}`;
+        const kv = (l, v, c = 'text-slate-200') => `<div class="flex items-baseline justify-between gap-3 py-1.5"><dt class="text-xs text-slate-400">${l}</dt><dd class="text-xs font-mono text-right ${c}">${v}</dd></div>`;
+        const sec = (t, body) => `<section><h5 class="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">${t}</h5><dl class="divide-y divide-slate-800/70">${body}</dl></section>`;
+        const opRow = op => `<div class="flex items-center justify-between gap-2 py-2 text-xs"><div class="flex items-center gap-2 min-w-0"><span class="px-1.5 py-0.5 rounded text-[11px] font-semibold ${op.tipo_ordem === 'C' ? 'bg-slate-800 text-slate-200' : 'bg-amber-500/20 text-amber-300'}">${op.tipo_ordem === 'C' ? 'Compra' : 'Venda'}</span><span class="font-mono text-slate-400" title="Nota: ${esc(op.numero_nota || 'Manual')}">${esc(op.data_operacao)}</span></div><div class="flex items-center gap-1.5"><span class="font-mono text-slate-200">${formatNumber(op.quantidade)} × ${formatMoney(op.preco_unitario)}</span><button type="button" onclick="deleteSingleOperation(${Number(op.id)})" class="text-rose-400 hover:text-rose-300 p-1.5" aria-label="Excluir lançamento de ${esc(op.data_operacao)}" title="Excluir lançamento"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div></div>`;
+        const ops = pos.operacoes.slice().reverse();
+        const posicao = sec('Posição',
+          kv('Custo da posição', formatMoney(pos.valorInvestido)) +
+          kv('Comprado / vendido', `${formatNumber(pos.qtdComprada)} / ${formatNumber(pos.qtdVendida)}`) +
+          kv('Participação na carteira', `${pos.pesoCarteira.toFixed(2)}%`));
+        const resultado = sec('Resultado',
+          (hasPosition ? kv('Não realizado', `${sgn(pos.lucroPrejuizo)}${formatMoney(pos.lucroPrejuizo)} (${formatPercent(pos.rentabilidade)})`, tone(pos.lucroPrejuizo)) : '') +
+          kv('Realizado', `${sgn(pos.resultadoRealizado || 0)}${formatMoney(pos.resultadoRealizado || 0)}`, tone(pos.resultadoRealizado || 0)) +
+          kv('Proventos (líquido)', formatMoney(pos.proventosRecebidos || 0)) +
+          (pos.valorInvestido > 0 ? kv('Rentabilidade total (c/ proventos)', formatPercent(pos.rentabilidadeTotal || 0), tone(pos.rentabilidadeTotal || 0)) : ''));
+        const custos = `<details class="rounded-xl bg-slate-900/60 px-3 py-2"><summary class="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden text-xs"><span class="text-slate-400">Taxas e custos</span><span class="font-mono text-slate-200">${formatMoney(pos.totalTaxas)} ▾</span></summary><dl class="divide-y divide-slate-800/70 mt-1">${kv('CBLC', formatMoney(pos.totalTaxasCblc))}${kv('Bovespa / emolumentos', formatMoney(pos.totalTaxasBovespa))}${kv('Corretagem / despesas', formatMoney(pos.totalTaxasCorretagem))}</dl></details>`;
+        const cotacao = hasPosition ? `<details class="rounded-xl bg-slate-900/60 px-3 py-2"><summary class="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden text-xs"><span class="text-slate-400">Cotação atual</span><span class="font-mono text-slate-200">${formatMoney(pos.cotacaoAtual)} · Ajustar ▾</span></summary><div class="flex items-center gap-1.5 pt-2"><input type="number" step="any" id="quote-input-${pos.ticker}" value="${pos.cotacaoAtual}" aria-label="Cotação de ${esc(pos.ticker)}" class="flex-1 min-w-0 bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-2 text-xs font-mono text-white"/><button type="button" onclick="openCalculator('quote-input-${pos.ticker}', 'Cotação Atual ${pos.ticker}')" class="p-2 rounded-xl bg-indigo-500/20 text-indigo-300 border border-indigo-500/30" aria-label="Calcular cotação" title="Calcular cotação"><i data-lucide="calculator" class="w-4 h-4"></i></button><button type="button" onclick="updateTickerQuote('${pos.ticker}')" class="px-3 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs">Atualizar</button></div></details>` : '';
+        const historico = `<section><h5 class="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">Operações (${ops.length})</h5><div class="divide-y divide-slate-800/70">${ops.slice(0, 5).map(opRow).join('')}</div>${ops.length > 5 ? `<details class="mt-1"><summary class="text-xs text-indigo-300 cursor-pointer py-1.5">Ver todas as ${ops.length} operações</summary><div class="divide-y divide-slate-800/70 max-h-64 overflow-y-auto">${ops.slice(5).map(opRow).join('')}</div></details>` : ''}</section>`;
         return `
-          <div class="glass-card rounded-2xl overflow-hidden border border-slate-800 transition">
-            <div onclick="togglePositionCard(${idx})" class="p-4 cursor-pointer hover:bg-slate-800/40 transition space-y-3">
-              <div class="flex items-start justify-between gap-2">
-                <div class="flex items-center gap-2.5 min-w-0">
-                  <span class="px-2.5 py-1 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-mono font-extrabold text-sm">${pos.ticker}</span>
-                  <div class="min-w-0"><h4 class="text-xs font-bold text-slate-200 truncate">${pos.especificacao}</h4><span class="text-[10px] text-slate-500">${pos.qtdOperacoes} operações · ${pos.pesoCarteira.toFixed(1)}% da carteira</span></div>
-                </div>
-                <div class="flex items-center gap-2 shrink-0"><div class="text-right"><span class="text-[10px] text-slate-400 block">Preço médio</span><strong class="text-sm font-mono text-white">${formatMoney(pos.precoMedio)}</strong></div><i data-lucide="chevron-down" id="pos-chevron-${idx}" class="w-4 h-4 text-slate-300"></i></div>
+          <div class="glass-card rounded-2xl overflow-hidden border border-slate-800">
+            <button type="button" id="pos-head-${idx}" aria-expanded="false" aria-controls="pos-details-${idx}" onclick="togglePositionCard(${idx})" class="w-full text-left p-4 hover:bg-slate-800/40 transition space-y-2">
+              <div class="flex items-center justify-between gap-3">
+                <div class="min-w-0"><span class="font-mono font-extrabold text-base text-white">${esc(pos.ticker)}</span><span class="block text-xs text-slate-400 truncate">${esc(pos.especificacao || '')}</span></div>
+                <div class="flex items-center gap-2 shrink-0"><strong class="text-base font-mono text-white">${hasPosition ? formatMoney(pos.patrimonioAtual) : '—'}</strong><i data-lucide="chevron-down" id="pos-chevron-${idx}" class="w-4 h-4 text-slate-400 transition"></i></div>
               </div>
-              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
-                <div class="bg-slate-900/70 rounded-xl py-2 px-2"><span class="text-[10px] text-slate-400 block">Qtd. atual</span><strong class="text-xs font-mono text-emerald-400">${formatNumber(pos.qtdAtual)}</strong></div>
-                <div class="bg-slate-900/70 rounded-xl py-2 px-2"><span class="text-[10px] text-slate-400 block">Valor atual</span><strong class="text-xs font-mono text-white">${formatMoney(pos.patrimonioAtual)}</strong></div>
-                <div class="bg-slate-900/70 rounded-xl py-2 px-2"><span class="text-[10px] text-slate-400 block">Resultado aberto</span><strong class="text-xs font-mono ${isPositive?'text-emerald-400':'text-rose-400'}">${isPositive?'+':''}${formatMoney(pos.lucroPrejuizo)}</strong></div>
-                <div class="bg-slate-900/70 rounded-xl py-2 px-2"><span class="text-[10px] text-slate-400 block">Rentabilidade</span><strong class="text-xs font-mono ${isPositive?'text-emerald-400':'text-rose-400'}">${formatPercent(pos.rentabilidade)}</strong></div>
+              <div class="flex items-center justify-between gap-3">
+                <span class="text-xs font-mono text-slate-400 truncate">${hasPosition ? `${formatNumber(pos.qtdAtual)} × ${formatMoney(pos.precoMedio)} · ${pos.pesoCarteira.toFixed(1)}%` : 'Posição encerrada'}</span>
+                <span class="shrink-0 px-2.5 py-1 rounded-full text-xs font-bold font-mono ${badgeTone}">${badgeText}</span>
               </div>
-            </div>
+            </button>
             <div id="pos-details-${idx}" class="hidden bg-slate-950/80 border-t border-slate-800 p-4 space-y-4">
-              <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs">
-                <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800"><span class="text-[10px] text-slate-400 block">Custo da posição atual</span><strong class="font-mono text-white text-sm">${formatMoney(pos.valorInvestido)}</strong></div>
-                <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800"><span class="text-[10px] text-slate-400 block">Patrimônio atual</span><strong class="font-mono text-white text-sm">${formatMoney(pos.patrimonioAtual)}</strong></div>
-                <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800"><span class="text-[10px] text-slate-400 block">Resultado não realizado</span><strong class="font-mono text-sm ${isPositive?'text-emerald-400':'text-rose-400'}">${isPositive?'+':''}${formatMoney(pos.lucroPrejuizo)} (${formatPercent(pos.rentabilidade)})</strong></div>
-                <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800"><span class="text-[10px] text-slate-400 block">Proventos recebidos (líquido)</span><strong class="font-mono text-sm text-emerald-400">${formatMoney(pos.proventosRecebidos||0)}</strong></div><div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800"><span class="text-[10px] text-slate-400 block">Rentabilidade total (c/ proventos)</span><strong class="font-mono text-sm ${(pos.rentabilidadeTotal||0)>=0?'text-emerald-400':'text-rose-400'}">${formatPercent(pos.rentabilidadeTotal||0)}</strong></div><div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800"><span class="text-[10px] text-slate-400 block">Resultado realizado estimado</span><strong class="font-mono text-sm ${(pos.resultadoRealizado||0)>=0?'text-emerald-400':'text-rose-400'}">${(pos.resultadoRealizado||0)>=0?'+':''}${formatMoney(pos.resultadoRealizado||0)}</strong></div>
-                <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800"><span class="text-[10px] text-slate-400 block">Quantidade comprada / vendida</span><strong class="font-mono text-slate-300">${formatNumber(pos.qtdComprada)} / ${formatNumber(pos.qtdVendida)}</strong></div>
-                <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800"><span class="text-[10px] text-slate-400 block">Participação na carteira</span><strong class="font-mono text-slate-300">${pos.pesoCarteira.toFixed(2)}%</strong></div>
-                <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800"><span class="text-[10px] text-slate-400 block">Taxas CBLC acumuladas</span><strong class="font-mono text-slate-300">${formatMoney(pos.totalTaxasCblc)}</strong></div>
-                <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800"><span class="text-[10px] text-slate-400 block">Taxas Bovespa / emol.</span><strong class="font-mono text-slate-300">${formatMoney(pos.totalTaxasBovespa)}</strong></div>
-                <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800"><span class="text-[10px] text-slate-400 block">Corretagem / despesas</span><strong class="font-mono text-slate-300">${formatMoney(pos.totalTaxasCorretagem)}</strong></div>
-              </div>
-              <div class="flex flex-wrap items-center justify-between gap-2 bg-slate-900/90 p-3 rounded-xl border border-slate-800">
-                <div class="text-xs"><span class="text-slate-300 font-semibold">Cotação atual (${pos.ticker})</span><span class="text-[11px] text-slate-500 block">${hasPosition?'Atualize para recalcular patrimônio e rentabilidade':'Posição encerrada'}</span></div>
-                <div class="flex items-center gap-1.5"><input type="number" step="any" id="quote-input-${pos.ticker}" value="${pos.cotacaoAtual}" ${!hasPosition?'disabled':''} class="w-28 bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs font-mono text-white disabled:opacity-50"/><button type="button" onclick="openCalculator('quote-input-${pos.ticker}', 'Cotação Atual ${pos.ticker}')" class="p-2 rounded-xl bg-indigo-500/20 text-indigo-300 border border-indigo-500/30" title="Calcular cotação"><i data-lucide="calculator" class="w-3.5 h-3.5"></i></button><button type="button" onclick="updateTickerQuote('${pos.ticker}')" ${!hasPosition?'disabled':''} class="px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs disabled:opacity-40">Atualizar</button></div>
-              </div>
-              <div class="space-y-2"><div class="flex items-center justify-between"><span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Histórico de operações (${pos.operacoes.length})</span><span class="text-[10px] text-slate-500">Mais recentes primeiro</span></div>
-                <div class="space-y-1.5 max-h-64 overflow-y-auto pr-1">${pos.operacoes.slice().reverse().map(op=>`<div class="flex flex-wrap items-center justify-between gap-2 p-2 rounded-xl bg-slate-900 border border-slate-800/80 text-xs"><div class="flex items-center gap-2"><span class="px-1.5 py-0.5 rounded font-mono font-bold text-[10px] ${op.tipo_ordem==='C'?'bg-emerald-500/20 text-emerald-300':'bg-amber-500/20 text-amber-300'}">${op.tipo_ordem==='C'?'COMPRA':'VENDA'}</span><span class="font-mono text-slate-300">${op.data_operacao}</span><span class="text-slate-500 font-mono">Nota: ${op.numero_nota||'Manual'}</span></div><div class="flex items-center gap-3"><span class="font-mono text-white">${formatNumber(op.quantidade)} × ${formatMoney(op.preco_unitario)}</span><button onclick="deleteSingleOperation(${op.id})" class="text-rose-400 hover:text-rose-300 p-1" title="Excluir lançamento"><i data-lucide="trash" class="w-3.5 h-3.5"></i></button></div></div>`).join('')}</div>
-              </div>
+              ${posicao}${resultado}${custos}${cotacao}${historico}
             </div>
           </div>`;
-      }).join('');
+      }).join('') + closedLink;
       lucide.createIcons();
     }
 
@@ -1728,16 +1738,23 @@
       const filter = document.getElementById('positionsFilter');
       const sort = document.getElementById('positionsSort');
       if (search) search.value = '';
-      if (filter) filter.value = 'all';
+      if (filter) filter.value = 'active';
       if (sort) sort.value = 'ticker';
       applyPositionsView();
     }
 
+    function setPositionsFilter(value) {
+      const f = document.getElementById('positionsFilter');
+      if (f) f.value = value;
+      applyPositionsView();
+    }
     function togglePositionCard(idx) {
       const details = document.getElementById(`pos-details-${idx}`);
       const chevron = document.getElementById(`pos-chevron-${idx}`);
       if (!details) return;
       const isHidden = details.classList.contains('hidden');
+      const head = document.getElementById(`pos-head-${idx}`);
+      if (head) head.setAttribute('aria-expanded', String(isHidden));
       if (isHidden) {
         details.classList.remove('hidden');
         if (chevron) chevron.style.transform = 'rotate(180deg)';

@@ -1,5 +1,5 @@
 // Altere CACHE_NAME a cada deploy para disparar a atualização do app.
-const CACHE_NAME = 'ledgerly-pwa-v4';
+const CACHE_NAME = 'ledgerly-pwa-v6';
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -23,7 +23,8 @@ const APP_SHELL = [
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./icons/icon-192-maskable.png",
-  "./icons/icon-512-maskable.png"
+  "./icons/icon-512-maskable.png",
+  "./icons/apple-touch-icon-180.png"
 ];
 
 self.addEventListener('install', event => {
