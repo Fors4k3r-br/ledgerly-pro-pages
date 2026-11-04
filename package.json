@@ -1,0 +1,6 @@
+{
+  "name": "ledgerly-pro",
+  "private": true,
+  "scripts": { "build:css": "tailwindcss -c tailwind.config.js -i src/input.css -o assets/tailwind.css --minify" },
+  "devDependencies": { "tailwindcss": "3.4.17" }
+}
