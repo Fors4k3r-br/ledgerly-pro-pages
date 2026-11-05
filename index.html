@@ -327,6 +327,8 @@
             <option value="weight">Maior participação</option>
           </select>
         </div>
+        <select id="positionsCorretora" aria-label="Filtrar por corretora" onchange="setPositionsCorretora()" class="w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-3 py-2.5 text-xs text-white outline-none"><option value="">Todas as corretoras</option></select>
+        <p id="positionsCorretoraNote" class="hidden text-[11px] text-slate-500">Há proventos sem corretora informada; eles só aparecem em “Todas as corretoras”.</p>
         <div class="flex items-center justify-between gap-2">
           <div id="positionsChips" class="flex gap-1.5" role="group" aria-label="Filtrar posições">
             <button type="button" data-f="active" onclick="setPositionsFilter('active')" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-300">Abertas</button>
@@ -495,6 +497,10 @@
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <div class="sm:col-span-3">
+              <label for="savedNotesCorretora" class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1">Corretora</label>
+              <select id="savedNotesCorretora" onchange="filterSavedNotes(true)" class="w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-3 py-2.5 text-xs text-white outline-none"><option value="">Todas as corretoras</option></select>
+            </div>
             <div class="sm:col-span-1">
               <label for="savedNotesSearch" class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1">Pesquisar nota</label>
               <div class="relative">
@@ -594,6 +600,11 @@
                   required
                   class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm font-mono text-white outline-none"
                 />
+              </div>
+              <div>
+                <label for="manCorretora" class="block text-xs font-medium text-slate-300 mb-1">Corretora</label>
+                <select id="manCorretora" onchange="onManCorretoraChange()" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none"><option value="">Não informada</option></select>
+                <input type="text" id="manCorretoraNova" maxlength="80" placeholder="Nome da nova corretora" class="hidden mt-2 w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none" />
               </div>
               <div>
                 <label class="block text-xs font-medium text-slate-300 mb-1">Nº de Controle da Nota (Opcional)</label>
@@ -772,6 +783,7 @@
             <select id="provTipo" onchange="provAutoTax()" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none">
               <option value="DIV">Dividendos</option><option value="JCP">JCP</option><option value="REND">Rendimentos (FII/ETF)</option><option value="AMORT">Amortização</option><option value="OUTRO">Outros</option>
             </select></div>
+          <div class="col-span-2"><label for="provCorretora" class="block text-[11px] font-semibold text-slate-300 mb-1">Corretora</label><select id="provCorretora" onchange="onProvCorretoraChange()" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none"><option value="">Não informada</option></select></div>
           <div><label for="provData" class="block text-[11px] font-semibold text-slate-300 mb-1">Data do pagamento *</label><input id="provData" type="date" required class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none" /></div>
           <div><label for="provQtd" class="block text-[11px] font-semibold text-slate-300 mb-1">Quantidade (opcional)</label><input id="provQtd" type="text" inputmode="decimal" placeholder="Cotas na data" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none font-mono" /></div>
           <div><label for="provBruto" class="block text-[11px] font-semibold text-slate-300 mb-1">Valor bruto (R$) *</label><input id="provBruto" type="text" inputmode="decimal" required oninput="provAutoTax()" placeholder="0,00" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none font-mono" /></div>
@@ -790,7 +802,7 @@
       <div class="space-y-3">
         <div class="flex items-center justify-between gap-3">
           <h3 class="text-sm font-bold text-white">Histórico</h3>
-          <select id="provFilter" onchange="renderProventos()" aria-label="Filtrar por ativo" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-white outline-none"></select>
+          <div class="flex gap-2 min-w-0"><select id="provFilterCorretora" onchange="renderProventos()" aria-label="Filtrar por corretora" class="min-w-0 max-w-[9.5rem] bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none"><option value="">Todas as corretoras</option></select><select id="provFilter" onchange="renderProventos()" aria-label="Filtrar por ativo" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-white outline-none"></select></div>
         </div>
         <div id="provList" class="space-y-2"></div>
       </div>
@@ -1240,7 +1252,7 @@
     let currentCalcExpression = '';
 
     // Constantes do IndexedDB para persistir o binário do SQLite
-    const IDB_NAME = 'InvestSQL_Database_Store';
+    const IDB_NAME = 'Ledgerly_Database';
     const IDB_STORE = 'sqlite_binary';
     const IDB_KEY = 'carteira_db';
 
@@ -1306,7 +1318,8 @@
           valor_liquido_nota REAL DEFAULT 0,
           nome_arquivo TEXT,
           arquivo_base64 TEXT,
-          criado_em TEXT
+          criado_em TEXT,
+          corretora_id INTEGER
         );
 
         CREATE TABLE IF NOT EXISTS operacoes (
@@ -1323,6 +1336,7 @@
           taxa_cblc REAL DEFAULT 0,
           taxa_bovespa REAL DEFAULT 0,
           taxa_corretagem REAL DEFAULT 0,
+          corretora_id INTEGER,
           FOREIGN KEY (nota_id) REFERENCES notas_corretagem(id) ON DELETE CASCADE
         );
 
@@ -1340,16 +1354,68 @@
           valor_bruto REAL NOT NULL,
           imposto REAL DEFAULT 0,
           valor_liquido REAL NOT NULL,
-          observacao TEXT
+          observacao TEXT,
+          corretora_id INTEGER
         );
         CREATE INDEX IF NOT EXISTS idx_proventos_ticker ON proventos(ticker);
+
+        CREATE TABLE IF NOT EXISTS corretoras (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          nome TEXT NOT NULL,
+          cnpj TEXT UNIQUE
+        );
 
         CREATE TABLE IF NOT EXISTS configuracoes_seguranca (
           chave TEXT PRIMARY KEY,
           valor TEXT
         );
       `);
+      ensureCorretoraColumns();
     }
+
+    // Corretora vinculada a cada nota e a cada operação (migração segura de bancos antigos)
+    function ensureColumn(table, col, ddl) {
+      const cols = queryAll(`PRAGMA table_info(${table})`).map(c => c.name);
+      if (!cols.includes(col)) db.run(`ALTER TABLE ${table} ADD COLUMN ${col} ${ddl}`);
+    }
+    function ensureCorretora(nome, cnpj) {
+      nome = String(nome || '').replace(/\s+/g, ' ').trim();
+      cnpj = String(cnpj || '').trim() || null;
+      let row;
+      if (cnpj) row = queryAll('SELECT id FROM corretoras WHERE cnpj = ?', [cnpj])[0];
+      else if (nome) row = queryAll('SELECT id FROM corretoras WHERE cnpj IS NULL AND UPPER(nome) = UPPER(?)', [nome])[0];
+      else return null;
+      if (row) return row.id;
+      db.run('INSERT INTO corretoras (nome, cnpj) VALUES (?, ?)', [nome || ('Corretora ' + cnpj), cnpj]);
+      return queryAll('SELECT last_insert_rowid() AS id')[0].id;
+    }
+    // Segurança para restaurar backups antigos: garante as colunas sem alterar nenhum dado
+    function ensureCorretoraColumns() {
+      ['notas_corretagem', 'operacoes', 'proventos'].forEach(t => ensureColumn(t, 'corretora_id', 'INTEGER'));
+      db.run('CREATE INDEX IF NOT EXISTS idx_operacoes_corretora ON operacoes(corretora_id)');
+      db.run('CREATE INDEX IF NOT EXISTS idx_notas_corretora ON notas_corretagem(corretora_id)');
+      db.run('CREATE INDEX IF NOT EXISTS idx_proventos_corretora ON proventos(corretora_id)');
+    }
+    function fillCorretoraSelects() {
+      const corr = queryAll('SELECT id, nome FROM corretoras ORDER BY nome');
+      const opts = corr.map(c => `<option value="${c.id}">${escapeSavedNoteText(c.nome)}</option>`).join('');
+      const set = (id, html) => {
+        const el = document.getElementById(id); if (!el) return;
+        const prev = el.value; el.innerHTML = html;
+        if (Array.from(el.options).some(o => o.value === prev)) el.value = prev;
+      };
+      set('positionsCorretora', '<option value="">Todas as corretoras</option>' + opts);
+      set('savedNotesCorretora', '<option value="">Todas as corretoras</option>' + opts);
+      set('provCorretora', '<option value="">Não informada</option>' + opts);
+      set('provFilterCorretora', '<option value="">Todas as corretoras</option>' + opts);
+      set('manCorretora', '<option value="">Não informada</option>' + opts + '<option value="__new__">＋ Nova corretora…</option>');
+      onManCorretoraChange();
+    }
+    function onManCorretoraChange() {
+      const sel = document.getElementById('manCorretora'), nova = document.getElementById('manCorretoraNova');
+      if (nova && sel) nova.classList.toggle('hidden', sel.value !== '__new__');
+    }
+    function setPositionsCorretora() { renderPositionsExpandableCards(); }
 
     function openIndexedDB() {
       return new Promise((resolve, reject) => {
@@ -1413,8 +1479,10 @@
     // =========================================================================
     // 2. CÁLCULO CONSOLIDADO DE CUSTÓDIA E PREÇO MÉDIO
     // =========================================================================
-    function getConsolidatedPositions() {
-      const ops = queryAll(`SELECT * FROM operacoes ORDER BY id ASC`);
+    function getConsolidatedPositions(corretoraId = null) {
+      const ops = corretoraId
+        ? queryAll(`SELECT * FROM operacoes WHERE corretora_id = ? ORDER BY id ASC`, [Number(corretoraId)])
+        : queryAll(`SELECT * FROM operacoes ORDER BY id ASC`);
       const quotesRows = queryAll(`SELECT ticker, preco_atual FROM cotacoes_atuais`);
       const quotesMap = {};
       quotesRows.forEach(r => { quotesMap[r.ticker] = Number(r.preco_atual); });
@@ -1481,7 +1549,9 @@
       });
 
       const provMap = {};
-      queryAll('SELECT ticker, SUM(valor_liquido) AS total FROM proventos GROUP BY ticker').forEach(r => { provMap[r.ticker] = Number(r.total) || 0; });
+      (corretoraId
+        ? queryAll('SELECT ticker, SUM(valor_liquido) AS total FROM proventos WHERE corretora_id = ? GROUP BY ticker', [Number(corretoraId)])
+        : queryAll('SELECT ticker, SUM(valor_liquido) AS total FROM proventos GROUP BY ticker')).forEach(r => { provMap[r.ticker] = Number(r.total) || 0; });
       return Object.values(map).map(pos => {
         const cotacaoAtual = quotesMap[pos.ticker] !== undefined ? quotesMap[pos.ticker] : pos.ultimoPrecoNegociado;
         const valorInvestido = pos.qtdAtual * pos.precoMedio;
@@ -1499,6 +1569,7 @@
           rentabilidade,
           totalTaxas,
           proventosRecebidos: provMap[pos.ticker] || 0,
+          filtradoCorretora: Boolean(corretoraId),
           rentabilidadeTotal: valorInvestido > 0 ? (((lucroPrejuizo + (provMap[pos.ticker] || 0)) / valorInvestido) * 100) : 0,
           pesoCarteira: 0
         };
@@ -1510,6 +1581,8 @@
     // =========================================================================
     function refreshAllViews() {
       const positions = getConsolidatedPositions();
+      allPositionsData = positions;
+      fillCorretoraSelects();
       const activePositions = positions.filter(p => p.qtdAtual > 0);
 
       // Soma dos KPIs da Carteira
@@ -1622,9 +1695,17 @@
     // Renderiza os Retângulos Expansíveis na Aba Oculta "Posições"
     <!-- Renderiza os Retângulos Expansíveis na Aba Oculta "Posições" -->
     let latestPositionsData = [];
+    let allPositionsData = [];
 
     function renderPositionsExpandableCards(positions) {
-      latestPositionsData = positions || [];
+      const corrSel = document.getElementById('positionsCorretora');
+      const corrId = corrSel ? corrSel.value : '';
+      latestPositionsData = corrId ? getConsolidatedPositions(corrId) : (positions || getConsolidatedPositions());
+      const corrNote = document.getElementById('positionsCorretoraNote');
+      if (corrNote) {
+        const semCorr = corrId ? Number(queryAll('SELECT COUNT(*) AS n FROM proventos WHERE corretora_id IS NULL')[0].n) : 0;
+        corrNote.classList.toggle('hidden', !semCorr);
+      }
       const active = latestPositionsData.filter(p => p.qtdAtual > 0);
       const totalInvestido = active.reduce((a,p) => a + p.valorInvestido, 0);
       const totalAtual = active.reduce((a,p) => a + p.patrimonioAtual, 0);
@@ -2001,6 +2082,37 @@
         throw e;
       }
 
+      // Conferência automática: compara o que foi lido com os totais impressos na própria nota
+      const brl = v => 'R$ ' + v.toFixed(2).replace('.', ',');
+      const liquidoImpresso = matchValAfterLabel(/L[ií]quido\s+para\s+\d{2}\/\d{2}\/\d{4}\s+([\d.,]+)/i);
+      const saldoOps = operacoesExtraidas.reduce((a, o) => a + (o.tipo_ordem === 'V' ? o.valor_operacao : -o.valor_operacao), 0);
+      const taxasTotais = taxaCblcLiquida + totalBovespa + totalCorretagem;
+      const avisosConferencia = [];
+      if (valorLiquidoOperacoes > 0 && Math.abs(Math.abs(saldoOps) - valorLiquidoOperacoes) > 0.015) {
+        avisosConferencia.push(`As operações lidas somam ${brl(Math.abs(saldoOps))}, mas a nota indica ${brl(valorLiquidoOperacoes)} em "Valor líquido das operações". Alguma operação pode não ter sido lida.`);
+      }
+      if (liquidoImpresso > 0) {
+        const esperado = saldoOps < 0 ? Math.abs(saldoOps) + taxasTotais : Math.abs(saldoOps) - taxasTotais;
+        if (Math.abs(esperado - liquidoImpresso) > 0.015) {
+          avisosConferencia.push(`Operações e taxas lidas resultam em ${brl(esperado)}, mas o "Líquido" impresso na nota é ${brl(liquidoImpresso)}. Verifique taxas ou outras despesas (ex.: IRRF).`);
+        }
+      }
+      if (valorLiquidoOperacoes === 0 && liquidoImpresso === 0) {
+        avisosConferencia.push('Não foi possível localizar os totais da nota para conferir os valores lidos.');
+      }
+
+      // Identificação da corretora (CNPJ é o dado mais confiável; o nome vem do cabeçalho da nota)
+      const cnpjM = normalized.match(/C\.?N\.?P\.?J\.?\s*:\s*(\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2})/i);
+      const corretoraCnpj = cnpjM ? cnpjM[1] : '';
+      const nomeM = normalized.match(/\b((?:[A-ZÀ-Ú][A-ZÀ-Ú.&'-]*\s+){1,8}?(?:S\.A\.|S\/A|LTDA\.?|CCTVM|DTVM|CTVM))/);
+      let corretoraNome = nomeM ? nomeM[1].replace(/^NOTA\s+DE\s+(?:CORRETAGEM|NEGOCIA[ÇC][AÃ]O)\s+/, '').trim() : '';
+      if (corretoraCnpj === '24.933.830/0001-30' && !corretoraNome) corretoraNome = 'BB BANCO DE INVESTIMENTO S.A.';
+      if (!corretoraCnpj && !corretoraNome) {
+        avisosConferencia.push('Não foi possível identificar a corretora desta nota.');
+      } else if (corretoraCnpj && corretoraCnpj !== '24.933.830/0001-30') {
+        avisosConferencia.push('Corretora diferente do BB Investimentos: o leitor foi testado apenas com notas do BB. Confira todos os valores.');
+      }
+
       // Rateio proporcional das taxas da nota para cada operação
       const somaOperacoes = operacoesExtraidas.reduce((acc, op) => acc + op.valor_operacao, 0) || 1;
       const operacoesComRateio = operacoesExtraidas.map(op => {
@@ -2024,6 +2136,9 @@
         valor_liquido_nota: valorLiquidoNota,
         nome_arquivo: fileName,
         arquivo_base64: base64Pdf,
+        avisos_conferencia: avisosConferencia,
+        corretora_nome: corretoraNome,
+        corretora_cnpj: corretoraCnpj,
         operacoes: operacoesComRateio
       };
     }
@@ -2052,6 +2167,7 @@
                 Nr. Nota: ${note.numero_controle}
               </span>
               <span class="text-xs font-mono text-slate-300">Pregão: ${note.data_pregao}</span>
+              <span class="text-xs text-slate-400">· ${escapeSavedNoteText(note.corretora_nome || 'Corretora não identificada')}</span>
             </div>
             <button
               type="button"
@@ -2062,6 +2178,10 @@
               <span>Remover Nota</span>
             </button>
           </div>
+
+          ${(note.avisos_conferencia && note.avisos_conferencia.length)
+            ? `<div role="alert" class="rounded-xl border border-amber-500/40 bg-amber-500/10 p-3 text-xs text-amber-200 space-y-1"><strong class="block text-amber-300">⚠ Confira esta nota antes de salvar</strong>${note.avisos_conferencia.map(a => `<p>${escapeSavedNoteText(a)}</p>`).join('')}</div>`
+            : `<div class="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs text-emerald-300">✔ Totais conferem com a nota</div>`}
 
           <div class="space-y-3">
             ${note.operacoes.map((op, opIdx) => `
@@ -2263,12 +2383,13 @@
             continue;
           }
 
+          const corretoraId = ensureCorretora(note.corretora_nome, note.corretora_cnpj);
           db.run(
             `INSERT INTO notas_corretagem (
               numero_controle, data_pregao, valor_operacoes, total_cblc_bruto,
               taxa_cblc, taxa_bovespa, taxa_corretagem, valor_liquido_nota,
-              nome_arquivo, arquivo_base64, criado_em
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+              nome_arquivo, arquivo_base64, criado_em, corretora_id
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
               note.numero_controle,
               note.data_pregao,
@@ -2280,7 +2401,8 @@
               note.valor_liquido_nota,
               note.nome_arquivo,
               note.arquivo_base64,
-              new Date().toISOString()
+              new Date().toISOString(),
+              corretoraId
             ]
           );
 
@@ -2292,8 +2414,8 @@
               `INSERT INTO operacoes (
                 nota_id, numero_nota, data_operacao, ticker, especificacao,
                 tipo_ordem, quantidade, preco_unitario, valor_operacao,
-                taxa_cblc, taxa_bovespa, taxa_corretagem
-              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                taxa_cblc, taxa_bovespa, taxa_corretagem, corretora_id
+              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
               [
                 notaId,
                 note.numero_controle,
@@ -2306,7 +2428,8 @@
                 Number(op.valor_operacao) || 0,
                 Number(op.taxa_cblc) || 0,
                 Number(op.taxa_bovespa) || 0,
-                Number(op.taxa_corretagem) || 0
+                Number(op.taxa_corretagem) || 0,
+                corretoraId
               ]
             );
           }
@@ -2351,6 +2474,8 @@
         const term = `%${search}%`;
         params.push(term, term, term);
       }
+      const corr = document.getElementById('savedNotesCorretora')?.value || '';
+      if (corr) { conditions.push('corretora_id = ?'); params.push(Number(corr)); }
       // As datas importadas pelo aplicativo usam DD/MM/AAAA.
       if (year) { conditions.push(`substr(data_pregao, 7, 4) = ?`); params.push(year); }
       if (month) { conditions.push(`substr(data_pregao, 4, 2) = ?`); params.push(month); }
@@ -2403,7 +2528,7 @@
 
       // Não usar SELECT *: arquivo_base64 pode conter PDFs grandes.
       const notes = total ? queryAll(`
-        SELECT id, numero_controle, data_pregao, valor_liquido_nota,
+        SELECT id, (SELECT nome FROM corretoras c WHERE c.id = notas_corretagem.corretora_id) AS corretora_nome, numero_controle, data_pregao, valor_liquido_nota,
                valor_operacoes, total_cblc_bruto, taxa_cblc,
                taxa_bovespa, taxa_corretagem, nome_arquivo
         FROM notas_corretagem
@@ -2428,7 +2553,7 @@
                   <span class="font-mono font-bold text-emerald-400">Nr. ${escapeSavedNoteText(n.numero_controle)}</span>
                   <span class="text-slate-400 font-mono">${escapeSavedNoteText(n.data_pregao)}</span>
                 </div>
-                <p class="text-[11px] text-slate-500 truncate">${escapeSavedNoteText(n.nome_arquivo || 'Arquivo salvo no banco')}</p>
+                <p class="text-[11px] text-slate-500 truncate">${escapeSavedNoteText(n.corretora_nome || 'Corretora não informada')} · ${escapeSavedNoteText(n.nome_arquivo || 'Arquivo salvo no banco')}</p>
               </div>
               <div class="flex items-center gap-3">
                 <div class="text-right">
@@ -2514,12 +2639,22 @@
         return;
       }
 
+      let corretoraId = null;
+      const corrSel = document.getElementById('manCorretora').value;
+      if (corrSel === '__new__') {
+        const nomeNova = document.getElementById('manCorretoraNova').value.trim();
+        if (!nomeNova) { showToast('Informe o nome da nova corretora.', 'error'); return; }
+        corretoraId = ensureCorretora(nomeNova, null);
+      } else if (corrSel) {
+        corretoraId = Number(corrSel);
+      }
+
       db.run(
         `INSERT INTO operacoes (
           nota_id, numero_nota, data_operacao, ticker, especificacao,
           tipo_ordem, quantidade, preco_unitario, valor_operacao,
-          taxa_cblc, taxa_bovespa, taxa_corretagem
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          taxa_cblc, taxa_bovespa, taxa_corretagem, corretora_id
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           null,
           numNota,
@@ -2532,13 +2667,15 @@
           valorOperacao,
           taxaCblc,
           taxaBovespa,
-          taxaCorretagem
+          taxaCorretagem,
+          corretoraId
         ]
       );
 
       await persistSQLiteToIndexedDB();
       document.getElementById('manualForm').reset();
       setTodayDateOnManualForm();
+      onManCorretoraChange();
       refreshAllViews();
       showToast(`Lançamento manual de ${ticker} salvo no SQLite!`, 'success');
       switchTab('carteira');
@@ -2921,17 +3058,17 @@
       return false;
     }
     function pinLockRemaining() {
-      try { return Math.max(0, Math.ceil((Number(localStorage.getItem('investsql_pin_lock')) - Date.now()) / 1000)); } catch (_) { return 0; }
+      try { return Math.max(0, Math.ceil((Number(localStorage.getItem('ledgerly_pin_lock')) - Date.now()) / 1000)); } catch (_) { return 0; }
     }
     function pinRegisterFail() {
       try {
-        const n = Number(localStorage.getItem('investsql_pin_fails') || 0) + 1;
-        localStorage.setItem('investsql_pin_fails', String(n));
-        if (n >= 5) localStorage.setItem('investsql_pin_lock', String(Date.now() + Math.min(900, 30 * 2 ** (n - 5)) * 1000));
+        const n = Number(localStorage.getItem('ledgerly_pin_fails') || 0) + 1;
+        localStorage.setItem('ledgerly_pin_fails', String(n));
+        if (n >= 5) localStorage.setItem('ledgerly_pin_lock', String(Date.now() + Math.min(900, 30 * 2 ** (n - 5)) * 1000));
       } catch (_) {}
     }
     function pinResetFails() {
-      try { localStorage.removeItem('investsql_pin_fails'); localStorage.removeItem('investsql_pin_lock'); } catch (_) {}
+      try { localStorage.removeItem('ledgerly_pin_fails'); localStorage.removeItem('ledgerly_pin_lock'); } catch (_) {}
     }
 
     async function handlePinManagementSubmit(event) {
@@ -3351,7 +3488,16 @@
     }
     function onProvTickerChange() {
       const t = document.getElementById('provTicker').value;
-      const pos = (latestPositionsData || []).find(p => p.ticker === t);
+      // Sugere a corretora onde o ativo tem a maior custódia atual
+      const rows = queryAll(`SELECT corretora_id, SUM(CASE WHEN tipo_ordem = 'C' THEN quantidade ELSE -quantidade END) AS q FROM operacoes WHERE ticker = ? GROUP BY corretora_id ORDER BY q DESC`, [t]);
+      const sel = document.getElementById('provCorretora');
+      sel.value = (rows.length && rows[0].corretora_id != null) ? String(rows[0].corretora_id) : '';
+      onProvCorretoraChange();
+    }
+    function onProvCorretoraChange() {
+      const t = document.getElementById('provTicker').value;
+      const c = document.getElementById('provCorretora').value;
+      const pos = getConsolidatedPositions(c || null).find(p => p.ticker === t);
       if (pos && pos.qtdAtual > 0) document.getElementById('provQtd').value = String(pos.qtdAtual).replace('.', ',');
     }
     async function saveProvento(event) {
@@ -3363,12 +3509,13 @@
       const bruto = parseMoneyField(document.getElementById('provBruto').value);
       const imposto = parseMoneyField(document.getElementById('provImposto').value);
       const obs = document.getElementById('provObs').value.trim();
+      const provCorr = document.getElementById('provCorretora').value;
       if (!ticker || !data) { showToast('Informe o ativo e a data do pagamento.', 'error'); return; }
       if (!(bruto > 0) || isNaN(imposto) || isNaN(qtd) || imposto < 0 || imposto > bruto) {
         showToast('Confira os valores: bruto > 0 e IR não pode exceder o bruto.', 'error'); return;
       }
-      db.run('INSERT INTO proventos (ticker, tipo, data_pagamento, quantidade, valor_bruto, imposto, valor_liquido, observacao) VALUES (?,?,?,?,?,?,?,?)',
-        [ticker, tipo, data, qtd, bruto, imposto, bruto - imposto, obs]);
+      db.run('INSERT INTO proventos (ticker, tipo, data_pagamento, quantidade, valor_bruto, imposto, valor_liquido, observacao, corretora_id) VALUES (?,?,?,?,?,?,?,?,?)',
+        [ticker, tipo, data, qtd, bruto, imposto, bruto - imposto, obs, provCorr ? Number(provCorr) : null]);
       await persistSQLiteToIndexedDB();
       ['provBruto', 'provImposto', 'provObs'].forEach(id => { const el = document.getElementById(id); el.value = ''; delete el.dataset.manual; });
       refreshAllViews();
@@ -3400,13 +3547,17 @@
       if (opsTickers.includes(prevT)) selT.value = prevT;
       const dateEl = document.getElementById('provData');
       if (!dateEl.value) dateEl.value = todayISO();
+      if (prevT !== selT.value) onProvTickerChange();
 
       const selF = document.getElementById('provFilter');
       const prevF = selF.value;
       selF.innerHTML = '<option value="">Todos</option>' + allTickers.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join('');
       if (allTickers.includes(prevF)) selF.value = prevF;
 
-      const rows = queryAll('SELECT * FROM proventos ORDER BY data_pagamento DESC, id DESC');
+      const fc = (document.getElementById('provFilterCorretora') || {}).value || '';
+      const provSql = 'SELECT p.*, (SELECT nome FROM corretoras c WHERE c.id = p.corretora_id) AS corretora_nome FROM proventos p ' + (fc ? 'WHERE p.corretora_id = ? ' : '') + 'ORDER BY p.data_pagamento DESC, p.id DESC';
+      const rows = fc ? queryAll(provSql, [Number(fc)]) : queryAll(provSql);
+      const posBase = fc ? getConsolidatedPositions(fc) : allPositionsData;
       const sum = (arr, k) => arr.reduce((a, r) => a + (Number(r[k]) || 0), 0);
       const lim = todayISO(-365);
       const last12 = rows.filter(r => r.data_pagamento >= lim);
@@ -3421,7 +3572,7 @@
       rows.forEach(r => { byT[r.ticker] = (byT[r.ticker] || 0) + (Number(r.valor_liquido) || 0); });
       const tickersWith = Object.keys(byT).sort((a, b) => byT[b] - byT[a]);
       document.getElementById('provByTicker').innerHTML = tickersWith.length ? tickersWith.map(t => {
-        const pos = (latestPositionsData || []).find(p => p.ticker === t);
+        const pos = (posBase || []).find(p => p.ticker === t);
         const yoc = pos && pos.valorInvestido > 0 ? formatPercent((byT[t] / pos.valorInvestido) * 100) : '—';
         const rt = pos && pos.valorInvestido > 0 ? `${pos.rentabilidadeTotal >= 0 ? '+' : ''}${formatPercent(pos.rentabilidadeTotal)}` : '—';
         return `<div class="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between gap-2">
@@ -3437,7 +3588,7 @@
           <div class="min-w-0">
             <div class="flex items-center gap-2"><span class="font-mono font-bold text-emerald-400 text-sm">${esc(r.ticker)}</span>
               <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300">${esc(PROV_TIPOS[r.tipo] || r.tipo)}</span></div>
-            <p class="text-[11px] text-slate-400 font-mono">${esc(isoToBR(r.data_pagamento))}${r.quantidade > 0 ? ' · ' + esc(formatNumber(r.quantidade)) + ' cotas' : ''}</p>
+            <p class="text-[11px] text-slate-400 font-mono">${esc(isoToBR(r.data_pagamento))}${r.quantidade > 0 ? ' · ' + esc(formatNumber(r.quantidade)) + ' cotas' : ''}${r.corretora_nome ? ' · ' + esc(r.corretora_nome) : ''}</p>
             ${r.observacao ? `<p class="text-[11px] text-slate-500 truncate">${esc(r.observacao)}</p>` : ''}
           </div>
           <div class="text-right shrink-0">
