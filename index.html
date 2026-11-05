@@ -116,14 +116,12 @@
   <header class="sticky top-0 z-30 bg-slate-950/90 backdrop-blur-md border-b border-slate-800/80 px-4 py-3.5">
     <div class="max-w-3xl mx-auto flex items-center justify-between">
       <div class="flex items-center gap-2.5">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-slate-950 font-extrabold shadow-md shadow-emerald-500/20">
-          <i data-lucide="Candlestick-chart" class="w-5 h-5"></i>
-        </div>
+        <img src="./icons/icon-192.png" alt="" width="36" height="36" class="w-9 h-9 rounded-xl shadow-md shadow-emerald-500/20" />
         <div>
           <div class="flex items-center gap-2">
             <h1 class="text-base font-extrabold tracking-tight text-white">Ledgerly Pro</h1>
             <span id="dbStatusBadge" class="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-              SQLite Ativo
+              Online
             </span>
           </div>
           <p class="text-[11px] text-slate-400">Controle de Notas SINACOR & Custódia</p>
@@ -382,7 +380,7 @@
                 Importar Notas de Corretagem (PDF)
               </h2>
               <p class="text-xs text-slate-400 mt-0.5">
-                Suporte ao padrão SINACOR / BB Investimentos. O controle pelo <strong>Nr. Nota</strong> impede qualquer duplicidade no SQLite.
+                Notas de corretagem no padrão SINACOR. Revise os dados antes de salvar: o <strong>Nr. Nota</strong> evita importar a mesma nota duas vezes. Se o layout da sua corretora não for reconhecido, o app avisa e você pode lançar manualmente.
               </p>
             </div>
           </div>
@@ -1786,7 +1784,7 @@
     }
 
     // =========================================================================
-    // 4. IMPORTAÇÃO DE NOTAS DE CORRETAGEM (PDF SINACOR / BB + ANTI-DUPLICIDADE)
+    // 4. IMPORTAÇÃO DE NOTAS DE CORRETAGEM (PDF SINACOR + ANTI-DUPLICIDADE)
     // =========================================================================
     async function handlePdfSelection(event, mode) {
       const files = Array.from(event.target.files || []).filter(f => f.name.toLowerCase().endsWith('.pdf'));
@@ -1805,7 +1803,7 @@
           const arrayBuffer = await file.arrayBuffer();
           const base64Pdf = arrayBufferToBase64(arrayBuffer);
           const extractedText = await extractTextFromPDFBuffer(arrayBuffer);
-          const parsedNote = parseSinacorBBNote(extractedText, file.name, base64Pdf);
+          const parsedNote = parseSinacorNote(extractedText, file.name, base64Pdf);
 
           // Verifica no SQLite se o numero_controle já foi importado antes
           if (isNoteAlreadyInSQLite(parsedNote.numero_controle)) {
@@ -1824,7 +1822,7 @@
           newlyParsedNotes.push(parsedNote);
         } catch (err) {
           console.error('Erro ao ler PDF:', file.name, err);
-          showToast(`Falha ao processar ${file.name}`, 'error');
+          showToast((err && err.userMessage) || `Falha ao processar ${file.name}`, 'error');
         }
       }
 
@@ -1861,8 +1859,8 @@
       return fullText;
     }
 
-    // Parser especializado para o padrão SINACOR / BB Investimentos (como a nota 29102026/3.182)
-    function parseSinacorBBNote(text, fileName, base64Pdf) {
+    // Parser para notas no padrão SINACOR (testado com a nota 29102026/3.182)
+    function parseSinacorNote(text, fileName, base64Pdf) {
       // Normaliza o texto e substitui caracteres cirílicos/especiais comuns em PDFs do BB (ex: 'З' cirílico por '3')
       const normalized = text.replace(/\s+/g, ' ')
                              .replace(/[ЗЗ3]/g, (m) => '3')
@@ -1996,19 +1994,11 @@
         }
       }
 
-      // Fallback genérico caso nenhuma regex bata exatamente com o layout do PDF
+      // Sem operações reconhecidas: não inventa dados, apenas avisa (layout de outra corretora, PDF escaneado etc.)
       if (operacoesExtraidas.length === 0) {
-        const fallbackTickerMatch = normalized.match(/\b([A-Z]{4}\d{1,3})F?\b/);
-        const fallbackTicker = fallbackTickerMatch ? fallbackTickerMatch[1].toUpperCase() : 'B3SA3';
-        const opVal = valorLiquidoOperacoes || 1525.00;
-        operacoesExtraidas.push({
-          ticker: fallbackTicker,
-          especificacao: `TÍTULO EXTRAÍDO - ${fallbackTicker}`,
-          tipo_ordem: 'C',
-          quantidade: 100,
-          preco_unitario: Number((opVal / 100).toFixed(2)),
-          valor_operacao: opVal
-        });
+        const e = new Error('Nenhuma operação reconhecida na nota');
+        e.userMessage = `Layout não reconhecido em ${fileName}. Lance as operações manualmente.`;
+        throw e;
       }
 
       // Rateio proporcional das taxas da nota para cada operação
@@ -3458,6 +3448,19 @@
         </div>`).join('') : '<div class="glass-card rounded-2xl p-6 text-center text-xs text-slate-400">Nenhum lançamento para exibir.</div>';
       if (window.lucide) lucide.createIcons();
     }
+
+    function updateConnectionBadge() {
+      const b = document.getElementById('dbStatusBadge');
+      if (!b) return;
+      const on = navigator.onLine;
+      b.textContent = on ? 'Online' : 'Offline';
+      b.className = 'text-[10px] font-mono uppercase px-2 py-0.5 rounded-full border ' + (on
+        ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
+        : 'bg-amber-500/15 text-amber-400 border-amber-500/30');
+    }
+    window.addEventListener('online', updateConnectionBadge);
+    window.addEventListener('offline', updateConnectionBadge);
+    document.addEventListener('DOMContentLoaded', updateConnectionBadge);
 
     function showToast(message, type = 'info') {
       const container = document.getElementById('toastContainer');

@@ -1,5 +1,5 @@
 // Altere CACHE_NAME a cada deploy para disparar a atualização do app.
-const CACHE_NAME = 'ledgerly-pwa-v6';
+const CACHE_NAME = 'ledgerly-pwa-v8';
 const APP_SHELL = [
   "./",
   "./index.html",
