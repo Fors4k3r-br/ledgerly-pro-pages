@@ -808,80 +808,64 @@
       </div>
     </section>
 
-    <section id="tab-config" class="space-y-5 hidden">
-
-      <!-- Card 1: Cotação Online via API brapi.dev -->
-      <div class="glass-card rounded-3xl p-5 space-y-4">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div class="flex-1 min-w-0">
-            <h2 class="text-base font-bold text-white flex items-center gap-2">
-              <i data-lucide="globe" class="w-5 h-5 text-emerald-400"></i>
-              API de Cotações Online (brapi.dev)
-            </h2>
-            <p class="text-xs text-slate-400 mt-1 leading-relaxed">
-              Informe sua chave de API da <strong>brapi.dev</strong> para buscar automaticamente a cotação atual dos ativos da sua carteira na B3.
-            </p>
-          </div>
-          <span id="brapiConfigBadge" class="self-start sm:self-center text-[11px] font-mono px-2.5 py-1 rounded-full bg-slate-800 text-slate-400 shrink-0">
-            Sem Token
-          </span>
-        </div>
-
-        <form onsubmit="saveBrapiConfig(event)" class="space-y-3 bg-slate-900/70 p-4 rounded-2xl border border-slate-800">
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1">
-              Token / Chave da API (brapi.dev)
-            </label>
-            <div class="flex flex-col sm:flex-row gap-2">
-              <input
-                type="password"
-                id="brapiTokenInput"
-                placeholder="Cole aqui seu token da brapi.dev"
-                class="flex-1 bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm font-mono text-white outline-none"
-              />
-              <button
-                type="button"
-                onclick="toggleBrapiTokenVisibility()"
-                class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold"
-                title="Mostrar/Ocultar Token"
-              >
-                <i data-lucide="eye" class="w-4 h-4 mx-auto"></i>
-              </button>
-              <button
-                type="submit"
-                class="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition shrink-0"
-              >
-                Salvar Chave API
-              </button>
+    <section id="tab-config" class="space-y-3 hidden">
+      <div class="glass-card rounded-2xl p-3.5">
+        <h2 class="text-base font-bold text-white flex items-center gap-2"><i data-lucide="settings" class="w-5 h-5 text-emerald-400"></i>Configurações</h2>
+      </div>
+      <div class="glass-card rounded-3xl p-5">
+        <button type="button" onclick="switchTab('banco')" aria-label="Abrir Banco de dados" class="w-full flex items-center justify-between gap-3 text-left">
+          <div class="flex items-center gap-3 min-w-0">
+            <i data-lucide="database" class="w-5 h-5 text-emerald-400 shrink-0"></i>
+            <div class="min-w-0">
+              <h2 class="text-base font-bold text-white">Banco de dados</h2>
+              <p id="dbSummaryText" class="text-xs text-slate-400 truncate">Backup, restauração e exclusão</p>
             </div>
           </div>
-
-          <div class="flex items-center justify-between pt-2 border-t border-slate-800/80">
-            <label for="brapiAutoSyncToggle" class="text-xs text-slate-300 cursor-pointer">
-              Atualizar cotações automaticamente ao abrir o app
-            </label>
-            <input
-              type="checkbox"
-              id="brapiAutoSyncToggle"
-              onchange="toggleBrapiAutoSync(this.checked)"
-              class="w-4 h-4 accent-emerald-500 rounded cursor-pointer"
-            />
-          </div>
-        </form>
-
-        <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
-          <button
-            type="button"
-            onclick="testAndSyncBrapiConnection()"
-            class="px-4 py-2.5 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-500/30 text-indigo-300 text-xs font-semibold transition flex items-center gap-1.5"
-          >
-            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
-            Testar Chave & Sincronizar Carteira Agora
-          </button>
-          <span id="brapiConfigStatusText" class="text-[11px] font-mono text-slate-400"></span>
-        </div>
+          <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400 shrink-0"></i>
+        </button>
       </div>
+      <div class="glass-card rounded-3xl p-5">
+        <button type="button" onclick="switchTab('seguranca')" aria-label="Abrir Segurança" class="w-full flex items-center justify-between gap-3 text-left">
+          <div class="flex items-center gap-3 min-w-0">
+            <i data-lucide="shield-check" class="w-5 h-5 text-indigo-400 shrink-0"></i>
+            <div class="min-w-0">
+              <h2 class="text-base font-bold text-white">Segurança</h2>
+              <p id="secSummaryText" class="text-xs text-slate-400 truncate">PIN e biometria</p>
+            </div>
+          </div>
+          <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400 shrink-0"></i>
+        </button>
+      </div>
+      <div class="glass-card rounded-3xl p-5">
+        <button type="button" onclick="switchTab('apis')" aria-label="Abrir APIs" class="w-full flex items-center justify-between gap-3 text-left">
+          <div class="flex items-center gap-3 min-w-0">
+            <i data-lucide="plug" class="w-5 h-5 text-emerald-400 shrink-0"></i>
+            <div class="min-w-0">
+              <h2 class="text-base font-bold text-white">APIs</h2>
+              <p id="apiSummaryText" class="text-xs text-slate-400 truncate">Cotações online (brapi.dev)</p>
+            </div>
+          </div>
+          <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400 shrink-0"></i>
+        </button>
+      </div>
+      <div class="glass-card rounded-3xl p-5">
+        <button type="button" onclick="switchTab('sync')" aria-label="Abrir Sincronização" class="w-full flex items-center justify-between gap-3 text-left">
+          <div class="flex items-center gap-3 min-w-0">
+            <i data-lucide="cloud" class="w-5 h-5 text-indigo-300 shrink-0"></i>
+            <div class="min-w-0">
+              <h2 class="text-base font-bold text-white">Sincronização</h2>
+              <p id="syncSummaryText" class="text-xs text-slate-400 truncate">Google Drive e regras de conflito</p>
+            </div>
+          </div>
+          <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400 shrink-0"></i>
+        </button>
+      </div>
+    </section>
 
+    <section id="tab-seguranca" class="space-y-5 hidden">
+      <button type="button" onclick="switchTab('config')" class="flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white">
+        <i data-lucide="arrow-left" class="w-4 h-4"></i>Configurações
+      </button>
       <!-- Card 2: Segurança para Abrir o App (PIN com Confirmação do PIN Atual + Biometria) -->
       <div class="glass-card rounded-3xl p-5 space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -1003,18 +987,117 @@
         </div>
       </div>
 
-      <!-- Card 3: Banco de dados (abre uma tela própria) -->
-      <div class="glass-card rounded-3xl p-5">
-        <button type="button" onclick="switchTab('banco')" aria-label="Abrir configurações do banco de dados" class="w-full flex items-center justify-between gap-3 text-left">
-          <div class="flex items-center gap-3 min-w-0">
-            <i data-lucide="database" class="w-5 h-5 text-emerald-400 shrink-0"></i>
-            <div class="min-w-0">
-              <h2 class="text-base font-bold text-white">Banco de dados</h2>
-              <p id="dbSummaryText" class="text-xs text-slate-400 truncate">Sincronização, backup e restauração</p>
+    </section>
+
+    <section id="tab-apis" class="space-y-5 hidden">
+      <button type="button" onclick="switchTab('config')" class="flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white">
+        <i data-lucide="arrow-left" class="w-4 h-4"></i>Configurações
+      </button>
+      <!-- Card 1: Cotação Online via API brapi.dev -->
+      <div class="glass-card rounded-3xl p-5 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="flex-1 min-w-0">
+            <h2 class="text-base font-bold text-white flex items-center gap-2">
+              <i data-lucide="globe" class="w-5 h-5 text-emerald-400"></i>
+              API de Cotações Online (brapi.dev)
+            </h2>
+            <p class="text-xs text-slate-400 mt-1 leading-relaxed">
+              Informe sua chave de API da <strong>brapi.dev</strong> para buscar automaticamente a cotação atual dos ativos da sua carteira na B3.
+            </p>
+          </div>
+          <span id="brapiConfigBadge" class="self-start sm:self-center text-[11px] font-mono px-2.5 py-1 rounded-full bg-slate-800 text-slate-400 shrink-0">
+            Sem Token
+          </span>
+        </div>
+
+        <form onsubmit="saveBrapiConfig(event)" class="space-y-3 bg-slate-900/70 p-4 rounded-2xl border border-slate-800">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">
+              Token / Chave da API (brapi.dev)
+            </label>
+            <div class="flex flex-col sm:flex-row gap-2">
+              <input
+                type="password"
+                id="brapiTokenInput"
+                placeholder="Cole aqui seu token da brapi.dev"
+                class="flex-1 bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm font-mono text-white outline-none"
+              />
+              <button
+                type="button"
+                onclick="toggleBrapiTokenVisibility()"
+                class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold"
+                title="Mostrar/Ocultar Token"
+              >
+                <i data-lucide="eye" class="w-4 h-4 mx-auto"></i>
+              </button>
+              <button
+                type="submit"
+                class="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition shrink-0"
+              >
+                Salvar Chave API
+              </button>
             </div>
           </div>
-          <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400 shrink-0"></i>
-        </button>
+
+          <div class="flex items-center justify-between pt-2 border-t border-slate-800/80">
+            <label for="brapiAutoSyncToggle" class="text-xs text-slate-300 cursor-pointer">
+              Atualizar cotações automaticamente ao abrir o app
+            </label>
+            <input
+              type="checkbox"
+              id="brapiAutoSyncToggle"
+              onchange="toggleBrapiAutoSync(this.checked)"
+              class="w-4 h-4 accent-emerald-500 rounded cursor-pointer"
+            />
+          </div>
+        </form>
+
+        <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+          <button
+            type="button"
+            onclick="testAndSyncBrapiConnection()"
+            class="px-4 py-2.5 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-500/30 text-indigo-300 text-xs font-semibold transition flex items-center gap-1.5"
+          >
+            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+            Testar Chave & Sincronizar Carteira Agora
+          </button>
+          <span id="brapiConfigStatusText" class="text-[11px] font-mono text-slate-400"></span>
+        </div>
+      </div>
+
+    </section>
+
+    <section id="tab-sync" class="space-y-5 hidden">
+      <button type="button" onclick="switchTab('config')" class="flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white">
+        <i data-lucide="arrow-left" class="w-4 h-4"></i>Configurações
+      </button>
+      <div class="glass-card rounded-2xl p-3.5">
+        <h2 class="text-base font-bold text-white flex items-center gap-2"><i data-lucide="cloud" class="w-5 h-5 text-indigo-300"></i>Sincronização</h2>
+        <p class="text-[11px] text-slate-400 mt-1">Mantém o banco de dados igual em todos os seus aparelhos, pelo Google Drive.</p>
+      </div>
+
+      <div class="glass-card rounded-2xl p-4 space-y-3">
+        <h3 class="text-sm font-bold text-white">Google Drive</h3>
+        <p class="text-[11px] text-slate-400">O banco é criptografado com a sua senha antes de ir para a pasta oculta do app no seu Drive. A sincronização acontece ao abrir o app e a cada alteração.</p>
+        <p id="syncStatusText" class="text-xs text-slate-300"></p>
+        <div class="flex flex-wrap gap-2">
+          <button type="button" id="syncConnectBtn" onclick="syncConnect()" class="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-slate-950 font-bold text-xs">Conectar ao Google Drive</button>
+          <button type="button" id="syncNowBtn" onclick="syncNow(true)" class="hidden px-4 py-2.5 rounded-xl bg-indigo-500 hover:bg-indigo-400 disabled:opacity-50 text-white font-bold text-xs">Sincronizar agora</button>
+          <button type="button" id="syncDisconnectBtn" onclick="syncDisconnect()" class="hidden px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs">Desconectar</button>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-2xl p-4 space-y-3" role="radiogroup" aria-label="Regra para conflitos de sincronização">
+        <h3 class="text-sm font-bold text-white">Quando os dados mudam em dois lugares</h3>
+        <p class="text-[11px] text-slate-400">Vale para este aparelho. A versão que não for mantida fica guardada em Banco de dados → Backup e restauração.</p>
+        <label class="flex items-start gap-3 p-3 rounded-xl bg-slate-900 border border-slate-800 cursor-pointer">
+          <input type="radio" name="conflictMode" id="conflictModeAuto" value="auto" onchange="setConflictMode('auto')" class="mt-0.5 accent-emerald-500" />
+          <span><strong class="block text-xs text-white">Usar o mais recente (automático)</strong><span class="block text-[11px] text-slate-400">Compara o horário da última alteração e mantém a versão mais nova.</span></span>
+        </label>
+        <label class="flex items-start gap-3 p-3 rounded-xl bg-slate-900 border border-slate-800 cursor-pointer">
+          <input type="radio" name="conflictMode" id="conflictModeManual" value="manual" onchange="setConflictMode('manual')" class="mt-0.5 accent-emerald-500" />
+          <span><strong class="block text-xs text-white">Deixar eu decidir</strong><span class="block text-[11px] text-slate-400">No conflito, o selo mostra “Conflito” e o app pergunta qual versão manter quando você tocar nele ou em Sincronizar agora.</span></span>
+        </label>
       </div>
     </section>
 
@@ -1024,21 +1107,7 @@
       </button>
       <div class="glass-card rounded-2xl p-3.5">
         <h2 class="text-base font-bold text-white flex items-center gap-2"><i data-lucide="database" class="w-5 h-5 text-emerald-400"></i>Banco de dados</h2>
-        <p class="text-[11px] text-slate-400 mt-1">Seus dados ficam neste aparelho. Conecte o Google Drive para mantê-los seguros e usá-los em vários aparelhos.</p>
-      </div>
-
-      <!-- Sincronização com Google Drive -->
-      <div class="glass-card rounded-2xl p-4 space-y-3">
-        <h3 class="text-sm font-bold text-white flex items-center gap-2"><i data-lucide="cloud" class="w-4 h-4 text-indigo-300"></i>Sincronização com Google Drive</h3>
-        <p class="text-[11px] text-slate-400">O banco é criptografado com a sua senha antes de ir para a pasta oculta do app no seu Drive. A sincronização acontece ao abrir o app e a cada alteração. Se os dois lados mudarem, vale a alteração mais recente, e a outra versão fica guardada para você restaurar.</p>
-        <p id="syncStatusText" class="text-xs text-slate-300"></p>
-        <div class="flex flex-wrap gap-2">
-          <button type="button" id="syncConnectBtn" onclick="syncConnect()" class="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-slate-950 font-bold text-xs">Conectar ao Google Drive</button>
-          <button type="button" id="syncNowBtn" onclick="syncNow(true)" class="hidden px-4 py-2.5 rounded-xl bg-indigo-500 hover:bg-indigo-400 disabled:opacity-50 text-white font-bold text-xs">Sincronizar agora</button>
-          <button type="button" id="syncDisconnectBtn" onclick="syncDisconnect()" class="hidden px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs">Desconectar</button>
-        </div>
-        <p id="syncConflictInfo" class="hidden text-[11px] text-amber-300"></p>
-        <button type="button" id="syncRestoreConflictBtn" onclick="restoreConflictBackup()" class="hidden w-full px-4 py-2.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-200 font-semibold text-xs">Restaurar versão descartada no último conflito</button>
+        <p class="text-[11px] text-slate-400 mt-1">Backup, restauração e exclusão dos dados. A sincronização com o Google Drive fica em Configurações → Sincronização.</p>
       </div>
 
       <!-- Backup e restauração -->
@@ -1063,17 +1132,8 @@
           </div>
         </div>
 
-        <!-- Botões de Backup Google Drive e Local -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <button
-            type="button"
-            onclick="backupToGoogleDrive()"
-            class="p-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs shadow-lg shadow-emerald-500/20 transition flex items-center justify-center gap-2"
-          >
-            <i data-lucide="share-2" class="w-4 h-4"></i>
-            <span>Salvar Backup no Google Drive</span>
-          </button>
-
+        <!-- Botão de backup local -->
+        <div class="grid grid-cols-1 gap-3">
           <button
             type="button"
             onclick="downloadLocalSQLiteBackup()"
@@ -1082,6 +1142,12 @@
             <i data-lucide="download" class="w-4 h-4 text-indigo-400"></i>
             <span>Baixar Arquivo do Banco (.db)</span>
           </button>
+        </div>
+
+        <!-- Versão guardada (conflito ou limpeza) -->
+        <div class="space-y-2">
+          <p id="syncConflictInfo" class="hidden text-[11px] text-amber-300"></p>
+          <button type="button" id="syncRestoreConflictBtn" onclick="restoreConflictBackup()" class="hidden w-full px-4 py-2.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-200 font-semibold text-xs">Restaurar cópia guardada</button>
         </div>
 
         <!-- Restaurar Backup e Limpar todos os dados -->
@@ -1111,6 +1177,10 @@
             <span>Limpar Todos os Dados</span>
           </button>
         </div>
+        <p class="text-[11px] text-slate-500">“Limpar” apaga notas, operações, proventos e cotações, mas mantém o PIN, o token e as configurações. “Excluir” remove o banco inteiro, inclusive PIN e token.</p>
+        <button type="button" onclick="requestDeleteDatabase()" class="w-full p-3 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-300 font-semibold text-xs transition flex items-center justify-center gap-2">
+          <i data-lucide="trash" class="w-4 h-4"></i><span>Excluir banco de dados…</span>
+        </button>
       </div>
     </section>
 
@@ -2956,34 +3026,6 @@
       return { blob, fileName };
     }
 
-    async function backupToGoogleDrive() {
-      try {
-        const { blob, fileName } = generateSQLiteBackupFileObject();
-        const file = new File([blob], fileName, { type: 'application/octet-stream' });
-        const nowFormatted = new Date().toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
-        await setSetting('ultimo_backup', nowFormatted);
-        updateDatabaseStats();
-
-        // No Smartphone Android/iOS, aciona a bandeja nativa de compartilhamento para salvar direto no app Google Drive
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-          await navigator.share({
-            title: 'Backup do banco de dados - Carteira de Investimentos',
-            text: 'Selecione "Salvar no Drive" (Google Drive) para guardar seu banco de dados na nuvem.',
-            files: [file]
-          });
-          showToast('Menu do Google Drive acionado com sucesso!', 'success');
-        } else {
-          // Fallback em navegadores Desktop: baixa o arquivo .db e oferece atalho para o Google Drive
-          triggerBlobDownload(blob, fileName);
-          showToast('Arquivo .db gerado! Salve-o na sua pasta do Google Drive.', 'success');
-        }
-      } catch (err) {
-        if (err.name !== 'AbortError') {
-          console.error('Erro no compartilhamento:', err);
-          downloadLocalSQLiteBackup();
-        }
-      }
-    }
 
     async function downloadLocalSQLiteBackup() {
       const { blob, fileName } = generateSQLiteBackupFileObject();
@@ -3041,17 +3083,19 @@
     }
 
     function requestWipeDatabase() {
+      const conectado = Boolean(syncState().connected);
       openConfirmDialog({
         title: 'Limpar Todos os Dados',
-        message: 'Esta ação apagará todas as Notas de Corretagem e Operações do banco de dados. Deseja realmente continuar?',
+        message: 'Esta ação apagará todas as notas de corretagem, operações, proventos, cotações e corretoras. O PIN, o token da brapi e as configurações são mantidos.'
+          + (conectado ? ' Como a sincronização está ativa, a limpeza também será enviada ao Google Drive e aos outros aparelhos.' : '')
+          + ' Uma cópia fica guardada neste aparelho e pode ser restaurada em Banco de dados → Backup e restauração.',
         requirePin: Boolean(getSetting('security_pin_hash')),
         onConfirm: async () => {
-          db.run('DELETE FROM operacoes; DELETE FROM notas_corretagem; DELETE FROM cotacoes_atuais;');
-          await persistSQLiteToIndexedDB();
+          await wipeAllData();
           stagedNotesQueue = [];
           renderStagingScreen();
           refreshAllViews();
-          showToast('Todos os dados foram limpos do banco de dados.', 'info');
+          showToast('Todos os dados foram limpos.', 'info');
         }
       });
     }
@@ -3382,7 +3426,7 @@
     // 10. NAVEGAÇÃO ENTRE ABAS, SUB-ABAS E UTILITÁRIOS VISUAIS
     // =========================================================================
     function switchTab(tabId) {
-      const tabs = ['carteira', 'posicoes', 'adicionar', 'proventos', 'config', 'banco'];
+      const tabs = ['carteira', 'posicoes', 'adicionar', 'proventos', 'config', 'banco', 'seguranca', 'apis', 'sync'];
       tabs.forEach(t => {
         const section = document.getElementById(`tab-${t}`);
         if (section) {
@@ -3390,7 +3434,7 @@
         }
       });
 
-      const activeNavId = tabId === 'posicoes' ? 'carteira' : (tabId === 'banco' ? 'config' : tabId);
+      const activeNavId = tabId === 'posicoes' ? 'carteira' : (['banco', 'seguranca', 'apis', 'sync'].includes(tabId) ? 'config' : tabId);
       ['carteira', 'adicionar', 'proventos', 'config'].forEach(nav => {
         const btn = document.getElementById(`nav-${nav}`);
         if (!btn) return;
@@ -3638,7 +3682,7 @@
     const DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.appdata';
     const SYNC_FILE = 'ledgerly.db.enc';
     const SYNC_LS = 'ledgerly_sync';
-    let gToken = null, gTokenExp = 0, syncBusy = false, syncTimer = null, syncError = '', syncPending = true, prefetched = null, conflictInfo = null, tapArmed = false;
+    let gToken = null, gTokenExp = 0, syncBusy = false, syncTimer = null, syncError = '', syncPending = true, prefetched = null, conflictInfo = null, tapArmed = false, syncConflict = false, syncCloudMissing = false;
 
     function syncState() { try { return JSON.parse(localStorage.getItem(SYNC_LS) || '{}'); } catch (_) { return {}; } }
     function saveSyncState(patch) { const s = Object.assign(syncState(), patch); try { localStorage.setItem(SYNC_LS, JSON.stringify(s)); } catch (_) {} return s; }
@@ -3868,8 +3912,18 @@
         const dirty = localHash !== st.syncedHash;
         const remoteRev = remote && remote.appProperties ? remote.appProperties.rev : null;
         const remoteTsIso = remote ? ((remote.appProperties && remote.appProperties.ts) || remote.modifiedTime || '') : '';
+        syncConflict = false; syncCloudMissing = false;
         let action = 'none', conflict = false;
-        if (!remote) action = 'upload';
+        if (!remote && st.baseRev && !ek.remoteDeleted) {
+          // A cópia da nuvem foi excluída (em outro aparelho): não recria sem perguntar
+          if (!manual) { syncCloudMissing = true; return false; }
+          const r = await ledgerlyModal({ title: 'Cópia da nuvem não encontrada', message: 'A cópia no Google Drive foi excluída. Quer recriá-la a partir deste aparelho ou desconectar a sincronização aqui?',
+            buttons: [{ label: 'Recriar a partir deste aparelho', value: 'recreate', primary: true }, { label: 'Desconectar neste aparelho', value: 'disconnect' }, { label: 'Cancelar', value: 'cancel' }] });
+          if (r.value === 'cancel') { const e = new Error('Sincronização cancelada.'); e.cancelled = true; throw e; }
+          if (r.value === 'disconnect') { await disconnectSyncLocal(); showToast('Sincronização desativada neste aparelho.', 'info'); return false; }
+          action = 'upload';
+        }
+        else if (!remote) action = 'upload';
         else if (remoteRev === st.baseRev) action = dirty ? 'upload' : 'none';
         else if (isLocalEmpty() || (!dirty && st.baseRev)) action = 'download';
         else if (!st.baseRev) {
@@ -3879,9 +3933,19 @@
           if (r.value === 'cancel') { const e = new Error('Sincronização cancelada.'); e.cancelled = true; throw e; }
           action = r.value; conflict = true;
         } else {
-          // Os dois lados mudaram: vale a alteração mais recente
-          const localTs = st.localChangedAt ? Date.parse(st.localChangedAt) : Date.now();
-          action = localTs > (Date.parse(remoteTsIso) || 0) ? 'upload' : 'download'; conflict = true;
+          // Os dois lados mudaram
+          const localIso = st.localChangedAt || new Date().toISOString();
+          if (st.conflictMode === 'manual') {
+            if (!manual) { syncConflict = true; return false; }   // espera o usuário tocar em sincronizar
+            const fmt = iso => iso ? new Date(iso).toLocaleString('pt-BR') : 'desconhecido';
+            const r = await ledgerlyModal({ title: 'Conflito de dados', message: `Os dois lados mudaram.\nNuvem: ${fmt(remoteTsIso)}\nEste aparelho: ${fmt(localIso)}\nA versão não escolhida fica guardada para restaurar.`,
+              buttons: [{ label: 'Usar a versão da nuvem', value: 'download', primary: true }, { label: 'Manter a versão deste aparelho', value: 'upload' }, { label: 'Cancelar', value: 'cancel' }] });
+            if (r.value === 'cancel') { const e = new Error('Sincronização cancelada.'); e.cancelled = true; throw e; }
+            action = r.value;
+          } else {
+            action = Date.parse(localIso) > (Date.parse(remoteTsIso) || 0) ? 'upload' : 'download';
+          }
+          conflict = true;
         }
         if (conflict) {
           if (action === 'download') await saveConflictBackup(raw, 'este aparelho');
@@ -3899,7 +3963,7 @@
         }
         saveSyncState({ lastSync: new Date().toISOString() });
         syncPending = false; ok = true;
-        if (conflict) showToast(action === 'download' ? 'Conflito resolvido: ficou a versão mais recente (nuvem). A deste aparelho foi guardada em Banco de dados.' : 'Conflito resolvido: ficou a versão mais recente (deste aparelho). A da nuvem foi guardada em Banco de dados.', 'info');
+        if (conflict) showToast(`Conflito resolvido: ficou a versão ${(st.conflictMode === 'manual' || !st.baseRev) ? 'escolhida' : 'mais recente'} (${action === 'download' ? 'da nuvem' : 'deste aparelho'}). A outra foi guardada em Banco de dados.`, 'info');
         else if (manual) showToast(action === 'download' ? 'Dados atualizados a partir do Google Drive.' : action === 'upload' ? 'Dados enviados ao Google Drive.' : 'Tudo já está sincronizado.', 'success');
       } catch (e) {
         if (e && e.cancelled) { if (manual) showToast(e.message, 'info'); }
@@ -3936,7 +4000,7 @@
     }
     async function restoreConflictBackup() {
       const c = await idbKv('get', 'conflict'); if (!c) return;
-      const r = await ledgerlyModal({ title: 'Restaurar versão descartada?', message: `Os dados atuais serão substituídos pela versão "${c.side}" guardada em ${new Date(c.at).toLocaleString('pt-BR')}.`,
+      const r = await ledgerlyModal({ title: 'Restaurar cópia guardada?', message: `Os dados atuais serão substituídos pela ${sideLabel(c.side)} guardada em ${new Date(c.at).toLocaleString('pt-BR')}.`,
         buttons: [{ label: 'Restaurar', value: 'ok', primary: true }, { label: 'Cancelar', value: 'cancel' }] });
       if (r.value !== 'ok') return;
       try {
@@ -3957,23 +4021,81 @@
       const r = await ledgerlyModal({ title: 'Desconectar do Google Drive?', message: 'Os dados continuam neste aparelho e a cópia na nuvem não é apagada. Para reconectar você precisará da senha de sincronização.',
         buttons: [{ label: 'Desconectar', value: 'ok', primary: true }, { label: 'Cancelar', value: 'cancel' }] });
       if (r.value !== 'ok') return;
-      saveSyncState({ connected: false, baseRev: null, syncedHash: null, fileId: null, needsLogin: false });
-      await keyDel().catch(() => {}); gToken = null; gTokenExp = 0;
+      await disconnectSyncLocal();
       updateConnectionBadge(); renderSyncCard(); showToast('Sincronização desativada neste aparelho.', 'info');
+    }
+    function sideLabel(side) { return side === 'nuvem' ? 'versão da nuvem' : side === 'limpeza' ? 'cópia de antes de limpar os dados' : 'versão deste aparelho'; }
+    function setConflictMode(mode) { saveSyncState({ conflictMode: mode === 'manual' ? 'manual' : 'auto' }); renderSyncCard(); }
+    async function disconnectSyncLocal() {
+      saveSyncState({ connected: false, baseRev: null, syncedHash: null, fileId: null, needsLogin: false, localChangedAt: null });
+      syncConflict = false; syncCloudMissing = false; clearTimeout(syncTimer);
+      await keyDel().catch(() => {}); gToken = null; gTokenExp = 0;
+    }
+    async function deleteCloudDb() {
+      if (!navigator.onLine) throw new Error('Sem internet. Conecte-se para excluir a cópia da nuvem.');
+      const token = await getToken('interactive');
+      const remote = await driveFind(token);
+      if (remote) await driveDelete(remote.id, token);
+      return Boolean(remote);
+    }
+    async function deleteLocalDb() {
+      clearTimeout(syncTimer);
+      window.__ledgerlyApplying = true;
+      try { db = new SQL.Database(); createSchemaIfNotExists(); await persistSQLiteToIndexedDB(); } finally { window.__ledgerlyApplying = false; }
+      try { await idbKv('del', 'conflict'); } catch (_) {}
+      conflictInfo = null;
+      try { localStorage.removeItem('ledgerly_pin_fails'); localStorage.removeItem('ledgerly_pin_lock'); } catch (_) {}
+    }
+    // scope: 'local' | 'cloud' | 'all'. A nuvem é apagada primeiro: se falhar, nada é apagado no aparelho.
+    async function performDeleteDatabase(scope) {
+      if (scope !== 'local') await deleteCloudDb();
+      await disconnectSyncLocal();
+      if (scope !== 'cloud') await deleteLocalDb();
+    }
+    async function requestDeleteDatabase() {
+      const r = await ledgerlyModal({ title: 'Excluir banco de dados', message: 'O que você quer excluir?',
+        buttons: [{ label: 'Somente neste aparelho', value: 'local' }, { label: 'Somente a nuvem (Google Drive)', value: 'cloud' }, { label: 'Tudo (aparelho e nuvem)', value: 'all' }, { label: 'Cancelar', value: 'cancel' }] });
+      if (r.value === 'cancel') return;
+      const txt = {
+        local: ['Excluir neste aparelho', 'Apaga todos os dados DESTE aparelho (inclusive PIN e token) e desconecta a sincronização. A cópia no Google Drive é mantida e pode ser baixada ao reconectar.'],
+        cloud: ['Excluir a cópia da nuvem', 'Apaga a cópia criptografada no Google Drive e desconecta a sincronização neste aparelho. Os dados deste aparelho são mantidos. Outros aparelhos conectados vão perguntar o que fazer.'],
+        all: ['Excluir tudo', 'Apaga a cópia no Google Drive e todos os dados deste aparelho (inclusive PIN e token). Esta ação não pode ser desfeita.']
+      }[r.value];
+      openConfirmDialog({ title: txt[0], message: txt[1], requirePin: Boolean(getSetting('security_pin_hash')),
+        onConfirm: async () => {
+          try {
+            await performDeleteDatabase(r.value);
+            updateConnectionBadge(); renderSyncCard();
+            if (r.value === 'cloud') { showToast('Cópia da nuvem excluída. Sincronização desconectada neste aparelho.', 'info'); return; }
+            showToast('Banco de dados excluído. Reiniciando…', 'info');
+            setTimeout(() => location.reload(), 900);
+          } catch (e) { if (!(e && e.cancelled)) showToast('Falha ao excluir: ' + ((e && e.message) || e), 'error'); }
+        } });
+    }
+    // Limpar: apaga os dados de investimentos e mantém PIN, token e configurações; guarda uma cópia para restaurar
+    async function wipeAllData() {
+      await saveConflictBackup(db.export(), 'limpeza');
+      db.run('DELETE FROM operacoes; DELETE FROM notas_corretagem; DELETE FROM proventos; DELETE FROM cotacoes_atuais; DELETE FROM corretoras;');
+      await persistSQLiteToIndexedDB();
     }
     function renderSyncCard() {
       const st = syncState();
       const when = st.lastSync ? new Date(st.lastSync) : null;
-      const sum = document.getElementById('dbSummaryText');
-      if (sum) sum.textContent = st.connected ? 'Google Drive conectado' + (when ? ' · sinc. ' + when.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '') : 'Sincronização, backup e restauração';
+      const sum = document.getElementById('syncSummaryText');
+      if (sum) sum.textContent = st.connected ? 'Conectado' + (when ? ' · sinc. ' + when.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '') : 'Google Drive e regras de conflito';
+      const cm = st.conflictMode === 'manual' ? 'conflictModeManual' : 'conflictModeAuto';
+      const radio = document.getElementById(cm); if (radio) radio.checked = true;
+      const cb = document.getElementById('syncRestoreConflictBtn'), ci = document.getElementById('syncConflictInfo');
+      if (cb) cb.classList.toggle('hidden', !conflictInfo);
+      if (ci) { ci.classList.toggle('hidden', !conflictInfo); if (conflictInfo) ci.textContent = `Cópia guardada: ${sideLabel(conflictInfo.side)}, de ${new Date(conflictInfo.at).toLocaleString('pt-BR')}.`; }
       const el = document.getElementById('syncStatusText'); if (!el) return;
       const hide = (id, v) => { const x = document.getElementById(id); if (x) { x.classList.toggle('hidden', v); x.disabled = syncBusy; } };
       hide('syncConnectBtn', !!st.connected); hide('syncNowBtn', !st.connected); hide('syncDisconnectBtn', !st.connected);
       el.textContent = !st.connected ? 'Não conectado: seus dados ficam só neste aparelho e podem ser perdidos se você limpar os dados do navegador.'
-        : syncBusy ? 'Sincronizando…' : syncError ? 'Erro: ' + syncError : (when ? 'Conectado · última sincronização em ' + when.toLocaleString('pt-BR') : 'Conectado · ainda não sincronizado');
-      const cb = document.getElementById('syncRestoreConflictBtn'), ci = document.getElementById('syncConflictInfo');
-      if (cb) cb.classList.toggle('hidden', !conflictInfo);
-      if (ci) { ci.classList.toggle('hidden', !conflictInfo); if (conflictInfo) ci.textContent = `Versão descartada no último conflito: ${conflictInfo.side}, de ${new Date(conflictInfo.at).toLocaleString('pt-BR')}.`; }
+        : syncBusy ? 'Sincronizando…'
+        : syncConflict ? 'Conflito pendente: toque em “Sincronizar agora” para escolher qual versão manter.'
+        : syncCloudMissing ? 'A cópia da nuvem não foi encontrada. Toque em “Sincronizar agora” para decidir.'
+        : syncError ? 'Erro: ' + syncError : (when ? 'Conectado · última sincronização em ' + when.toLocaleString('pt-BR') : 'Conectado · ainda não sincronizado');
     }
     // ===== FIM DA SINCRONIZAÇÃO =====
 
@@ -3988,6 +4110,8 @@
       if (st.connected) {
         if (syncBusy) { text = 'Sincronizando'; cls = tone.busy; }
         else if (!on) { text = 'Offline'; cls = tone.warn; }
+        else if (syncConflict) { text = 'Conflito'; cls = tone.err; }
+        else if (syncCloudMissing) { text = 'Sem nuvem'; cls = tone.warn; }
         else if (syncError) { text = 'Erro de sync'; cls = tone.err; }
         else if (syncPending || st.needsLogin) { text = 'Sincronizar'; cls = tone.warn; }
         else { const d = st.lastSync ? new Date(st.lastSync) : null; text = 'Sinc. ' + (d ? d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : 'ok'); cls = tone.ok; }
