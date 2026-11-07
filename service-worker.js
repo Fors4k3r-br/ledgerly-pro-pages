@@ -1,9 +1,12 @@
-// Altere CACHE_NAME a cada deploy para disparar a atualização do app.
-const CACHE_NAME = 'ledgerly-pwa-v18';
+// A versão e o build vêm de changelog.js (único arquivo a editar a cada entrega).
+importScripts('./changelog.js');
+const CL = self.LEDGERLY_CHANGELOG || { version: '0.0.0', build: 0, entries: [] };
+const CACHE_NAME = 'ledgerly-pwa-v' + CL.build;
 const APP_SHELL = [
   "./",
   "./index.html",
   "./manifest.json",
+  "./changelog.js",
   "./assets/tailwind.css",
   "./assets/fonts.css",
   "./assets/fonts/inter-latin-400-normal.woff2",
@@ -32,7 +35,11 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('message', event => {
-  if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
+  const m = event.data;
+  if (!m) return;
+  if (m.type === 'SKIP_WAITING') self.skipWaiting();
+  // O app aberto pergunta quais são as novidades da versão que está aguardando para ser instalada
+  if (m.type === 'GET_INFO' && event.source) event.source.postMessage({ type: 'INFO', version: CL.version, build: CL.build, entries: CL.entries });
 });
 
 self.addEventListener('activate', event => {
