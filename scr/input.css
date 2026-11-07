@@ -1,3 +1,38 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Paletas de tema: o app usa a escala "slate" do Tailwind, e cada tema redefine essas variáveis */
+@layer base {
+  :root, html[data-theme="default"] {
+    --c-white: 255 255 255;
+    --s-50: 248 250 252; --s-100: 241 245 249; --s-200: 226 232 240; --s-300: 203 213 225; --s-400: 148 163 184;
+    --s-500: 123 139 163; --s-600: 71 85 105; --s-700: 51 65 85; --s-800: 30 41 59; --s-850: 19 28 46;
+    --s-900: 15 23 42; --s-925: 11 17 30; --s-950: 7 11 20;
+  }
+  html[data-theme="dark"] {
+    --c-white: 255 255 255;
+    --s-50: 250 250 250; --s-100: 245 245 245; --s-200: 229 229 229; --s-300: 212 212 212; --s-400: 163 163 163;
+    --s-500: 140 140 140; --s-600: 82 82 82; --s-700: 64 64 64; --s-800: 38 38 38; --s-850: 28 28 28;
+    --s-900: 20 20 20; --s-925: 13 13 13; --s-950: 5 5 5;
+  }
+  html[data-theme="light"] {
+    --c-white: 15 23 42;
+    --s-50: 2 6 23; --s-100: 15 23 42; --s-200: 30 41 59; --s-300: 51 65 85; --s-400: 71 85 105;
+    --s-500: 100 116 139; --s-600: 148 163 184; --s-700: 203 213 225; --s-800: 226 232 240; --s-850: 248 250 252;
+    --s-900: 255 255 255; --s-925: 241 245 249; --s-950: 241 245 249;
+  }
+}
+
+/* Tema claro: tons de destaque mais escuros para manter o contraste sobre fundo claro */
+html[data-theme="light"] .text-emerald-200, html[data-theme="light"] .text-emerald-300, html[data-theme="light"] .text-emerald-400 { color: #047857; }
+html[data-theme="light"] .text-rose-200, html[data-theme="light"] .text-rose-300, html[data-theme="light"] .text-rose-400 { color: #be123c; }
+html[data-theme="light"] .text-amber-200, html[data-theme="light"] .text-amber-300, html[data-theme="light"] .text-amber-400 { color: #b45309; }
+html[data-theme="light"] .text-indigo-200, html[data-theme="light"] .text-indigo-300, html[data-theme="light"] .text-indigo-400 { color: #4338ca; }
+html[data-theme="light"] .text-teal-300, html[data-theme="light"] .text-teal-400 { color: #0f766e; }
+html[data-theme="light"] .text-sky-300, html[data-theme="light"] .text-sky-400, html[data-theme="light"] .text-cyan-300, html[data-theme="light"] .text-cyan-400 { color: #0e7490; }
+html[data-theme="light"] .text-violet-300, html[data-theme="light"] .text-violet-400 { color: #6d28d9; }
+html[data-theme="light"] .bg-emerald-500, html[data-theme="light"] .bg-emerald-400, html[data-theme="light"] .from-emerald-500 { color: #022c22; }
+html[data-theme="light"] .bg-indigo-500, html[data-theme="light"] .bg-indigo-400 { color: #ffffff; }
+html[data-theme="light"] .glass-card { box-shadow: 0 1px 2px rgba(15, 23, 42, .06), 0 4px 14px rgba(15, 23, 42, .05); }
+html[data-theme="light"] :focus-visible { outline-color: #059669; }
