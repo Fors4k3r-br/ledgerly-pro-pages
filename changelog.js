@@ -2,9 +2,17 @@
 //   - suba "version" e "build" (o build define o nome do cache do service worker);
 //   - acrescente uma entrada nova no INÍCIO de "entries" com as mudanças, em linguagem simples.
 globalThis.LEDGERLY_CHANGELOG = {
-  version: '1.0.0',
-  build: 19,
+  version: '1.1.0',
+  build: 20,
   entries: [
+    {
+      version: '1.1.0',
+      date: '2026-11-07',
+      notes: [
+        'Login do Google uma única vez: o app renova o acesso sozinho e não pede mais para escolher a conta a cada abertura.',
+        'A sincronização agora acontece logo ao abrir o app, sem precisar tocar na tela.'
+      ]
+    },
     {
       version: '1.0.0',
       date: '2026-11-07',

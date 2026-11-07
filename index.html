@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://accounts.google.com/gsi/client; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob:; connect-src 'self' https://brapi.dev https://www.googleapis.com https://accounts.google.com https://oauth2.googleapis.com; frame-src https://accounts.google.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://accounts.google.com/gsi/client; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob:; connect-src 'self' https://ledgerly-auth-proxy.appsbyfors4k3r.workers.dev https://brapi.dev https://www.googleapis.com https://accounts.google.com https://oauth2.googleapis.com; frame-src https://accounts.google.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'" />
   <meta name="theme-color" content="#090d16" />
   <script>(function(){try{var t=localStorage.getItem('ledgerly_theme');t=(t==='dark'||t==='light')?t:'default';document.documentElement.setAttribute('data-theme',t);var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',{default:'#090d16',dark:'#050505',light:'#f1f5f9'}[t]);}catch(e){}})();</script>
   <meta name="mobile-web-app-capable" content="yes" />
@@ -3978,22 +3978,49 @@
       });
     }
     function hasValidToken() { return Boolean(gToken) && Date.now() < gTokenExp - 60000; }
-    async function getToken(mode = 'interactive') {
-      if (hasValidToken()) return gToken;
-      await loadGIS();
-      const req = new Promise((resolve, reject) => {
-        const client = google.accounts.oauth2.initTokenClient({
-          client_id: GOOGLE_CLIENT_ID, scope: DRIVE_SCOPE,
-          callback: r => {
-            if (r.error) return reject(new Error(r.error_description || r.error));
-            gToken = r.access_token; gTokenExp = Date.now() + (Number(r.expires_in) || 3000) * 1000; resolve(gToken);
-          },
+    // Login único: o servidor (Cloudflare) guarda o segredo do Google e troca/renova os tokens; o app guarda só o refresh token deste aparelho
+    const AUTH_PROXY_URL = 'https://ledgerly-auth-proxy.appsbyfors4k3r.workers.dev/';
+    async function authProxy(payload) {
+      const r = await fetch(AUTH_PROXY_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      let data = null; try { data = await r.json(); } catch (_) {}
+      if (!r.ok || !data || data.error) {
+        const e = new Error((data && (data.error_description || data.error)) || `Servidor de login (${r.status})`);
+        e.code = data && data.error; e.permanent = e.code === 'invalid_grant';   // acesso expirado ou revogado
+        throw e;
+      }
+      return data;
+    }
+    function applyTokenResponse(d) {
+      if (!d || !d.access_token) throw new Error('Resposta de login inválida.');
+      gToken = d.access_token; gTokenExp = Date.now() + (Number(d.expires_in) || 3000) * 1000;
+    }
+    function requestAuthCode() {
+      return new Promise((resolve, reject) => {
+        const client = google.accounts.oauth2.initCodeClient({
+          client_id: GOOGLE_CLIENT_ID, scope: DRIVE_SCOPE, ux_mode: 'popup',
+          callback: r => r.error ? reject(new Error(r.error_description || r.error)) : resolve(r.code),
           error_callback: e => { const x = new Error(e && e.type === 'popup_closed' ? 'Login cancelado.' : 'Falha no login do Google.'); x.cancelled = Boolean(e && e.type === 'popup_closed'); reject(x); }
         });
-        client.requestAccessToken({ prompt: mode === 'silent' ? 'none' : '' });
+        client.requestCode();
       });
-      if (mode !== 'silent') return req;
-      return Promise.race([req, new Promise((_, rej) => setTimeout(() => rej(new Error('silent_timeout')), 10000))]);
+    }
+    async function getToken(mode = 'interactive') {
+      if (hasValidToken()) return gToken;
+      const saved = await idbKv('get', 'refresh').catch(() => null);
+      if (saved) {
+        try { applyTokenResponse(await authProxy({ action: 'refresh_token', refresh_token: saved })); return gToken; }
+        catch (e) {
+          if (e.permanent) await idbKv('del', 'refresh').catch(() => {});   // expirou (no modo de teste do Google: 7 dias) ou foi revogado
+          else if (mode === 'silent') throw e;                                // sem rede / servidor fora: mantém o acesso salvo
+        }
+      }
+      if (mode === 'silent') throw new Error('login_required');
+      await loadGIS();
+      const data = await authProxy({ action: 'exchange_code', code: await requestAuthCode(), redirect_uri: 'postmessage' });
+      applyTokenResponse(data);
+      if (data.refresh_token) await idbKv('put', 'refresh', data.refresh_token).catch(() => {});
+      else showToast('O Google não liberou o acesso permanente: o login vale por 1 hora. Remova o app em myaccount.google.com/permissions e conecte de novo.', 'info');
+      return gToken;
     }
 
     // API do Drive (pasta oculta do app)
@@ -4079,13 +4106,12 @@
       const st0 = syncState();
       if (!st0.connected || syncBusy) return false;
       if (!navigator.onLine) { if (manual) showToast('Sem internet. A sincronização ocorre quando a conexão voltar.', 'info'); updateConnectionBadge(); return false; }
-      if (mode === false && !hasValidToken()) { saveSyncState({ needsLogin: true }); armTapSync(); updateConnectionBadge(); renderSyncCard(); return false; }
       syncBusy = true; syncError = ''; prefetched = null; updateConnectionBadge(); renderSyncCard();
       let ok = false;
       try {
         let token;
         if (hasValidToken()) token = gToken;
-        else if (mode === 'start') {
+        else if (mode === 'start' || mode === false) {
           try { token = await getToken('silent'); }
           catch (_) { saveSyncState({ needsLogin: true }); armTapSync(); return false; }
         } else token = await getToken('interactive');
@@ -4217,7 +4243,7 @@
     async function disconnectSyncLocal() {
       saveSyncState({ connected: false, baseRev: null, syncedHash: null, fileId: null, needsLogin: false, localChangedAt: null });
       syncConflict = false; syncCloudMissing = false; clearTimeout(syncTimer);
-      await keyDel().catch(() => {}); gToken = null; gTokenExp = 0;
+      await keyDel().catch(() => {}); await idbKv('del', 'refresh').catch(() => {}); gToken = null; gTokenExp = 0;
     }
     async function deleteCloudDb() {
       if (!navigator.onLine) throw new Error('Sem internet. Conecte-se para excluir a cópia da nuvem.');
