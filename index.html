@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://accounts.google.com/gsi/client; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob:; connect-src 'self' https://brapi.dev https://www.googleapis.com https://accounts.google.com https://oauth2.googleapis.com; frame-src https://accounts.google.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'" />
   <meta name="theme-color" content="#090d16" />
+  <script>(function(){try{var t=localStorage.getItem('ledgerly_theme');t=(t==='dark'||t==='light')?t:'default';document.documentElement.setAttribute('data-theme',t);var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',{default:'#090d16',dark:'#050505',light:'#f1f5f9'}[t]);}catch(e){}})();</script>
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="application-name" content="Ledgerly Pro" />
   <link rel="manifest" href="./manifest.json" />
@@ -33,19 +34,19 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
     :focus-visible { outline: 2px solid #34d399; outline-offset: 2px; }
     body {
-      background-color: #070b14;
-      color: #f1f5f9;
+      background-color: rgb(var(--s-950));
+      color: rgb(var(--s-100));
       -webkit-tap-highlight-color: transparent;
     }
     /* Custom Scrollbar */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #0b111e; }
-    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 9999px; }
-    ::-webkit-scrollbar-thumb:hover { background: #334155; }
+    ::-webkit-scrollbar-track { background: rgb(var(--s-925)); }
+    ::-webkit-scrollbar-thumb { background: rgb(var(--s-800)); border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgb(var(--s-700)); }
     .glass-card {
-      background: rgba(19, 28, 46, 0.85);
+      background: rgb(var(--s-850) / 0.85);
       backdrop-filter: blur(12px);
-      border: 1px solid rgba(148, 163, 184, 0.12);
+      border: 1px solid rgb(var(--s-400) / 0.16);
     }
     .calc-btn {
       transition: all 0.12s ease;
@@ -120,11 +121,10 @@
         <div>
           <div class="flex items-center gap-2">
             <h1 class="text-base font-extrabold tracking-tight text-white">Ledgerly Pro</h1>
-            <span id="dbStatusBadge" class="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+            <span id="dbStatusBadge" class="text-[11px] font-mono uppercase px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
               Online
             </span>
           </div>
-          <p class="text-[11px] text-slate-400">Controle de Notas SINACOR & Custódia</p>
         </div>
       </div>
 
@@ -158,68 +158,32 @@
          ABA 1: CARTEIRA (RESUMO + GRÁFICO + BOTÃO DETALHAR POSIÇÕES)
     ================================================================ -->
     <section id="tab-carteira" class="space-y-5">
-      <!-- Barra de Sincronização Brapi.dev -->
-      <div class="flex flex-wrap items-center justify-between gap-2 glass-card rounded-2xl px-4 py-3">
-        <div class="flex items-center gap-2.5">
-          <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
-          <div>
-            <p class="text-xs font-bold text-white">Cotações Online (brapi.dev)</p>
-            <p id="brapiLastSyncLabel" class="text-[10px] text-slate-400">Sincronize para atualizar o patrimônio com preços B3 em tempo real</p>
-          </div>
+      <!-- Primeiro uso -->
+      <div id="onboardingCard" class="hidden glass-card rounded-3xl p-5 space-y-4"></div>
+      <div id="homeContent" class="space-y-5">
+      <!-- Cotações (compacto) -->
+      <div class="flex items-center justify-between gap-2 glass-card rounded-2xl px-4 py-2.5">
+        <div class="flex items-center gap-2 min-w-0">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
+          <p id="brapiLastSyncLabel" class="text-xs text-slate-300 truncate">Cotações: toque em ↻ para atualizar</p>
         </div>
-        <button
-          type="button"
-          id="btnSyncBrapiCarteira"
-          onclick="syncAllQuotesFromBrapi()"
-          class="px-3.5 py-2 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-500/40 text-indigo-300 text-xs font-bold transition flex items-center gap-1.5"
-        >
-          <i data-lucide="refresh-cw" id="iconSyncBrapiCarteira" class="w-3.5 h-3.5"></i>
-          <span>Atualizar Cotações</span>
+        <button type="button" id="btnSyncBrapiCarteira" onclick="syncAllQuotesFromBrapi()" aria-label="Atualizar cotações" title="Atualizar cotações" class="p-2 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-500/40 text-indigo-300 transition disabled:opacity-60">
+          <i data-lucide="refresh-cw" id="iconSyncBrapiCarteira" class="w-4 h-4"></i>
         </button>
       </div>
 
-      <!-- 4 Cards de Resumo -->
-      <div class="grid grid-cols-2 gap-3">
-        <!-- Total Investido -->
-        <div class="glass-card rounded-2xl p-4">
-          <div class="flex items-center justify-between text-slate-400 text-xs mb-1">
-            <span>Total Investido</span>
-            <i data-lucide="wallet" class="w-4 h-4 text-slate-500"></i>
-          </div>
-          <p id="kpiTotalInvestido" class="text-lg sm:text-xl font-bold font-mono text-white truncate">R$ 0,00</p>
-          <span class="text-[10px] text-slate-500">Custo c/ taxas inclusas</span>
+      <!-- Destaque: patrimônio -->
+      <div class="glass-card rounded-3xl p-5">
+        <p class="text-xs text-slate-400">Patrimônio atual</p>
+        <p id="kpiPatrimonioAtual" class="text-3xl font-extrabold font-mono text-white truncate mt-0.5">R$ 0,00</p>
+        <div class="flex flex-wrap items-center gap-2 mt-2">
+          <span id="kpiResultadoBadge" class="px-2.5 py-1 rounded-full text-xs font-bold font-mono bg-emerald-500/15 text-emerald-300">R$ 0,00 (0,00%)</span>
+          <span class="text-[11px] text-slate-400">resultado em aberto</span>
         </div>
-
-        <!-- Patrimônio Atual -->
-        <div class="glass-card rounded-2xl p-4">
-          <div class="flex items-center justify-between text-slate-400 text-xs mb-1">
-            <span>Patrimônio Atual</span>
-            <i data-lucide="landmark" class="w-4 h-4 text-indigo-400"></i>
-          </div>
-          <p id="kpiPatrimonioAtual" class="text-lg sm:text-xl font-bold font-mono text-white truncate">R$ 0,00</p>
-          <span class="text-[10px] text-slate-500">Valor de mercado atual</span>
-        </div>
-
-        <!-- Lucro / Prejuízo -->
-        <div class="glass-card rounded-2xl p-4">
-          <div class="flex items-center justify-between text-slate-400 text-xs mb-1">
-            <span>Lucro / Prejuízo</span>
-            <i data-lucide="trending-up" class="w-4 h-4 text-emerald-400"></i>
-          </div>
-          <p id="kpiLucroPrejuizo" class="text-lg sm:text-xl font-bold font-mono text-emerald-400 truncate">R$ 0,00</p>
-          <span class="text-[10px] text-slate-500">Resultado não realizado</span>
-        </div>
-
-        <!-- Rentabilidade -->
-        <div class="glass-card rounded-2xl p-4">
-          <div class="flex items-center justify-between text-slate-400 text-xs mb-1">
-            <span>Rentabilidade</span>
-            <i data-lucide="percent" class="w-4 h-4 text-amber-400"></i>
-          </div>
-          <div class="flex items-baseline gap-2">
-            <p id="kpiRentabilidade" class="text-lg sm:text-xl font-bold font-mono text-emerald-400">0,00%</p>
-          </div>
-          <span class="text-[10px] text-slate-500">Variação sobre o PM</span>
+        <div class="grid grid-cols-3 gap-3 mt-4 pt-4 border-t border-slate-800">
+          <div class="min-w-0"><p class="text-[11px] text-slate-400">Investido</p><p id="kpiTotalInvestido" class="text-sm font-bold font-mono text-white truncate">R$ 0,00</p></div>
+          <div class="min-w-0"><p class="text-[11px] text-slate-400">Proventos 12m</p><p id="kpiProventos12m" class="text-sm font-bold font-mono text-white truncate">R$ 0,00</p></div>
+          <div class="min-w-0"><p class="text-[11px] text-slate-400">Rentab. c/ proventos</p><p id="kpiRentabTotal" class="text-sm font-bold font-mono text-emerald-400 truncate">0,00%</p></div>
         </div>
       </div>
 
@@ -231,11 +195,16 @@
               <i data-lucide="pie-chart" class="w-4 h-4 text-emerald-400"></i>
               Composição da Carteira
             </h2>
-            <p class="text-xs text-slate-400">Distribuição percentual por ativo em custódia</p>
+            <p id="chartSubtitle" class="text-xs text-slate-400">Maiores posições em custódia</p>
           </div>
           <span id="chartTotalAtivosBadge" class="text-xs font-mono px-2.5 py-1 rounded-xl bg-slate-800 text-slate-300">
             0 ativos
           </span>
+        </div>
+
+        <div id="chartModeChips" class="flex gap-1.5" role="group" aria-label="Agrupar gráfico">
+          <button type="button" data-m="ativo" onclick="setChartMode('ativo')" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-300">Por ativo</button>
+          <button type="button" data-m="corretora" onclick="setChartMode('corretora')" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-300">Por corretora</button>
         </div>
 
         <!-- Estado Vazio do Gráfico -->
@@ -266,17 +235,7 @@
         <!-- Legenda rápida de Alocação -->
         <div id="chartLegendList" class="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-2"></div>
 
-        <!-- BOTÃO ABAIXO DO GRÁFICO PARA ABRIR A VISÃO "POSIÇÕES" -->
-        <div class="pt-3 border-t border-slate-800/80">
-          <button
-            onclick="switchTab('posicoes')"
-            class="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-extrabold text-sm shadow-lg shadow-emerald-500/20 transition flex items-center justify-center gap-2"
-          >
-            <i data-lucide="layers" class="w-5 h-5"></i>
-            <span>Detalhar Carteira / Posições</span>
-            <i data-lucide="chevron-right" class="w-4 h-4 ml-1"></i>
-          </button>
-        </div>
+      </div>
       </div>
     </section>
 
@@ -388,7 +347,7 @@
           </div>
 
           <!-- Botões de Seleção: Arquivo Único/Múltiplos ou Diretório Inteiro -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+          <div class="grid grid-cols-1 gap-2.5 pt-1">
             <input
               type="file"
               id="pdfFileInput"
@@ -397,18 +356,8 @@
               class="hidden"
               onchange="handlePdfSelection(event, 'arquivo')"
             />
-            <button
-              type="button"
-              onclick="document.getElementById('pdfFileInput').click()"
-              class="p-4 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700 hover:border-emerald-500/50 transition flex items-center gap-3.5 text-left group"
-            >
-              <div class="w-11 h-11 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 group-hover:scale-105 transition">
-                <i data-lucide="file-text" class="w-6 h-6"></i>
-              </div>
-              <div>
-                <p class="text-sm font-bold text-white">Selecionar Arquivo(s)</p>
-                <p class="text-[11px] text-slate-400">Importar 1 ou mais PDFs avulsos</p>
-              </div>
+            <button type="button" onclick="document.getElementById('pdfFileInput').click()" class="w-full py-4 px-4 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-sm shadow-lg shadow-emerald-500/20 transition flex items-center justify-center gap-2.5">
+              <i data-lucide="file-up" class="w-5 h-5"></i><span>Importar notas (PDF)</span>
             </button>
 
             <input
@@ -420,18 +369,8 @@
               class="hidden"
               onchange="handlePdfSelection(event, 'diretorio')"
             />
-            <button
-              type="button"
-              onclick="document.getElementById('pdfDirInput').click()"
-              class="p-4 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700 hover:border-indigo-500/50 transition flex items-center gap-3.5 text-left group"
-            >
-              <div class="w-11 h-11 rounded-xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center text-indigo-400 group-hover:scale-105 transition">
-                <i data-lucide="folder-search" class="w-6 h-6"></i>
-              </div>
-              <div>
-                <p class="text-sm font-bold text-white">Selecionar Diretório / Pasta</p>
-                <p class="text-[11px] text-slate-400">Filtra notas novas e ignora já salvas</p>
-              </div>
+            <button type="button" onclick="document.getElementById('pdfDirInput').click()" class="w-full py-2.5 px-3 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700 text-slate-300 text-xs font-semibold transition flex items-center justify-center gap-2">
+              <i data-lucide="folder-search" class="w-4 h-4"></i><span>Importar uma pasta inteira (ignora notas já salvas)</span>
             </button>
           </div>
         </div>
@@ -454,7 +393,7 @@
         <div id="stagingContainer" class="glass-card rounded-3xl p-5 border-2 border-emerald-500/40 space-y-4 hidden">
           <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
             <div>
-              <span class="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-bold">
+              <span class="text-[11px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-bold">
                 Etapa Pré-Salvamento (Revisão)
               </span>
               <h3 class="text-base font-bold text-white mt-1">Conferência dos Ativos Importados</h3>
@@ -486,23 +425,20 @@
           </div>
         </div>
 
-        <!-- Histórico de Notas Salvas no Banco -->
-        <div class="glass-card rounded-3xl p-4 sm:p-5 space-y-4">
-          <div class="flex flex-wrap items-center justify-between gap-2">
-            <h3 class="text-sm font-bold text-white flex items-center gap-2">
-              <i data-lucide="archive" class="w-4 h-4 text-indigo-400"></i>
-              Notas de Corretagem Salvas
-            </h3>
-            <span id="savedNotesCountBadge" class="text-xs font-mono text-slate-400">0 notas</span>
-          </div>
-
+        <!-- Histórico de Notas Salvas (recolhido) -->
+        <details id="savedNotesDetails" class="glass-card rounded-3xl p-4 sm:p-5 group">
+          <summary class="flex items-center justify-between gap-2 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+            <span class="text-sm font-bold text-white flex items-center gap-2"><i data-lucide="archive" class="w-4 h-4 text-indigo-400"></i>Últimas notas · ver todas</span>
+            <span class="flex items-center gap-2"><span id="savedNotesCountBadge" class="text-xs font-mono text-slate-400">0 notas</span><i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transition group-open:rotate-180"></i></span>
+          </summary>
+          <div class="space-y-4 pt-4">
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
             <div class="sm:col-span-3">
-              <label for="savedNotesCorretora" class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1">Corretora</label>
+              <label for="savedNotesCorretora" class="block text-[11px] uppercase tracking-wider text-slate-400 mb-1">Corretora</label>
               <select id="savedNotesCorretora" onchange="filterSavedNotes(true)" class="w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-3 py-2.5 text-xs text-white outline-none"><option value="">Todas as corretoras</option></select>
             </div>
             <div class="sm:col-span-1">
-              <label for="savedNotesSearch" class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1">Pesquisar nota</label>
+              <label for="savedNotesSearch" class="block text-[11px] uppercase tracking-wider text-slate-400 mb-1">Pesquisar nota</label>
               <div class="relative">
                 <i data-lucide="search" class="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2"></i>
                 <input id="savedNotesSearch" type="search" placeholder="Número, data ou arquivo..." oninput="filterSavedNotes(true)"
@@ -510,13 +446,13 @@
               </div>
             </div>
             <div>
-              <label for="savedNotesYear" class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1">Ano</label>
+              <label for="savedNotesYear" class="block text-[11px] uppercase tracking-wider text-slate-400 mb-1">Ano</label>
               <select id="savedNotesYear" onchange="filterSavedNotes(true)" class="w-full px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-xs text-white focus:outline-none focus:border-indigo-500">
                 <option value="">Todos os anos</option>
               </select>
             </div>
             <div>
-              <label for="savedNotesMonth" class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1">Mês</label>
+              <label for="savedNotesMonth" class="block text-[11px] uppercase tracking-wider text-slate-400 mb-1">Mês</label>
               <select id="savedNotesMonth" onchange="filterSavedNotes(true)" class="w-full px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-xs text-white focus:outline-none focus:border-indigo-500">
                 <option value="">Todos os meses</option>
                 <option value="01">Janeiro</option><option value="02">Fevereiro</option>
@@ -538,8 +474,9 @@
               <button type="button" onclick="changeSavedNotesPage(1)" id="savedNotesNext" class="px-3 py-2 rounded-lg bg-slate-800 text-slate-300 text-xs disabled:opacity-30 disabled:cursor-not-allowed">Próxima</button>
             </div>
           </div>
-          <p class="text-[10px] text-slate-500">Exibindo até 20 notas por página. Os PDFs armazenados não são carregados nesta listagem.</p>
-        </div>
+          <p class="text-[11px] text-slate-500">Exibindo até 20 notas por página. Os PDFs armazenados não são carregados nesta listagem.</p>
+          </div>
+        </details>
       </div>
 
       <!-- SUB-ABA 2.2: INSERÇÃO MANUAL (COM CALCULADORA EM TODOS OS CAMPOS) -->
@@ -773,26 +710,14 @@
         <h2 class="text-base font-bold text-white flex items-center gap-2"><i data-lucide="coins" class="w-5 h-5 text-emerald-400"></i>Proventos recebidos</h2>
         <p class="text-[11px] text-slate-400 mt-1">Dividendos, JCP e rendimentos vinculados a cada ativo da carteira.</p>
       </div>
+      <button type="button" onclick="openProvSheet()" class="w-full py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-sm shadow-lg shadow-emerald-500/20 transition flex items-center justify-center gap-2"><i data-lucide="plus" class="w-5 h-5"></i><span>Novo provento</span></button>
       <div id="provKpis" class="grid grid-cols-2 gap-2"></div>
+      <div class="glass-card rounded-2xl p-4 space-y-2">
+        <h3 class="text-sm font-bold text-white">Proventos por mês</h3>
+        <div id="provChartWrap" class="relative h-44"><canvas id="provMonthlyChart"></canvas></div>
+        <p id="provChartEmpty" class="hidden text-xs text-slate-500 py-6 text-center">Sem proventos nos últimos 12 meses.</p>
+      </div>
 
-      <form onsubmit="saveProvento(event)" class="glass-card rounded-2xl p-4 space-y-3">
-        <h3 class="text-sm font-bold text-white">Novo provento</h3>
-        <div class="grid grid-cols-2 gap-3">
-          <div><label for="provTicker" class="block text-[11px] font-semibold text-slate-300 mb-1">Ativo *</label><select id="provTicker" onchange="onProvTickerChange()" required class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none font-mono"></select></div>
-          <div><label for="provTipo" class="block text-[11px] font-semibold text-slate-300 mb-1">Tipo *</label>
-            <select id="provTipo" onchange="provAutoTax()" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none">
-              <option value="DIV">Dividendos</option><option value="JCP">JCP</option><option value="REND">Rendimentos (FII/ETF)</option><option value="AMORT">Amortização</option><option value="OUTRO">Outros</option>
-            </select></div>
-          <div class="col-span-2"><label for="provCorretora" class="block text-[11px] font-semibold text-slate-300 mb-1">Corretora</label><select id="provCorretora" onchange="onProvCorretoraChange()" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none"><option value="">Não informada</option></select></div>
-          <div><label for="provData" class="block text-[11px] font-semibold text-slate-300 mb-1">Data do pagamento *</label><input id="provData" type="date" required class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none" /></div>
-          <div><label for="provQtd" class="block text-[11px] font-semibold text-slate-300 mb-1">Quantidade (opcional)</label><input id="provQtd" type="text" inputmode="decimal" placeholder="Cotas na data" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none font-mono" /></div>
-          <div><label for="provBruto" class="block text-[11px] font-semibold text-slate-300 mb-1">Valor bruto (R$) *</label><input id="provBruto" type="text" inputmode="decimal" required oninput="provAutoTax()" placeholder="0,00" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none font-mono" /></div>
-          <div><label for="provImposto" class="block text-[11px] font-semibold text-slate-300 mb-1">IR retido (R$)</label><input id="provImposto" type="text" inputmode="decimal" oninput="this.dataset.manual='1'" placeholder="0,00" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none font-mono" /></div>
-        </div>
-        <div><label for="provObs" class="block text-[11px] font-semibold text-slate-300 mb-1">Observação</label><input id="provObs" type="text" maxlength="120" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none" /></div>
-        <p class="text-[10px] text-slate-500">JCP: o IR de 15% é sugerido automaticamente; você pode ajustar.</p>
-        <button type="submit" class="w-full py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-sm transition">Salvar provento</button>
-      </form>
 
       <div class="glass-card rounded-2xl p-4 space-y-2">
         <h3 class="text-sm font-bold text-white">Por ativo</h3>
@@ -806,6 +731,26 @@
         </div>
         <div id="provList" class="space-y-2"></div>
       </div>
+      <div id="provSheet" class="hidden fixed inset-0 z-[150] bg-black/60 flex items-end sm:items-center justify-center sm:p-4" onclick="if (event.target === this) closeProvSheet()" role="dialog" aria-modal="true" aria-label="Novo provento">
+      <form onsubmit="saveProvento(event)" class="glass-card w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 space-y-3 max-h-[92vh] overflow-y-auto border border-slate-700">
+        <div class="flex items-center justify-between"><h3 class="text-base font-bold text-white">Novo provento</h3><button type="button" onclick="closeProvSheet()" aria-label="Fechar" class="p-1.5 rounded-lg text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button></div>
+        <div class="grid grid-cols-2 gap-3">
+          <div><label for="provTicker" class="block text-[11px] font-semibold text-slate-300 mb-1">Ativo *</label><select id="provTicker" onchange="onProvTickerChange()" required class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none font-mono"></select></div>
+          <div><label for="provTipo" class="block text-[11px] font-semibold text-slate-300 mb-1">Tipo *</label>
+            <select id="provTipo" onchange="provAutoTax()" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none">
+              <option value="DIV">Dividendos</option><option value="JCP">JCP</option><option value="REND">Rendimentos (FII/ETF)</option><option value="AMORT">Amortização</option><option value="OUTRO">Outros</option>
+            </select></div>
+          <div class="col-span-2"><label for="provCorretora" class="block text-[11px] font-semibold text-slate-300 mb-1">Corretora</label><select id="provCorretora" onchange="onProvCorretoraChange()" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none"><option value="">Não informada</option></select></div>
+          <div><label for="provData" class="block text-[11px] font-semibold text-slate-300 mb-1">Data do pagamento *</label><input id="provData" type="date" required class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none" /></div>
+          <div><label for="provQtd" class="block text-[11px] font-semibold text-slate-300 mb-1">Quantidade (opcional)</label><input id="provQtd" type="text" inputmode="decimal" placeholder="Cotas na data" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none font-mono" /></div>
+          <div><label for="provBruto" class="block text-[11px] font-semibold text-slate-300 mb-1">Valor bruto (R$) *</label><input id="provBruto" type="text" inputmode="decimal" required oninput="provAutoTax()" placeholder="0,00" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none font-mono" /></div>
+          <div><label for="provImposto" class="block text-[11px] font-semibold text-slate-300 mb-1">IR retido (R$)</label><input id="provImposto" type="text" inputmode="decimal" oninput="this.dataset.manual='1'" placeholder="0,00" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none font-mono" /></div>
+        </div>
+        <div><label for="provObs" class="block text-[11px] font-semibold text-slate-300 mb-1">Observação</label><input id="provObs" type="text" maxlength="120" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none" /></div>
+        <p class="text-[11px] text-slate-500">JCP: o IR de 15% é sugerido automaticamente; você pode ajustar.</p>
+        <button type="submit" class="w-full py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-sm transition">Salvar provento</button>
+      </form>
+      </div>
     </section>
 
     <section id="tab-config" class="space-y-3 hidden">
@@ -818,7 +763,7 @@
             <i data-lucide="database" class="w-5 h-5 text-emerald-400 shrink-0"></i>
             <div class="min-w-0">
               <h2 class="text-base font-bold text-white">Banco de dados</h2>
-              <p id="dbSummaryText" class="text-xs text-slate-400 truncate">Backup, restauração e exclusão</p>
+              <p id="dbSummaryText" class="text-xs text-slate-400 truncate">Sincronização, backup e exclusão</p>
             </div>
           </div>
           <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400 shrink-0"></i>
@@ -849,12 +794,12 @@
         </button>
       </div>
       <div class="glass-card rounded-3xl p-5">
-        <button type="button" onclick="switchTab('sync')" aria-label="Abrir Sincronização" class="w-full flex items-center justify-between gap-3 text-left">
+        <button type="button" onclick="switchTab('temas')" aria-label="Abrir Temas" class="w-full flex items-center justify-between gap-3 text-left">
           <div class="flex items-center gap-3 min-w-0">
-            <i data-lucide="cloud" class="w-5 h-5 text-indigo-300 shrink-0"></i>
+            <i data-lucide="palette" class="w-5 h-5 text-indigo-300 shrink-0"></i>
             <div class="min-w-0">
-              <h2 class="text-base font-bold text-white">Sincronização</h2>
-              <p id="syncSummaryText" class="text-xs text-slate-400 truncate">Google Drive e regras de conflito</p>
+              <h2 class="text-base font-bold text-white">Temas</h2>
+              <p id="themeSummaryText" class="text-xs text-slate-400 truncate">Padrão (atual)</p>
             </div>
           </div>
           <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400 shrink-0"></i>
@@ -892,7 +837,7 @@
           <!-- Campo PIN Atual (Exibido apenas quando já existe um PIN salvo no banco de dados) -->
           <div id="currentPinFieldWrapper" class="hidden">
             <label class="block text-xs font-medium text-slate-300 mb-1">
-              PIN Atual * <span class="text-[10px] text-amber-400">(Obrigatório para alterar o PIN)</span>
+              PIN Atual * <span class="text-[11px] text-amber-400">(Obrigatório para alterar o PIN)</span>
             </label>
             <input
               type="password"
@@ -1067,9 +1012,34 @@
 
     </section>
 
-    <section id="tab-sync" class="space-y-5 hidden">
+    <section id="tab-temas" class="space-y-5 hidden">
       <button type="button" onclick="switchTab('config')" class="flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white">
         <i data-lucide="arrow-left" class="w-4 h-4"></i>Configurações
+      </button>
+      <div class="glass-card rounded-2xl p-4 space-y-3" role="radiogroup" aria-label="Tema do aplicativo">
+        <h2 class="text-base font-bold text-white flex items-center gap-2"><i data-lucide="palette" class="w-5 h-5 text-indigo-300"></i>Temas</h2>
+        <p class="text-[11px] text-slate-400">A escolha vale para este aparelho e é aplicada na hora.</p>
+        <label id="themeOpt-default" class="flex items-center gap-3 p-3.5 rounded-2xl bg-slate-900 border border-slate-800 cursor-pointer transition">
+          <input type="radio" name="theme" value="default" onchange="setTheme('default')" class="accent-emerald-500" />
+          <span class="flex gap-1" aria-hidden="true"><span class="w-5 h-5 rounded-md border border-slate-600" style="background:#070b14"></span><span class="w-5 h-5 rounded-md border border-slate-600" style="background:#131c2e"></span><span class="w-5 h-5 rounded-md" style="background:#10b981"></span></span>
+          <span class="min-w-0"><strong class="block text-sm text-white">Padrão (atual)</strong><span class="block text-[11px] text-slate-400">Azul-marinho escuro com destaques em verde.</span></span>
+        </label>
+        <label id="themeOpt-dark" class="flex items-center gap-3 p-3.5 rounded-2xl bg-slate-900 border border-slate-800 cursor-pointer transition">
+          <input type="radio" name="theme" value="dark" onchange="setTheme('dark')" class="accent-emerald-500" />
+          <span class="flex gap-1" aria-hidden="true"><span class="w-5 h-5 rounded-md border border-slate-600" style="background:#050505"></span><span class="w-5 h-5 rounded-md border border-slate-600" style="background:#141414"></span><span class="w-5 h-5 rounded-md" style="background:#10b981"></span></span>
+          <span class="min-w-0"><strong class="block text-sm text-white">Escuro</strong><span class="block text-[11px] text-slate-400">Preto neutro, bom para telas AMOLED.</span></span>
+        </label>
+        <label id="themeOpt-light" class="flex items-center gap-3 p-3.5 rounded-2xl bg-slate-900 border border-slate-800 cursor-pointer transition">
+          <input type="radio" name="theme" value="light" onchange="setTheme('light')" class="accent-emerald-500" />
+          <span class="flex gap-1" aria-hidden="true"><span class="w-5 h-5 rounded-md border border-slate-600" style="background:#f1f5f9"></span><span class="w-5 h-5 rounded-md border border-slate-600" style="background:#ffffff"></span><span class="w-5 h-5 rounded-md" style="background:#059669"></span></span>
+          <span class="min-w-0"><strong class="block text-sm text-white">Claro</strong><span class="block text-[11px] text-slate-400">Fundo claro, ideal para uso à luz do dia.</span></span>
+        </label>
+      </div>
+    </section>
+
+    <section id="tab-sync" class="space-y-5 hidden">
+      <button type="button" onclick="switchTab('banco')" class="flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white">
+        <i data-lucide="arrow-left" class="w-4 h-4"></i>Banco de dados
       </button>
       <div class="glass-card rounded-2xl p-3.5">
         <h2 class="text-base font-bold text-white flex items-center gap-2"><i data-lucide="cloud" class="w-5 h-5 text-indigo-300"></i>Sincronização</h2>
@@ -1107,7 +1077,21 @@
       </button>
       <div class="glass-card rounded-2xl p-3.5">
         <h2 class="text-base font-bold text-white flex items-center gap-2"><i data-lucide="database" class="w-5 h-5 text-emerald-400"></i>Banco de dados</h2>
-        <p class="text-[11px] text-slate-400 mt-1">Backup, restauração e exclusão dos dados. A sincronização com o Google Drive fica em Configurações → Sincronização.</p>
+        <p class="text-[11px] text-slate-400 mt-1">Sincronização, backup, restauração e exclusão dos dados.</p>
+      </div>
+
+      <!-- Sincronização (abre uma tela própria) -->
+      <div class="glass-card rounded-2xl p-4">
+        <button type="button" onclick="switchTab('sync')" aria-label="Abrir sincronização" class="w-full flex items-center justify-between gap-3 text-left">
+          <div class="flex items-center gap-3 min-w-0">
+            <i data-lucide="cloud" class="w-5 h-5 text-indigo-300 shrink-0"></i>
+            <div class="min-w-0">
+              <h3 class="text-sm font-bold text-white">Sincronização</h3>
+              <p id="syncSummaryText" class="text-xs text-slate-400 truncate">Google Drive e regras de conflito</p>
+            </div>
+          </div>
+          <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400 shrink-0"></i>
+        </button>
       </div>
 
       <!-- Backup e restauração -->
@@ -1119,15 +1103,15 @@
         <!-- Status do Banco -->
         <div class="grid grid-cols-3 gap-2 bg-slate-900/90 rounded-2xl p-3 border border-slate-800 text-center">
           <div>
-            <span class="text-[10px] text-slate-400 block">Notas Salvas</span>
+            <span class="text-[11px] text-slate-400 block">Notas Salvas</span>
             <strong id="statNotasCount" class="text-sm font-mono text-white">0</strong>
           </div>
           <div class="border-x border-slate-800">
-            <span class="text-[10px] text-slate-400 block">Operações</span>
+            <span class="text-[11px] text-slate-400 block">Operações</span>
             <strong id="statOperacoesCount" class="text-sm font-mono text-white">0</strong>
           </div>
           <div>
-            <span class="text-[10px] text-slate-400 block">Último Backup</span>
+            <span class="text-[11px] text-slate-400 block">Último Backup</span>
             <strong id="statUltimoBackup" class="text-xs font-mono text-emerald-400">Nunca</strong>
           </div>
         </div>
@@ -1191,7 +1175,7 @@
     <div class="w-full max-w-sm bg-slate-900 border-t sm:border border-slate-700 rounded-t-3xl sm:rounded-3xl p-5 shadow-2xl space-y-4 animate-in slide-in-from-bottom">
       <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
         <div>
-          <span class="text-[10px] font-mono uppercase text-indigo-400 font-semibold">Calculadora Integrada</span>
+          <span class="text-[11px] font-mono uppercase text-indigo-400 font-semibold">Calculadora Integrada</span>
           <h4 id="calcTargetLabel" class="text-sm font-bold text-white">Campo Selecionado</h4>
         </div>
         <button onclick="closeCalculator()" class="p-1.5 rounded-lg text-slate-400 hover:text-white bg-slate-800">
@@ -1296,41 +1280,25 @@
 
   <!-- ================= NAVEGAÇÃO INFERIOR (3 ABAS PRINCIPAIS VISÍVEIS) ================= -->
   <nav class="fixed bottom-0 inset-x-0 z-40 bg-slate-950/95 backdrop-blur-lg border-t border-slate-800/90 px-2 py-1.5">
-    <div class="max-w-md mx-auto grid grid-cols-4 gap-1.5">
-      <button
-        onclick="switchTab('carteira')"
-        id="nav-carteira"
-        class="nav-item flex flex-col items-center justify-center py-2 rounded-2xl text-emerald-400 bg-emerald-500/10 font-semibold transition"
-      >
+    <div class="max-w-md mx-auto grid grid-cols-5 gap-1 items-end">
+      <button onclick="switchTab('carteira')" id="nav-carteira" class="nav-item flex flex-col items-center justify-center py-2 rounded-2xl text-emerald-400 bg-emerald-500/10 font-semibold transition">
         <i data-lucide="pie-chart" class="w-5 h-5"></i>
         <span class="text-[11px] mt-1">Carteira</span>
       </button>
-
-      <button
-        onclick="switchTab('adicionar')"
-        id="nav-adicionar"
-        class="nav-item flex flex-col items-center justify-center py-2 rounded-2xl text-slate-400 hover:text-slate-200 font-medium transition"
-      >
-        <i data-lucide="plus-square" class="w-5 h-5"></i>
-        <span class="text-[11px] mt-1">Adicionar Ativos</span>
+      <button onclick="switchTab('posicoes')" id="nav-posicoes" class="nav-item flex flex-col items-center justify-center py-2 rounded-2xl text-slate-400 hover:text-slate-200 font-medium transition">
+        <i data-lucide="layers" class="w-5 h-5"></i>
+        <span class="text-[11px] mt-1">Posições</span>
       </button>
-
-      <button
-        onclick="switchTab('proventos')"
-        id="nav-proventos"
-        class="nav-item flex flex-col items-center justify-center py-2 rounded-2xl text-slate-400 hover:text-slate-200 font-medium transition"
-      >
+      <button onclick="switchTab('adicionar')" id="nav-adicionar" aria-label="Adicionar ativos" class="nav-item flex items-center justify-center -mt-5 pb-1">
+        <span class="w-14 h-14 rounded-full bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/30 flex items-center justify-center transition"><i data-lucide="plus" class="w-7 h-7"></i></span>
+      </button>
+      <button onclick="switchTab('proventos')" id="nav-proventos" class="nav-item flex flex-col items-center justify-center py-2 rounded-2xl text-slate-400 hover:text-slate-200 font-medium transition">
         <i data-lucide="coins" class="w-5 h-5"></i>
         <span class="text-[11px] mt-1">Proventos</span>
       </button>
-
-      <button
-        onclick="switchTab('config')"
-        id="nav-config"
-        class="nav-item flex flex-col items-center justify-center py-2 rounded-2xl text-slate-400 hover:text-slate-200 font-medium transition"
-      >
+      <button onclick="switchTab('config')" id="nav-config" class="nav-item flex flex-col items-center justify-center py-2 rounded-2xl text-slate-400 hover:text-slate-200 font-medium transition">
         <i data-lucide="settings" class="w-5 h-5"></i>
-        <span class="text-[11px] mt-1">Configurações</span>
+        <span class="text-[11px] mt-1">Config.</span>
       </button>
     </div>
   </nav>
@@ -1692,16 +1660,22 @@
       const lucroPrejuizo = patrimonioAtual - totalInvestido;
       const rentabilidade = totalInvestido > 0 ? ((lucroPrejuizo / totalInvestido) * 100) : 0;
 
-      document.getElementById('kpiTotalInvestido').textContent = formatMoney(totalInvestido);
+      const prov12 = Number(queryAll('SELECT COALESCE(SUM(valor_liquido), 0) AS s FROM proventos WHERE data_pagamento >= ?', [todayISO(-365)])[0].s) || 0;
+      const provAtivos = activePositions.reduce((acc, p) => acc + (p.proventosRecebidos || 0), 0);
+      const rentTotal = totalInvestido > 0 ? (((lucroPrejuizo + provAtivos) / totalInvestido) * 100) : 0;
+      const sg = v => (v >= 0 ? '+' : '');
       document.getElementById('kpiPatrimonioAtual').textContent = formatMoney(patrimonioAtual);
-
-      const elLucro = document.getElementById('kpiLucroPrejuizo');
-      elLucro.textContent = (lucroPrejuizo >= 0 ? '+ ' : '') + formatMoney(lucroPrejuizo);
-      elLucro.className = `text-lg sm:text-xl font-bold font-mono truncate ${lucroPrejuizo >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
-
-      const elRent = document.getElementById('kpiRentabilidade');
-      elRent.textContent = (rentabilidade >= 0 ? '+' : '') + formatPercent(rentabilidade);
-      elRent.className = `text-lg sm:text-xl font-bold font-mono ${rentabilidade >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
+      const badge = document.getElementById('kpiResultadoBadge');
+      badge.textContent = `${sg(lucroPrejuizo)}${formatMoney(lucroPrejuizo)} (${sg(rentabilidade)}${formatPercent(rentabilidade)})`;
+      badge.className = 'px-2.5 py-1 rounded-full text-xs font-bold font-mono ' + (lucroPrejuizo >= 0 ? 'bg-emerald-500/15 text-emerald-300' : 'bg-rose-500/15 text-rose-300');
+      document.getElementById('kpiTotalInvestido').textContent = formatMoney(totalInvestido);
+      document.getElementById('kpiProventos12m').textContent = formatMoney(prov12);
+      const rtEl = document.getElementById('kpiRentabTotal');
+      rtEl.textContent = `${sg(rentTotal)}${formatPercent(rentTotal)}`;
+      rtEl.className = 'text-sm font-bold font-mono truncate ' + (rentTotal >= 0 ? 'text-emerald-400' : 'text-rose-400');
+      renderOnboarding();
+      updateQuotesLabel();
+      renderThemeCard();
 
       document.getElementById('chartTotalAtivosBadge').textContent = `${activePositions.length} ${activePositions.length === 1 ? 'ativo' : 'ativos'}`;
 
@@ -1713,85 +1687,148 @@
       lucide.createIcons();
     }
 
+    let chartMode = (() => { try { return localStorage.getItem('ledgerly_chart_mode') === 'corretora' ? 'corretora' : 'ativo'; } catch (_) { return 'ativo'; } })();
+    function setChartMode(m) { chartMode = m === 'corretora' ? 'corretora' : 'ativo'; try { localStorage.setItem('ledgerly_chart_mode', chartMode); } catch (_) {} refreshAllViews(); }
+    function focusTicker(t) {
+      const s = document.getElementById('positionsSearch'), f = document.getElementById('positionsFilter'), c = document.getElementById('positionsCorretora');
+      if (s) s.value = t; if (f) f.value = 'active'; if (c) c.value = '';
+      switchTab('posicoes');
+      setTimeout(() => { const d = document.getElementById('pos-details-0'); if (d && !document.getElementById('pos-details-1') && d.classList.contains('hidden')) togglePositionCard(0); }, 60);
+    }
+    function focusCorretora(id) {
+      const s = document.getElementById('positionsSearch'), f = document.getElementById('positionsFilter'), c = document.getElementById('positionsCorretora');
+      if (s) s.value = ''; if (f) f.value = 'active'; if (c) c.value = String(id);
+      switchTab('posicoes');
+    }
     function renderPortfolioChart(activePositions, totalPatrimonio) {
       const emptyState = document.getElementById('emptyChartState');
       const chartWrapper = document.getElementById('chartWrapper');
       const legendList = document.getElementById('chartLegendList');
+      document.querySelectorAll('#chartModeChips button').forEach(b => {
+        const on = b.dataset.m === chartMode;
+        b.className = 'px-3 py-1.5 rounded-full text-xs font-semibold transition ' + (on ? 'bg-emerald-500 text-slate-950' : 'bg-slate-800 text-slate-300 hover:bg-slate-700');
+        b.setAttribute('aria-pressed', String(on));
+      });
+      const sub = document.getElementById('chartSubtitle');
+      if (sub) sub.textContent = chartMode === 'corretora' ? 'Patrimônio por corretora' : 'Maiores posições em custódia (5 maiores + outros)';
 
       if (activePositions.length === 0) {
         emptyState.classList.remove('hidden');
         chartWrapper.classList.add('hidden');
         legendList.innerHTML = '';
-        if (portfolioChart) {
-          portfolioChart.destroy();
-          portfolioChart = null;
-        }
+        if (portfolioChart) { portfolioChart.destroy(); portfolioChart = null; }
         return;
       }
-
       emptyState.classList.add('hidden');
       chartWrapper.classList.remove('hidden');
 
-      const palette = [
-        '#10b981', '#6366f1', '#f59e0b', '#06b6d4',
-        '#ec4899', '#8b5cf6', '#14b8a6', '#f97316'
-      ];
-
-      const labels = activePositions.map(p => p.ticker);
-      const dataValues = activePositions.map(p => Number(p.patrimonioAtual.toFixed(2)));
-      const bgColors = activePositions.map((_, idx) => palette[idx % palette.length]);
+      const palette = ['#10b981', '#6366f1', '#f59e0b', '#06b6d4', '#ec4899', '#8b5cf6', '#14b8a6', '#f97316'];
+      let slices = [];
+      if (chartMode === 'corretora') {
+        const shortName = n => n.replace(/\s+(S\.?\/?A\.?|LTDA\.?|CCTVM|DTVM|CTVM)\b.*$/i, '').trim() || n;
+        queryAll('SELECT id, nome FROM corretoras ORDER BY nome').forEach(c => {
+          const v = getConsolidatedPositions(c.id).filter(p => p.qtdAtual > 0).reduce((a, p) => a + p.patrimonioAtual, 0);
+          if (v > 0) slices.push({ label: shortName(c.nome), value: v, action: `focusCorretora(${Number(c.id)})` });
+        });
+        const resto = totalPatrimonio - slices.reduce((a, s) => a + s.value, 0);
+        if (resto > 0.5) slices.push({ label: 'Não informada', value: resto, action: '' });
+        slices.sort((a, b) => b.value - a.value);
+      } else {
+        const sorted = activePositions.slice().sort((a, b) => b.patrimonioAtual - a.patrimonioAtual);
+        sorted.slice(0, 5).forEach(p => slices.push({ label: p.ticker, value: p.patrimonioAtual, action: `focusTicker('${p.ticker}')` }));
+        const rest = sorted.slice(5);
+        if (rest.length) slices.push({ label: `Outros (${rest.length})`, value: rest.reduce((a, p) => a + p.patrimonioAtual, 0), action: '' });
+      }
+      const colorOf = (s, idx) => (!s.action ? '#64748b' : palette[idx % palette.length]);
 
       const ctx = document.getElementById('portfolioDonutChart').getContext('2d');
-      if (portfolioChart) {
-        portfolioChart.destroy();
-      }
-
+      if (portfolioChart) portfolioChart.destroy();
       portfolioChart = new Chart(ctx, {
         type: 'doughnut',
-        data: {
-          labels,
-          datasets: [{
-            data: dataValues,
-            backgroundColor: bgColors,
-            borderColor: '#0b111e',
-            borderWidth: 3,
-            hoverOffset: 6
-          }]
-        },
+        data: { labels: slices.map(s => s.label), datasets: [{ data: slices.map(s => Number(s.value.toFixed(2))), backgroundColor: slices.map(colorOf), borderColor: themeRgb(925), borderWidth: 3, hoverOffset: 6 }] },
         options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          cutout: '68%',
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              callbacks: {
-                label: function(context) {
-                  const val = context.parsed || 0;
-                  const pct = totalPatrimonio > 0 ? ((val / totalPatrimonio) * 100).toFixed(1) : 0;
-                  return ` ${context.label}: ${isPrivacyMode ? 'R$ ••••' : formatMoney(val)} (${pct}%)`;
-                }
-              }
-            }
-          }
+          responsive: true, maintainAspectRatio: false, cutout: '68%',
+          plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(context) {
+            const val = context.parsed || 0;
+            const pct = totalPatrimonio > 0 ? ((val / totalPatrimonio) * 100).toFixed(1) : 0;
+            return ` ${context.label}: ${isPrivacyMode ? 'R$ ••••' : formatMoney(val)} (${pct}%)`;
+          } } } }
         }
       });
 
-      // Renderiza os mini-cards de legenda abaixo do gráfico
-      legendList.innerHTML = activePositions.map((pos, idx) => {
-        const color = palette[idx % palette.length];
-        const pct = totalPatrimonio > 0 ? ((pos.patrimonioAtual / totalPatrimonio) * 100) : 0;
+      legendList.innerHTML = slices.map((s, idx) => {
+        const pct = totalPatrimonio > 0 ? ((s.value / totalPatrimonio) * 100) : 0;
         return `
-          <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/90 border border-slate-800/90 text-xs">
+          <button type="button" ${s.action ? `onclick="${s.action}"` : 'disabled'} class="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/90 border border-slate-800/90 text-xs text-left transition ${s.action ? 'hover:border-emerald-500/50' : 'cursor-default'}">
             <div class="flex items-center gap-2 truncate">
-              <span class="w-3 h-3 rounded-full shrink-0" style="background-color: ${color}"></span>
-              <strong class="font-mono text-white truncate">${pos.ticker}</strong>
+              <span class="w-3 h-3 rounded-full shrink-0" style="background-color: ${colorOf(s, idx)}"></span>
+              <strong class="font-mono text-white truncate">${escapeSavedNoteText(s.label)}</strong>
             </div>
             <span class="font-mono text-slate-300">${pct.toFixed(1)}%</span>
-          </div>
-        `;
+          </button>`;
       }).join('');
     }
+
+    // Primeiro uso: roteiro de 3 passos quando o banco está vazio
+    function renderOnboarding() {
+      const card = document.getElementById('onboardingCard'), home = document.getElementById('homeContent');
+      if (!card || !home) return;
+      const empty = isLocalEmpty();
+      card.classList.toggle('hidden', !empty); home.classList.toggle('hidden', empty);
+      if (!empty) return;
+      const steps = [
+        ['file-up', 'Importar sua primeira nota', 'Leia uma nota de corretagem em PDF', 'adicionar', false],
+        ['cloud', 'Conectar o Google Drive', 'Backup e sincronização entre aparelhos', 'sync', Boolean(syncState().connected)],
+        ['shield-check', 'Definir um PIN de acesso', 'Proteja o app com PIN ou biometria', 'seguranca', Boolean(getSetting('security_pin_hash'))]
+      ];
+      card.innerHTML = `
+        <div><h2 class="text-lg font-extrabold text-white">Bem-vindo ao Ledgerly Pro</h2><p class="text-xs text-slate-400 mt-0.5">Comece em 3 passos:</p></div>
+        <div class="space-y-2">${steps.map(([icon, title, desc, tab, done]) => `
+          <button type="button" onclick="switchTab('${tab}')" class="w-full flex items-center gap-3 p-3.5 rounded-2xl bg-slate-900 border ${done ? 'border-emerald-500/40' : 'border-slate-800'} hover:border-emerald-500/50 text-left transition">
+            <span class="w-10 h-10 rounded-xl bg-emerald-500/15 flex items-center justify-center text-emerald-400 shrink-0"><i data-lucide="${icon}" class="w-5 h-5"></i></span>
+            <span class="min-w-0 flex-1"><strong class="block text-sm text-white">${title}</strong><span class="block text-xs text-slate-400">${desc}</span></span>
+            <i data-lucide="${done ? 'check-circle-2' : 'chevron-right'}" class="w-5 h-5 ${done ? 'text-emerald-400' : 'text-slate-400'} shrink-0"></i>
+          </button>`).join('')}</div>`;
+      if (window.lucide) lucide.createIcons();
+    }
+
+    // Temas
+    const THEMES = { default: { name: 'Padrão (atual)', meta: '#090d16' }, dark: { name: 'Escuro', meta: '#050505' }, light: { name: 'Claro', meta: '#f1f5f9' } };
+    function currentTheme() { const t = document.documentElement.getAttribute('data-theme'); return THEMES[t] ? t : 'default'; }
+    function applyTheme(t) {
+      t = THEMES[t] ? t : 'default';
+      document.documentElement.setAttribute('data-theme', t);
+      const m = document.querySelector('meta[name="theme-color"]'); if (m) m.setAttribute('content', THEMES[t].meta);
+    }
+    function setTheme(t) { try { localStorage.setItem('ledgerly_theme', t); } catch (_) {} applyTheme(t); refreshAllViews(); }
+    function themeRgb(n, a) {
+      const v = getComputedStyle(document.documentElement).getPropertyValue('--s-' + n).trim().replace(/\s+/g, ',') || '11,17,30';
+      return a == null ? `rgb(${v})` : `rgba(${v},${a})`;
+    }
+    function renderThemeCard() {
+      const cur = currentTheme();
+      Object.keys(THEMES).forEach(k => {
+        const el = document.getElementById('themeOpt-' + k); if (!el) return;
+        el.classList.toggle('border-emerald-500', k === cur); el.classList.toggle('border-slate-800', k !== cur);
+        const r = el.querySelector('input'); if (r) r.checked = (k === cur);
+      });
+      const s = document.getElementById('themeSummaryText'); if (s) s.textContent = THEMES[cur].name;
+    }
+
+    // Etiqueta compacta das cotações ("atualizadas há 2 h")
+    function relTime(iso) {
+      const min = Math.max(0, Math.round((Date.now() - Date.parse(iso)) / 60000));
+      if (min < 1) return 'agora';
+      if (min < 60) return `há ${min} min`;
+      if (min < 1440) return `há ${Math.round(min / 60)} h`;
+      return `há ${Math.round(min / 1440)} d`;
+    }
+    function updateQuotesLabel() {
+      const el = document.getElementById('brapiLastSyncLabel'); if (!el || !db) return;
+      const iso = getSetting('brapi_last_sync_iso'), old = getSetting('brapi_last_sync');
+      el.textContent = iso ? `Cotações atualizadas ${relTime(iso)}` : (old ? `Cotações: última atualização ${old}` : 'Cotações: toque em ↻ para atualizar');
+    }
+    setInterval(() => { try { updateQuotesLabel(); } catch (_) {} }, 60000);
 
     // Renderiza os Retângulos Expansíveis na Aba Oculta "Posições"
     <!-- Renderiza os Retângulos Expansíveis na Aba Oculta "Posições" -->
@@ -1819,17 +1856,17 @@
       if (overview) overview.innerHTML = [
         ['Patrimônio atual', formatMoney(totalAtual), 'text-white'],
         ['Resultado total', (resTotal >= 0 ? '+' : '') + formatMoney(resTotal), resTotal >= 0 ? 'text-emerald-400' : 'text-rose-400']
-      ].map(([label,value,color]) => `<div class="glass-card rounded-xl p-3 min-w-0"><span class="block text-[10px] text-slate-400">${label}</span><strong class="block mt-1 text-sm font-mono ${color} break-words">${value}</strong></div>`).join('');
+      ].map(([label,value,color]) => `<div class="glass-card rounded-xl p-3 min-w-0"><span class="block text-[11px] text-slate-400">${label}</span><strong class="block mt-1 text-sm font-mono ${color} break-words">${value}</strong></div>`).join('');
 
       const allocation = document.getElementById('positionsAllocation');
       if (allocation) {
         const top = active.slice().sort((a,b) => b.patrimonioAtual-a.patrimonioAtual).slice(0,5);
         const colors = ['#10b981','#6366f1','#f59e0b','#06b6d4','#ec4899'];
         allocation.innerHTML = active.length ? `
-          <div class="flex items-center justify-between"><strong class="text-xs text-slate-200">Distribuição da carteira</strong><span class="text-[10px] text-slate-500">Por valor de mercado</span></div>
+          <div class="flex items-center justify-between"><strong class="text-xs text-slate-200">Distribuição da carteira</strong><span class="text-[11px] text-slate-500">Por valor de mercado</span></div>
           <div class="flex h-2.5 overflow-hidden rounded-full bg-slate-800">${top.map((p,i)=>`<span style="width:${p.pesoCarteira}%;background:${colors[i%colors.length]}"></span>`).join('')}${active.length>5?`<span style="width:${Math.max(0,100-top.reduce((a,p)=>a+p.pesoCarteira,0))}%;background:#64748b"></span>`:''}</div>
           <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">${top.map((p,i)=>`<div class="flex items-center gap-2 text-[11px] min-w-0"><span class="w-2 h-2 rounded-full shrink-0" style="background:${colors[i%colors.length]}"></span><span class="text-slate-300 font-mono">${p.ticker}</span><strong class="ml-auto text-slate-200">${p.pesoCarteira.toFixed(1)}%</strong></div>`).join('')}</div>
-          ${active.length>5?'<p class="text-[10px] text-slate-500">Exibindo os cinco maiores ativos; os demais estão agrupados no saldo.</p>':''}` : '<p class="text-xs text-slate-500">A distribuição aparecerá quando houver posições abertas.</p>';
+          ${active.length>5?'<p class="text-[11px] text-slate-500">Exibindo os cinco maiores ativos; os demais estão agrupados no saldo.</p>':''}` : '<p class="text-xs text-slate-500">A distribuição aparecerá quando houver posições abertas.</p>';
       }
       applyPositionsView();
     }
@@ -2291,7 +2328,7 @@
               <div class="p-3 rounded-xl bg-slate-950/90 border border-slate-800/90 space-y-3">
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                   <div>
-                    <label class="block text-[10px] text-slate-400 mb-1">Ticker</label>
+                    <label class="block text-[11px] text-slate-400 mb-1">Ticker</label>
                     <input
                       type="text"
                       value="${op.ticker}"
@@ -2300,7 +2337,7 @@
                     />
                   </div>
                   <div>
-                    <label class="block text-[10px] text-slate-400 mb-1">Especificação do Título</label>
+                    <label class="block text-[11px] text-slate-400 mb-1">Especificação do Título</label>
                     <input
                       type="text"
                       value="${op.especificacao}"
@@ -2309,7 +2346,7 @@
                     />
                   </div>
                   <div>
-                    <label class="block text-[10px] text-slate-400 mb-1">Tipo da Ordem</label>
+                    <label class="block text-[11px] text-slate-400 mb-1">Tipo da Ordem</label>
                     <select
                       onchange="updateStagedOpField(${nIdx}, ${opIdx}, 'tipo_ordem', this.value)"
                       class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white"
@@ -2322,7 +2359,7 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                   <div>
-                    <label class="block text-[10px] text-slate-400 mb-1">Quantidade</label>
+                    <label class="block text-[11px] text-slate-400 mb-1">Quantidade</label>
                     <div class="flex gap-1">
                       <input
                         type="number"
@@ -2343,7 +2380,7 @@
                   </div>
 
                   <div>
-                    <label class="block text-[10px] text-slate-400 mb-1">Valor Unitário (R$)</label>
+                    <label class="block text-[11px] text-slate-400 mb-1">Valor Unitário (R$)</label>
                     <div class="flex gap-1">
                       <input
                         type="number"
@@ -2364,7 +2401,7 @@
                   </div>
 
                   <div>
-                    <label class="block text-[10px] text-slate-400 mb-1">Valor Operação (R$)</label>
+                    <label class="block text-[11px] text-slate-400 mb-1">Valor Operação (R$)</label>
                     <div class="flex gap-1">
                       <input
                         type="number"
@@ -2387,7 +2424,7 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1 border-t border-slate-800/70">
                   <div>
-                    <label class="block text-[10px] text-slate-400 mb-1">Taxas CBLC (Liq/Reg R$)</label>
+                    <label class="block text-[11px] text-slate-400 mb-1">Taxas CBLC (Liq/Reg R$)</label>
                     <div class="flex gap-1">
                       <input
                         type="number"
@@ -2408,7 +2445,7 @@
                   </div>
 
                   <div>
-                    <label class="block text-[10px] text-slate-400 mb-1">Total Bovespa / Soma (R$)</label>
+                    <label class="block text-[11px] text-slate-400 mb-1">Total Bovespa / Soma (R$)</label>
                     <div class="flex gap-1">
                       <input
                         type="number"
@@ -2429,7 +2466,7 @@
                   </div>
 
                   <div>
-                    <label class="block text-[10px] text-slate-400 mb-1">Corretagem / Despesas (R$)</label>
+                    <label class="block text-[11px] text-slate-400 mb-1">Corretagem / Despesas (R$)</label>
                     <div class="flex gap-1">
                       <input
                         type="number"
@@ -2660,7 +2697,7 @@
               </div>
               <div class="flex items-center gap-3">
                 <div class="text-right">
-                  <span class="text-[10px] text-slate-400 block">Líquido da Nota</span>
+                  <span class="text-[11px] text-slate-400 block">Líquido da Nota</span>
                   <strong class="font-mono text-white">${formatMoney(n.valor_liquido_nota)}</strong>
                 </div>
                 <button type="button" onclick="deleteSavedNote(${Number(n.id)})"
@@ -2670,16 +2707,16 @@
               </div>
             </div>
             <details class="group border-t border-slate-800/80 pt-2">
-              <summary class="cursor-pointer list-none flex items-center justify-between text-[10px] text-indigo-300 select-none">
+              <summary class="cursor-pointer list-none flex items-center justify-between text-[11px] text-indigo-300 select-none">
                 <span class="flex items-center gap-1"><i data-lucide="chevron-down" class="w-3 h-3"></i> Ver detalhes financeiros</span>
                 <span class="text-slate-500">Abrir</span>
               </summary>
               <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-3">
-                <div><span class="block text-[10px] text-slate-500">Operações</span><strong class="text-slate-200 font-mono">${formatMoney(n.valor_operacoes)}</strong></div>
-                <div><span class="block text-[10px] text-slate-500">Total CBLC bruto</span><strong class="text-slate-200 font-mono">${formatMoney(n.total_cblc_bruto)}</strong></div>
-                <div><span class="block text-[10px] text-slate-500">Taxa CBLC</span><strong class="text-slate-200 font-mono">${formatMoney(n.taxa_cblc)}</strong></div>
-                <div><span class="block text-[10px] text-slate-500">Taxa Bovespa</span><strong class="text-slate-200 font-mono">${formatMoney(n.taxa_bovespa)}</strong></div>
-                <div><span class="block text-[10px] text-slate-500">Corretagem</span><strong class="text-slate-200 font-mono">${formatMoney(n.taxa_corretagem)}</strong></div>
+                <div><span class="block text-[11px] text-slate-500">Operações</span><strong class="text-slate-200 font-mono">${formatMoney(n.valor_operacoes)}</strong></div>
+                <div><span class="block text-[11px] text-slate-500">Total CBLC bruto</span><strong class="text-slate-200 font-mono">${formatMoney(n.total_cblc_bruto)}</strong></div>
+                <div><span class="block text-[11px] text-slate-500">Taxa CBLC</span><strong class="text-slate-200 font-mono">${formatMoney(n.taxa_cblc)}</strong></div>
+                <div><span class="block text-[11px] text-slate-500">Taxa Bovespa</span><strong class="text-slate-200 font-mono">${formatMoney(n.taxa_bovespa)}</strong></div>
+                <div><span class="block text-[11px] text-slate-500">Corretagem</span><strong class="text-slate-200 font-mono">${formatMoney(n.taxa_corretagem)}</strong></div>
               </div>
             </details>
           </div>
@@ -2894,10 +2931,7 @@
         }
       }
 
-      const lastSyncLabel = document.getElementById('brapiLastSyncLabel');
-      if (lastSyncLabel && lastSync) {
-        lastSyncLabel.textContent = `Última sincronização Brapi: ${lastSync}`;
-      }
+      updateQuotesLabel();
     }
 
     function toggleBrapiTokenVisibility() {
@@ -2973,6 +3007,7 @@
 
         const nowStr = new Date().toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
         await setSetting('brapi_last_sync', nowStr);
+        await setSetting('brapi_last_sync_iso', new Date().toISOString());
         await persistSQLiteToIndexedDB();
 
         loadBrapiSettingsToUI();
@@ -3426,7 +3461,7 @@
     // 10. NAVEGAÇÃO ENTRE ABAS, SUB-ABAS E UTILITÁRIOS VISUAIS
     // =========================================================================
     function switchTab(tabId) {
-      const tabs = ['carteira', 'posicoes', 'adicionar', 'proventos', 'config', 'banco', 'seguranca', 'apis', 'sync'];
+      const tabs = ['carteira', 'posicoes', 'adicionar', 'proventos', 'config', 'banco', 'seguranca', 'apis', 'temas', 'sync'];
       tabs.forEach(t => {
         const section = document.getElementById(`tab-${t}`);
         if (section) {
@@ -3434,14 +3469,15 @@
         }
       });
 
-      const activeNavId = tabId === 'posicoes' ? 'carteira' : (['banco', 'seguranca', 'apis', 'sync'].includes(tabId) ? 'config' : tabId);
-      ['carteira', 'adicionar', 'proventos', 'config'].forEach(nav => {
+      const activeNavId = ['banco', 'seguranca', 'apis', 'temas', 'sync'].includes(tabId) ? 'config' : tabId;
+      ['carteira', 'posicoes', 'adicionar', 'proventos', 'config'].forEach(nav => {
         const btn = document.getElementById(`nav-${nav}`);
         if (!btn) return;
-        if (nav === activeNavId) {
-          btn.className = 'nav-item flex flex-col items-center justify-center py-2 rounded-2xl text-emerald-400 bg-emerald-500/10 font-semibold transition';
+        const on = nav === activeNavId;
+        if (nav === 'adicionar') {
+          btn.firstElementChild.className = 'w-14 h-14 rounded-full bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/30 flex items-center justify-center transition' + (on ? ' ring-4 ring-emerald-400/30' : '');
         } else {
-          btn.className = 'nav-item flex flex-col items-center justify-center py-2 rounded-2xl text-slate-400 hover:text-slate-200 font-medium transition';
+          btn.className = 'nav-item flex flex-col items-center justify-center py-2 rounded-2xl transition ' + (on ? 'text-emerald-400 bg-emerald-500/10 font-semibold' : 'text-slate-400 hover:text-slate-200 font-medium');
         }
       });
 
@@ -3595,8 +3631,38 @@
         [ticker, tipo, data, qtd, bruto, imposto, bruto - imposto, obs, provCorr ? Number(provCorr) : null]);
       await persistSQLiteToIndexedDB();
       ['provBruto', 'provImposto', 'provObs'].forEach(id => { const el = document.getElementById(id); el.value = ''; delete el.dataset.manual; });
+      closeProvSheet();
       refreshAllViews();
       showToast(`Provento de ${ticker} registrado!`, 'success');
+    }
+    function openProvSheet() {
+      const s = document.getElementById('provSheet'); if (!s) return;
+      s.classList.remove('hidden');
+      const el = document.getElementById('provBruto'); if (el) setTimeout(() => el.focus(), 50);
+    }
+    function closeProvSheet() { const s = document.getElementById('provSheet'); if (s) s.classList.add('hidden'); }
+    let provChart = null;
+    function renderProvMonthlyChart(rows) {
+      const canvas = document.getElementById('provMonthlyChart'); if (!canvas || typeof Chart === 'undefined') return;
+      const months = []; const now = new Date();
+      for (let i = 11; i >= 0; i--) {
+        const m = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        months.push({ key: `${m.getFullYear()}-${String(m.getMonth() + 1).padStart(2, '0')}`, label: m.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '') + '/' + String(m.getFullYear()).slice(2), v: 0 });
+      }
+      rows.forEach(r => { const m = months.find(x => x.key === String(r.data_pagamento).slice(0, 7)); if (m) m.v += Number(r.valor_liquido) || 0; });
+      const total = months.reduce((a, m) => a + m.v, 0);
+      const empty = document.getElementById('provChartEmpty'), wrap = document.getElementById('provChartWrap');
+      if (empty) empty.classList.toggle('hidden', total > 0);
+      if (wrap) wrap.classList.toggle('hidden', total <= 0);
+      if (provChart) { provChart.destroy(); provChart = null; }
+      if (total <= 0) return;
+      provChart = new Chart(canvas.getContext('2d'), {
+        type: 'bar',
+        data: { labels: months.map(m => m.label), datasets: [{ data: months.map(m => Number(m.v.toFixed(2))), backgroundColor: '#10b981', borderRadius: 6, maxBarThickness: 22 }] },
+        options: { responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ` ${isPrivacyMode ? 'R$ ••••' : formatMoney(c.parsed.y)}` } } },
+          scales: { x: { ticks: { color: themeRgb(400), font: { size: 11 } }, grid: { display: false } }, y: { display: false, beginAtZero: true } } }
+      });
     }
     function deleteProvento(id) {
       openConfirmDialog({
@@ -3643,7 +3709,7 @@
         ['Últimos 12 meses', formatMoney(sum(last12, 'valor_liquido')), 'text-white'],
         ['Total bruto', formatMoney(sum(rows, 'valor_bruto')), 'text-white'],
         ['IR retido', formatMoney(sum(rows, 'imposto')), 'text-amber-400']
-      ].map(([l, v, c]) => `<div class="glass-card rounded-xl p-3 min-w-0"><span class="block text-[10px] text-slate-400">${l}</span><strong class="block mt-1 text-sm font-mono truncate ${c}">${v}</strong></div>`).join('');
+      ].map(([l, v, c]) => `<div class="glass-card rounded-xl p-3 min-w-0"><span class="block text-[11px] text-slate-400">${l}</span><strong class="block mt-1 text-sm font-mono truncate ${c}">${v}</strong></div>`).join('');
 
       const byT = {};
       rows.forEach(r => { byT[r.ticker] = (byT[r.ticker] || 0) + (Number(r.valor_liquido) || 0); });
@@ -3654,7 +3720,7 @@
         const rt = pos && pos.valorInvestido > 0 ? `${pos.rentabilidadeTotal >= 0 ? '+' : ''}${formatPercent(pos.rentabilidadeTotal)}` : '—';
         return `<div class="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between gap-2">
           <div class="min-w-0"><span class="font-mono font-bold text-emerald-400 text-sm">${esc(t)}</span>
-            <span class="block text-[10px] text-slate-500">Yield on cost ${yoc} · Rentab. total ${rt}</span></div>
+            <span class="block text-[11px] text-slate-500">Yield on cost ${yoc} · Rentab. total ${rt}</span></div>
           <strong class="font-mono text-sm text-white shrink-0">${formatMoney(byT[t])}</strong></div>`;
       }).join('') : '<p class="text-xs text-slate-500">Nenhum provento registrado ainda.</p>';
 
@@ -3664,16 +3730,17 @@
         <div class="glass-card rounded-2xl p-3.5 flex items-center justify-between gap-3">
           <div class="min-w-0">
             <div class="flex items-center gap-2"><span class="font-mono font-bold text-emerald-400 text-sm">${esc(r.ticker)}</span>
-              <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300">${esc(PROV_TIPOS[r.tipo] || r.tipo)}</span></div>
+              <span class="text-[11px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300">${esc(PROV_TIPOS[r.tipo] || r.tipo)}</span></div>
             <p class="text-[11px] text-slate-400 font-mono">${esc(isoToBR(r.data_pagamento))}${r.quantidade > 0 ? ' · ' + esc(formatNumber(r.quantidade)) + ' cotas' : ''}${r.corretora_nome ? ' · ' + esc(r.corretora_nome) : ''}</p>
             ${r.observacao ? `<p class="text-[11px] text-slate-500 truncate">${esc(r.observacao)}</p>` : ''}
           </div>
           <div class="text-right shrink-0">
             <strong class="block font-mono text-sm text-emerald-400">${formatMoney(r.valor_liquido)}</strong>
-            <span class="block text-[10px] text-slate-500 font-mono">bruto ${formatMoney(r.valor_bruto)}</span>
+            <span class="block text-[11px] text-slate-500 font-mono">bruto ${formatMoney(r.valor_bruto)}</span>
           </div>
           <button type="button" onclick="deleteProvento(${Number(r.id)})" aria-label="Excluir provento de ${esc(r.ticker)}" class="p-2 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 transition shrink-0"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
         </div>`).join('') : '<div class="glass-card rounded-2xl p-6 text-center text-xs text-slate-400">Nenhum lançamento para exibir.</div>';
+      renderProvMonthlyChart(rows);
       if (window.lucide) lucide.createIcons();
     }
 
@@ -4117,14 +4184,14 @@
         else { const d = st.lastSync ? new Date(st.lastSync) : null; text = 'Sinc. ' + (d ? d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : 'ok'); cls = tone.ok; }
       }
       b.textContent = text;
-      b.className = 'text-[10px] font-mono uppercase px-2 py-0.5 rounded-full border ' + cls + (st.connected ? ' cursor-pointer' : '');
+      b.className = 'text-[11px] font-mono uppercase px-2 py-0.5 rounded-full border ' + cls + (st.connected ? ' cursor-pointer' : '');
       b.onclick = st.connected ? () => syncNow(true) : null;
       b.setAttribute('role', st.connected ? 'button' : 'status');
     }
     window.addEventListener('online', () => { updateConnectionBadge(); if (syncState().connected && syncPending) syncNow(false); });
     window.addEventListener('offline', updateConnectionBadge);
     document.addEventListener('visibilitychange', () => { if (!document.hidden && syncState().connected && hasValidToken()) syncNow(false); });
-    document.addEventListener('DOMContentLoaded', () => { updateConnectionBadge(); renderSyncCard(); refreshConflictInfo(); });
+    document.addEventListener('DOMContentLoaded', () => { updateConnectionBadge(); renderSyncCard(); refreshConflictInfo(); renderThemeCard(); });
 
     function showToast(message, type = 'info') {
       const container = document.getElementById('toastContainer');
