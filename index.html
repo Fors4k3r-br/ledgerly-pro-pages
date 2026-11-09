@@ -162,17 +162,6 @@
       <!-- Primeiro uso -->
       <div id="onboardingCard" class="hidden glass-card rounded-3xl p-5 space-y-4"></div>
       <div id="homeContent" class="space-y-5">
-      <!-- Cotações (compacto) -->
-      <div class="flex items-center justify-between gap-2 glass-card rounded-2xl px-4 py-2.5">
-        <div class="flex items-center gap-2 min-w-0">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
-          <p id="brapiLastSyncLabel" class="text-xs text-slate-300 truncate">Cotações: toque em ↻ para atualizar</p>
-        </div>
-        <button type="button" id="btnSyncBrapiCarteira" onclick="syncAllQuotesFromBrapi()" aria-label="Atualizar cotações" title="Atualizar cotações" class="p-2 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-500/40 text-indigo-300 transition disabled:opacity-60">
-          <i data-lucide="refresh-cw" id="iconSyncBrapiCarteira" class="w-4 h-4"></i>
-        </button>
-      </div>
-
       <!-- Destaque: patrimônio -->
       <div class="glass-card rounded-3xl p-5">
         <p class="text-xs text-slate-400">Patrimônio atual</p>
@@ -188,13 +177,80 @@
         </dl>
       </div>
 
+
+      <!-- Gráfico de evolução: Investido x Patrimônio -->
+      <div class="glass-card rounded-3xl p-5 space-y-3">
+        <div class="flex items-center justify-between gap-3">
+          <h2 class="text-base font-bold text-white">Evolução</h2>
+          <div class="flex items-center gap-3 text-[11px] text-slate-400">
+            <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full" style="background:rgb(129,140,248)"></span>Investido</span>
+            <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400"></span>Patrimônio</span>
+          </div>
+        </div>
+        <div id="profitChartWrap" class="relative h-52 w-full"><canvas id="profitChart" aria-label="Gráfico de evolução do investido e do patrimônio"></canvas></div>
+        <p id="profitChartNote" class="hidden text-[11px] text-slate-500"></p>
+        <div id="rangeChips" class="flex gap-1.5 overflow-x-auto -mx-1 px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" role="group" aria-label="Período do gráfico">
+          <button type="button" data-r="1s" onclick="setProfitRange('1s')" class="shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-700 text-slate-300">1 semana</button>
+          <button type="button" data-r="1m" onclick="setProfitRange('1m')" class="shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-700 text-slate-300">1 mês</button>
+          <button type="button" data-r="mes" onclick="setProfitRange('mes')" class="shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-700 text-slate-300">No mês</button>
+          <button type="button" data-r="6m" onclick="setProfitRange('6m')" class="shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-700 text-slate-300">6 meses</button>
+          <button type="button" data-r="sem" onclick="setProfitRange('sem')" class="shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-700 text-slate-300">No semestre</button>
+          <button type="button" data-r="12m" onclick="setProfitRange('12m')" class="shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-700 text-slate-300">12 meses</button>
+          <button type="button" data-r="ano" onclick="setProfitRange('ano')" class="shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-700 text-slate-300">No ano</button>
+          <button type="button" data-r="tudo" onclick="setProfitRange('tudo')" class="shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-700 text-slate-300">Desde o início</button>
+        </div>
+      </div>
+
+      <!-- Cotações: bloco clicável para atualizar -->
+      <button type="button" id="btnSyncBrapiCarteira" onclick="onQuotesBlockTap()" aria-label="Atualizar cotações" class="w-full text-left flex items-center justify-between gap-3 glass-card rounded-2xl px-4 py-3 transition hover:border-indigo-500/40 disabled:opacity-60">
+        <span class="flex items-center gap-2.5 min-w-0">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
+          <span class="min-w-0">
+            <span id="brapiLastSyncLabel" class="block text-xs text-slate-200 truncate">Cotações ainda não atualizadas</span>
+            <span class="block text-[11px] text-slate-500">Toque para atualizar</span>
+          </span>
+        </span>
+        <i data-lucide="refresh-cw" id="iconSyncBrapiCarteira" class="w-4 h-4 text-indigo-300 shrink-0"></i>
+      </button>
+
+      <div class="flex justify-end">
+        <button type="button" onclick="switchTab('posicoes')" class="flex items-center gap-1 text-sm font-semibold text-emerald-400 hover:text-emerald-300 transition">Ver mais<i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+      </div>
+      </div>
+    </section>
+
+    <!-- ===============================================================
+         VISÃO DETALHADA: POSIÇÕES / CUSTÓDIA CONSOLIDADA (CARDS EXPANSÍVEIS)
+    ================================================================ -->
+    <section id="tab-posicoes" class="space-y-4 hidden">
+      <div class="flex flex-wrap items-center justify-between gap-2 glass-card rounded-2xl p-3.5">
+        <div class="flex items-center gap-3">
+          <button
+            onclick="switchTab('carteira')"
+            class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 transition flex items-center gap-1 text-xs font-semibold"
+          >
+            <i data-lucide="arrow-left" class="w-4 h-4"></i>
+            <span>Voltar</span>
+          </button>
+          <p class="text-[11px] text-slate-400">Toque em um ativo para ver os detalhes e as taxas</p>
+        </div>
+        <button
+          type="button"
+          onclick="syncAllQuotesFromBrapi()"
+          class="px-3 py-1.5 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-500/30 text-indigo-300 text-xs font-semibold transition flex items-center gap-1.5"
+        >
+          <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+          <span>Sincronizar Brapi</span>
+        </button>
+      </div>
+
       <!-- Gráfico de Composição da Carteira (No lugar da tabela) -->
       <div class="glass-card rounded-3xl p-5 space-y-4">
         <div class="flex items-center justify-between">
           <div>
             <h2 class="text-base font-bold text-white flex items-center gap-2">
               <i data-lucide="pie-chart" class="w-4 h-4 text-emerald-400"></i>
-              Composição da Carteira
+              Meus ativos
             </h2>
             <p id="chartSubtitle" class="text-xs text-slate-400">Por valor em custódia</p>
           </div>
@@ -234,45 +290,9 @@
         <div id="chartLegendList" class="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-2"></div>
 
       </div>
-      </div>
-    </section>
-
-    <!-- ===============================================================
-         VISÃO DETALHADA: POSIÇÕES / CUSTÓDIA CONSOLIDADA (CARDS EXPANSÍVEIS)
-    ================================================================ -->
-    <section id="tab-posicoes" class="space-y-4 hidden">
-      <div class="flex flex-wrap items-center justify-between gap-2 glass-card rounded-2xl p-3.5">
-        <div class="flex items-center gap-3">
-          <button
-            onclick="switchTab('carteira')"
-            class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 transition flex items-center gap-1 text-xs font-semibold"
-          >
-            <i data-lucide="arrow-left" class="w-4 h-4"></i>
-            <span>Voltar</span>
-          </button>
-          <div>
-            <h2 class="text-base font-bold text-white">Custódia Consolidada</h2>
-            <p class="text-[11px] text-slate-400">Toque em um ativo para expandir todos os detalhes e taxas</p>
-          </div>
-        </div>
-        <button
-          type="button"
-          onclick="syncAllQuotesFromBrapi()"
-          class="px-3 py-1.5 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-500/30 text-indigo-300 text-xs font-semibold transition flex items-center gap-1.5"
-        >
-          <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
-          <span>Sincronizar Brapi</span>
-        </button>
-      </div>
 
       <div id="positionsOverview" class="grid grid-cols-2 gap-2"></div>
-      <details class="glass-card rounded-2xl px-3.5 py-3 group">
-        <summary class="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden text-xs font-semibold text-slate-300">
-          <span>Ver distribuição da carteira</span>
-          <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transition group-open:rotate-180"></i>
-        </summary>
-        <div id="positionsAllocation" class="space-y-3 pt-3"></div>
-      </details>
+      <div id="positionsAllocation" class="hidden"></div>
       <div class="space-y-2.5">
         <div class="flex gap-2">
           <input id="positionsSearch" type="search" placeholder="Buscar ativo..." aria-label="Buscar ativo" oninput="applyPositionsView()" class="flex-1 min-w-0 bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-3 py-2.5 text-sm text-white outline-none" />
@@ -1316,7 +1336,7 @@
       </button>
       <button onclick="switchTab('posicoes')" id="nav-posicoes" class="nav-item flex flex-col items-center justify-center py-2 rounded-2xl text-slate-400 hover:text-slate-200 font-medium transition">
         <i data-lucide="layers" class="w-5 h-5"></i>
-        <span class="text-[11px] mt-1">Posições</span>
+        <span class="text-[11px] mt-1">Ativos</span>
       </button>
       <button onclick="switchTab('adicionar')" id="nav-adicionar" aria-label="Adicionar ativos" class="nav-item flex items-center justify-center -mt-5 pb-1">
         <span class="w-14 h-14 rounded-full bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/30 flex items-center justify-center transition"><i data-lucide="plus" class="w-7 h-7"></i></span>
@@ -1464,12 +1484,19 @@
           cnpj TEXT UNIQUE
         );
 
+        CREATE TABLE IF NOT EXISTS patrimonio_diario (
+          data TEXT PRIMARY KEY,
+          patrimonio REAL NOT NULL,
+          investido REAL NOT NULL
+        );
+
         CREATE TABLE IF NOT EXISTS configuracoes_seguranca (
           chave TEXT PRIMARY KEY,
           valor TEXT
         );
       `);
       ensureCorretoraColumns();
+      if (typeof migrateLocalSnapshots === 'function') migrateLocalSnapshots();
     }
 
     // Corretora vinculada a cada nota e a cada operação (migração segura de bancos antigos)
@@ -1578,10 +1605,11 @@
     // =========================================================================
     // 2. CÁLCULO CONSOLIDADO DE CUSTÓDIA E PREÇO MÉDIO
     // =========================================================================
-    function getConsolidatedPositions(corretoraId = null) {
-      const ops = corretoraId
+    function getConsolidatedPositions(corretoraId = null, asOfISO = null) {
+      let ops = corretoraId
         ? queryAll(`SELECT * FROM operacoes WHERE corretora_id = ? ORDER BY id ASC`, [Number(corretoraId)])
         : queryAll(`SELECT * FROM operacoes ORDER BY id ASC`);
+      if (asOfISO) ops = ops.filter(op => { const d = toISODate(op.data_operacao); return d && d <= asOfISO; });
       const quotesRows = queryAll(`SELECT ticker, preco_atual FROM cotacoes_atuais`);
       const quotesMap = {};
       quotesRows.forEach(r => { quotesMap[r.ticker] = Number(r.preco_atual); });
@@ -1703,6 +1731,9 @@
       const rtEl = document.getElementById('kpiRentabTotal');
       rtEl.textContent = `${sg(rentTotal)}${formatPercent(rentTotal)}`;
       rtEl.className = 'text-sm font-bold font-mono text-right ' + (rentTotal >= 0 ? 'text-emerald-400' : 'text-rose-400');
+      lastPortfolio = { patrimonio: patrimonioAtual, investido: totalInvestido };
+      if (patrimonioAtual > 0) savePortfolioSnapshot(patrimonioAtual, totalInvestido);
+      renderProfitChart();
       renderOnboarding();
       updateQuotesLabel();
       renderThemeCard();
@@ -1714,6 +1745,106 @@
       renderProventos();
       updateDatabaseStats();
       lucide.createIcons();
+    }
+
+    // ===== Gráfico de evolução: Investido x Patrimônio =====
+    let profitChart = null, lastPortfolio = { patrimonio: 0, investido: 0 };
+    const PROFIT_RANGES = ['1s', '1m', 'mes', '6m', 'sem', '12m', 'ano', 'tudo'];
+    let profitRange = (() => { try { const r = localStorage.getItem('ledgerly_profit_range'); return PROFIT_RANGES.includes(r) ? r : 'tudo'; } catch (_) { return 'tudo'; } })();
+    function toISODate(s) {
+      s = String(s || '');
+      let m = s.match(/^(\d{4})-(\d{2})-(\d{2})/); if (m) return `${m[1]}-${m[2]}-${m[3]}`;
+      m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})/); return m ? `${m[3]}-${m[2]}-${m[1]}` : '';
+    }
+    function isoFromDate(d) { return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }
+    function setProfitRange(r) {
+      profitRange = PROFIT_RANGES.includes(r) ? r : 'tudo';
+      try { localStorage.setItem('ledgerly_profit_range', profitRange); } catch (_) {}
+      renderProfitChart();
+      const b = document.querySelector(`#rangeChips button[data-r="${profitRange}"]`);
+      if (b && b.scrollIntoView) b.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
+    }
+    function profitRangeStart(r, firstISO) {
+      const t = new Date(), y = t.getFullYear(), m = t.getMonth(), dd = t.getDate();
+      const d = { '1s': new Date(y, m, dd - 7), '1m': new Date(y, m - 1, dd), 'mes': new Date(y, m, 1), '6m': new Date(y, m - 6, dd),
+        'sem': new Date(y, m < 6 ? 0 : 6, 1), '12m': new Date(y - 1, m, dd), 'ano': new Date(y, 0, 1) }[r];
+      const iso = d ? isoFromDate(d) : firstISO;
+      return iso > firstISO ? iso : firstISO;   // o gráfico começa na primeira operação
+    }
+    // Uma foto por dia: o patrimônio do passado não pode ser reconstruído (o app só conhece o preço de hoje)
+    const SNAP_KEY = 'ledgerly_patrimonio_diario';   // formato antigo (só neste aparelho): é migrado para o banco
+    function readSnapshots() {
+      const o = {};
+      queryAll('SELECT data, patrimonio, investido FROM patrimonio_diario ORDER BY data').forEach(r => { o[r.data] = [Number(r.patrimonio), Number(r.investido)]; });
+      return o;
+    }
+    function clearSnapshots() { try { localStorage.removeItem(SNAP_KEY); } catch (_) {} }
+    function migrateLocalSnapshots() {
+      try {
+        const raw = localStorage.getItem(SNAP_KEY); if (!raw) return;
+        const old = JSON.parse(raw) || {};
+        Object.keys(old).forEach(d => { if (Array.isArray(old[d])) db.run('INSERT OR IGNORE INTO patrimonio_diario (data, patrimonio, investido) VALUES (?, ?, ?)', [d, Number(old[d][0]) || 0, Number(old[d][1]) || 0]); });
+        localStorage.removeItem(SNAP_KEY);
+      } catch (_) {}
+    }
+    // Uma foto por dia, guardada no banco (assim vai para o Drive e para os backups): o patrimônio do passado não pode ser reconstruído
+    function savePortfolioSnapshot(patrimonio, investido) {
+      if (window.__ledgerlyApplying) return false;
+      const d = todayISO(0), p = Math.round(patrimonio * 100) / 100, i = Math.round(investido * 100) / 100;
+      const prev = queryAll('SELECT patrimonio, investido FROM patrimonio_diario WHERE data = ?', [d])[0];
+      if (prev && Math.abs(prev.patrimonio - p) < 0.005 && Math.abs(prev.investido - i) < 0.005) return false;
+      db.run('INSERT OR REPLACE INTO patrimonio_diario (data, patrimonio, investido) VALUES (?, ?, ?)', [d, p, i]);
+      window.__ledgerlySnapshotWrite = true;   // só uma foto automática: não conta como edição do usuário na regra de conflito
+      persistSQLiteToIndexedDB().catch(() => {}).finally(() => { window.__ledgerlySnapshotWrite = false; });   // grava e dispara a sincronização
+      return true;
+    }
+    function buildProfitSeries(range) {
+      const opDates = Array.from(new Set(queryAll('SELECT data_operacao FROM operacoes').map(r => toISODate(r.data_operacao)).filter(Boolean))).sort();
+      if (!opDates.length) return null;
+      const today = todayISO(0), start = profitRangeStart(range, opDates[0]);
+      const snapObj = readSnapshots(), snaps = Object.keys(snapObj).sort().map(d => ({ data: d, patrimonio: snapObj[d][0] }));
+      const snapMap = {}; snaps.forEach(s => { snapMap[s.data] = Number(s.patrimonio); });
+      snapMap[today] = lastPortfolio.patrimonio;   // hoje: valor ao vivo
+      const set = new Set([start, today]);
+      opDates.concat(snaps.map(s => s.data)).forEach(d => { if (d >= start && d <= today) set.add(d); });
+      const dates = Array.from(set).sort(), cache = {};
+      const investedAt = d => {
+        let key = ''; for (const od of opDates) { if (od <= d) key = od; else break; }
+        if (!key) return 0;
+        if (!(key in cache)) cache[key] = getConsolidatedPositions(null, key).filter(p => p.qtdAtual > 0).reduce((a, p) => a + p.valorInvestido, 0);
+        return cache[key];
+      };
+      return { dates, start, firstSnap: snaps.length ? snaps[0].data : null, invested: dates.map(investedAt), patr: dates.map(d => (snapMap[d] > 0 ? snapMap[d] : null)) };
+    }
+    function renderProfitChart() {
+      const canvas = document.getElementById('profitChart'); if (!canvas || !db) return;
+      document.querySelectorAll('#rangeChips button').forEach(b => {
+        const on = b.dataset.r === profitRange;
+        b.className = 'shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-semibold border transition ' + (on ? 'bg-emerald-500 border-emerald-500 text-slate-950' : 'border-slate-700 text-slate-300 hover:bg-slate-800');
+        b.setAttribute('aria-pressed', String(on));
+      });
+      if (profitChart) { profitChart.destroy(); profitChart = null; }
+      const wrap = document.getElementById('profitChartWrap'), note = document.getElementById('profitChartNote');
+      const s = buildProfitSeries(profitRange);
+      if (!s || typeof Chart === 'undefined') { if (wrap) wrap.classList.add('hidden'); if (note) note.classList.add('hidden'); return; }
+      wrap.classList.remove('hidden');
+      const n = s.dates.length, accent = lastPortfolio.patrimonio >= lastPortfolio.investido ? '16,185,129' : '244,63,94';
+      const fmtD = iso => `${iso.slice(8, 10)}/${iso.slice(5, 7)}`, radius = n <= 3 ? 3 : 0;
+      profitChart = new Chart(canvas.getContext('2d'), {
+        type: 'line',
+        data: { labels: s.dates.map(fmtD), datasets: [
+          { label: 'Investido', data: s.invested, borderColor: 'rgb(129,140,248)', borderWidth: 2, stepped: 'after', pointRadius: radius, pointHoverRadius: 4, fill: false },
+          { label: 'Patrimônio', data: s.patr, borderColor: `rgb(${accent})`, backgroundColor: `rgba(${accent},0.14)`, borderWidth: 2.5, tension: 0.25, spanGaps: true, pointRadius: Math.max(radius, 3), pointHoverRadius: 5, fill: true }
+        ] },
+        options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+          plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.parsed.y == null ? null : ` ${c.dataset.label}: ${isPrivacyMode ? 'R$ ••••' : formatMoney(c.parsed.y)}` } } },
+          scales: { x: { ticks: { color: themeRgb(400), font: { size: 11 }, maxTicksLimit: 4, maxRotation: 0 }, grid: { display: false } }, y: { display: false, grace: '10%' } } }
+      });
+      if (note) {
+        const show = Boolean(s.firstSnap) && s.firstSnap > s.start;
+        note.classList.toggle('hidden', !show);
+        if (show) note.textContent = `Histórico do patrimônio desde ${s.firstSnap.slice(8, 10)}/${s.firstSnap.slice(5, 7)}/${s.firstSnap.slice(0, 4)}: o app guarda um ponto por dia de uso.`;
+      }
     }
 
     let chartMode = (() => { try { return localStorage.getItem('ledgerly_chart_mode') === 'corretora' ? 'corretora' : 'ativo'; } catch (_) { return 'ativo'; } })();
@@ -1855,7 +1986,20 @@
     function updateQuotesLabel() {
       const el = document.getElementById('brapiLastSyncLabel'); if (!el || !db) return;
       const iso = getSetting('brapi_last_sync_iso'), old = getSetting('brapi_last_sync');
-      el.textContent = iso ? `Cotações atualizadas ${relTime(iso)}` : (old ? `Cotações: última atualização ${old}` : 'Cotações: toque em ↻ para atualizar');
+      if (iso) {
+        const d = new Date(iso), n = new Date();
+        const hm = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        const diff = Math.round((new Date(n.getFullYear(), n.getMonth(), n.getDate()) - new Date(d.getFullYear(), d.getMonth(), d.getDate())) / 86400000);
+        const dia = diff === 0 ? 'hoje' : diff === 1 ? 'ontem' : d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+        el.textContent = `Cotações atualizadas ${dia} às ${hm}`;
+      } else el.textContent = old ? `Cotações: última atualização ${old}` : 'Cotações ainda não atualizadas';
+    }
+    let lastQuoteTap = 0;
+    function onQuotesBlockTap() {
+      const wait = 30000 - (Date.now() - lastQuoteTap);
+      if (wait > 0) { showToast(`Aguarde ${Math.ceil(wait / 1000)} s para atualizar de novo.`, 'info'); return; }
+      lastQuoteTap = Date.now();
+      syncAllQuotesFromBrapi();
     }
     setInterval(() => { try { updateQuotesLabel(); } catch (_) {} }, 60000);
 
@@ -4058,8 +4202,8 @@
         for (const [k, v] of keep) if (v && !getSetting(k)) db.run('INSERT OR REPLACE INTO configuracoes_seguranca (chave, valor) VALUES (?, ?)', [k, v]);
         if (!getSetting('biometrics_cred_id')) db.run("INSERT OR REPLACE INTO configuracoes_seguranca (chave, valor) VALUES ('biometrics_enabled', '0')");
         await persistSQLiteToIndexedDB();
+        refreshAllViews();
       } finally { window.__ledgerlyApplying = false; }
-      refreshAllViews();
     }
 
     // Obtém (ou cria) a chave de criptografia deste aparelho
@@ -4168,8 +4312,9 @@
         if (action === 'upload') {
           const rev = hexOf(crypto.getRandomValues(new Uint8Array(8)));
           const sealed = await sealDb(sanitizedExport(raw), kd.key, kd.salt);
-          const meta = await driveUpload(sealed, { rev, salt: hexOf(kd.salt), ts: st.localChangedAt || new Date().toISOString() }, remote ? remote.id : null, token);
-          saveSyncState({ fileId: meta.id, baseRev: rev, syncedHash: localHash });
+          const upTs = st.localChangedAt || new Date().toISOString();
+          const meta = await driveUpload(sealed, { rev, salt: hexOf(kd.salt), ts: upTs }, remote ? remote.id : null, token);
+          saveSyncState({ fileId: meta.id, baseRev: rev, syncedHash: localHash, localChangedAt: upTs });
         } else if (action === 'download') {
           const bytes = (prefetched && prefetched.rev === remoteRev) ? prefetched.bytes : await openDb(await driveDownload(remote.id, token), kd.key);
           await applyRemoteDb(bytes);
@@ -4188,8 +4333,9 @@
     async function syncAfterPersist(data) {
       const st = syncState();
       if (!st.connected || window.__ledgerlyApplying) return;
+      const snapshotOnly = Boolean(window.__ledgerlySnapshotWrite);   // lido antes do await: a flag é limpa logo depois
       if ((await sha256Bytes(data)) === st.syncedHash) return;
-      saveSyncState({ localChangedAt: new Date().toISOString() });
+      if (!snapshotOnly) saveSyncState({ localChangedAt: new Date().toISOString() });
       syncPending = true; updateConnectionBadge();
       clearTimeout(syncTimer); syncTimer = setTimeout(() => syncNow(false), 4000);
     }
@@ -4259,6 +4405,7 @@
       try { await idbKv('del', 'conflict'); } catch (_) {}
       conflictInfo = null;
       try { localStorage.removeItem('ledgerly_pin_fails'); localStorage.removeItem('ledgerly_pin_lock'); } catch (_) {}
+      if (typeof clearSnapshots === 'function') clearSnapshots();
     }
     // scope: 'local' | 'cloud' | 'all'. A nuvem é apagada primeiro: se falhar, nada é apagado no aparelho.
     async function performDeleteDatabase(scope) {
@@ -4289,7 +4436,8 @@
     // Limpar: apaga os dados de investimentos e mantém PIN, token e configurações; guarda uma cópia para restaurar
     async function wipeAllData() {
       await saveConflictBackup(db.export(), 'limpeza');
-      db.run('DELETE FROM operacoes; DELETE FROM notas_corretagem; DELETE FROM proventos; DELETE FROM cotacoes_atuais; DELETE FROM corretoras;');
+      db.run('DELETE FROM operacoes; DELETE FROM notas_corretagem; DELETE FROM proventos; DELETE FROM cotacoes_atuais; DELETE FROM corretoras; DELETE FROM patrimonio_diario;');
+      clearSnapshots();
       await persistSQLiteToIndexedDB();
     }
     function renderSyncCard() {
