@@ -2,9 +2,17 @@
 //   - suba "version" e "build" (o build define o nome do cache do service worker);
 //   - acrescente uma entrada nova no INÍCIO de "entries" com as mudanças, em linguagem simples.
 globalThis.LEDGERLY_CHANGELOG = {
-  version: '1.3.0',
-  build: 22,
+  version: '1.3.1',
+  build: 23,
   entries: [
+    {
+      version: '1.3.1',
+      date: '2026-11-10',
+      notes: [
+        'Gráfico da Carteira: o eixo agora termina em “Atual” (última cotação conhecida) e a linha tracejada sai da data da última compra até ele, mesmo quando você compra no dia da atualização das cotações.',
+        'Os balões do gráfico somem sozinhos depois de alguns segundos.'
+      ]
+    },
     {
       version: '1.3.0',
       date: '2026-11-09',

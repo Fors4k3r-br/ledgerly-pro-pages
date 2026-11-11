@@ -1749,6 +1749,17 @@
 
     // ===== Gráfico de evolução: Investido x Patrimônio =====
     let profitChart = null, lastPortfolio = { patrimonio: 0, investido: 0 };
+    let chartTooltipHideMs = 4000;   // balões dos gráficos somem sozinhos depois deste tempo
+    // No toque, o balão do Chart.js ficaria aberto até tocar em outro lugar: este plugin o esconde depois de alguns segundos
+    function autoHideTooltipPlugin() {
+      return { id: 'autoHideTooltip',
+        afterEvent(chart, args) {
+          const e = args.event; if (!e || e.type === 'mouseout') return;
+          clearTimeout(chart.$hideTimer);
+          chart.$hideTimer = setTimeout(() => { try { chart.tooltip.setActiveElements([], { x: 0, y: 0 }); chart.setActiveElements([]); chart.update('none'); } catch (_) {} }, chartTooltipHideMs);
+        },
+        beforeDestroy(chart) { clearTimeout(chart.$hideTimer); } };
+    }
     const PROFIT_RANGES = ['tudo', '1s', '1m', 'mes', '6m', 'sem', '12m', 'ano'];
     let profitRange = (() => { try { const r = localStorage.getItem('ledgerly_profit_range'); return PROFIT_RANGES.includes(r) ? r : 'tudo'; } catch (_) { return 'tudo'; } })();
     function toISODate(s) {
@@ -1778,7 +1789,7 @@
       const opDates = Array.from(new Set(queryAll('SELECT data_operacao FROM operacoes').map(r => toISODate(r.data_operacao)).filter(Boolean))).sort();
       if (!opDates.length) return null;
       const today = todayISO(0), start = profitRangeStart(range, opDates[0]);
-      const set = new Set([start, today]);
+      const set = new Set([start]);
       opDates.forEach(d => { if (d >= start && d <= today) set.add(d); });
       const dates = Array.from(set).sort(), cache = {};
       const investedAt = d => {
@@ -1787,9 +1798,10 @@
         if (!(key in cache)) cache[key] = getConsolidatedPositions(null, key).filter(p => p.qtdAtual > 0).reduce((a, p) => a + p.valorInvestido, 0);
         return cache[key];
       };
-      const patr = dates.map(() => null);
-      if (lastPortfolio.patrimonio > 0) patr[dates.length - 1] = lastPortfolio.patrimonio;
-      return { dates, start, invested: dates.map(investedAt), patr };
+      const invested = dates.map(investedAt);
+      // "Atual" = patrimônio com a última cotação conhecida; a linha tracejada sai da última data do eixo (a última compra da janela) até ele
+      const atual = lastPortfolio.patrimonio > 0 ? { from: invested[invested.length - 1], patr: lastPortfolio.patrimonio } : null;
+      return { dates, start, invested, atual };
     }
     function renderProfitChart() {
       const canvas = document.getElementById('profitChart'); if (!canvas || !db) return;
@@ -1803,24 +1815,39 @@
       const s = buildProfitSeries(profitRange);
       if (!s || typeof Chart === 'undefined') { if (wrap) wrap.classList.add('hidden'); if (note) note.classList.add('hidden'); return; }
       wrap.classList.remove('hidden');
-      const n = s.dates.length, accent = lastPortfolio.patrimonio >= lastPortfolio.investido ? '16,185,129' : '244,63,94';
+      const n = s.dates.length, hasAtual = !!s.atual;
+      const accent = lastPortfolio.patrimonio >= lastPortfolio.investido ? '16,185,129' : '244,63,94';
       const fmtD = iso => `${iso.slice(8, 10)}/${iso.slice(5, 7)}`;
-      // Trecho tracejado entre o investido e o patrimônio de hoje: a distância é o resultado em aberto
-      const gapPlugin = { id: 'gapToPatrimonio', afterDatasetsDraw(chart) {
-        const i = chart.data.labels.length - 1, a = chart.getDatasetMeta(0).data[i], b = chart.getDatasetMeta(1).data[i];
-        if (!a || !b) return;
-        const c = chart.ctx; c.save(); c.setLineDash([4, 3]); c.strokeStyle = `rgb(${accent})`; c.lineWidth = 2;
-        c.beginPath(); c.moveTo(a.x, a.y); c.lineTo(b.x, b.y); c.stroke(); c.restore();
-      } };
+      const money = v => isPrivacyMode ? 'R$ ••••' : formatMoney(v);
+      const iso = getSetting('brapi_last_sync_iso'); let quoteTime = '';
+      if (iso) { const d = new Date(iso); if (!isNaN(d)) quoteTime = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; }
+      const labels = s.dates.map(fmtD).concat(hasAtual ? ['Atual'] : []);
+      const solid = s.invested.concat(hasAtual ? [null] : []);
+      const dashed = hasAtual ? s.dates.map((_, i) => (i === n - 1 ? s.atual.from : null)).concat([s.atual.patr]) : labels.map(() => null);
+      // Os balões somem sozinhos depois de alguns segundos (no toque eles ficariam abertos até tocar em outro lugar)
+      const autoHide = autoHideTooltipPlugin();
+      const lastIdx = labels.length - 1, step = Math.max(1, Math.ceil(lastIdx / 3));
       profitChart = new Chart(canvas.getContext('2d'), {
-        type: 'line', plugins: [gapPlugin],
-        data: { labels: s.dates.map(fmtD), datasets: [
-          { label: 'Investido', data: s.invested, borderColor: 'rgb(129,140,248)', borderWidth: 2, stepped: 'after', pointRadius: n <= 3 ? 3 : 0, pointHoverRadius: 4, fill: false },
-          { label: 'Patrimônio atual', data: s.patr, borderColor: `rgb(${accent})`, backgroundColor: `rgb(${accent})`, showLine: false, pointRadius: 5, pointHoverRadius: 6, pointBorderColor: 'rgb(255,255,255)', pointBorderWidth: 1.5 }
+        type: 'line', plugins: [autoHide],
+        data: { labels, datasets: [
+          { label: 'Investido', data: solid, borderColor: 'rgb(129,140,248)', borderWidth: 2, stepped: 'after', pointRadius: n <= 3 ? 3 : 0, pointHoverRadius: 4, fill: false },
+          { label: 'Patrimônio atual', data: dashed, borderColor: `rgb(${accent})`, backgroundColor: `rgb(${accent})`, borderWidth: 2, borderDash: [6, 4], spanGaps: true, fill: false,
+            pointRadius: c => (hasAtual && c.dataIndex === n ? 5 : 0), pointHoverRadius: c => (c.dataIndex === n ? 6 : 0), pointBackgroundColor: `rgb(${accent})`, pointBorderColor: 'rgb(255,255,255)', pointBorderWidth: 1.5 }
         ] },
-        options: { responsive: true, maintainAspectRatio: false, layout: { padding: { right: 8, top: 8 } }, interaction: { mode: 'index', intersect: false },
-          plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.parsed.y == null ? null : ` ${c.dataset.label}: ${isPrivacyMode ? 'R$ ••••' : formatMoney(c.parsed.y)}` } } },
-          scales: { x: { ticks: { color: themeRgb(400), font: { size: 11 }, maxTicksLimit: 4, maxRotation: 0 }, grid: { display: false } }, y: { display: false, grace: '10%' } } }
+        options: { responsive: true, maintainAspectRatio: false, layout: { padding: { right: 10, top: 8 } }, interaction: { mode: 'index', intersect: false },
+          plugins: { legend: { display: false }, tooltip: {
+            filter: it => !(it.datasetIndex === 1 && it.dataIndex !== n),
+            callbacks: {
+              title: items => (hasAtual && items[0].dataIndex === n ? 'Atual' + (quoteTime ? ' · cotações de ' + quoteTime : '') : items[0].label),
+              label: c => (c.parsed.y == null ? null : ` ${c.dataset.label}: ${money(c.parsed.y)}`),
+              afterLabel: c => {
+                if (!(hasAtual && c.datasetIndex === 1 && c.dataIndex === n) || isPrivacyMode) return '';
+                const res = s.atual.patr - s.atual.from, pct = s.atual.from > 0 ? (res / s.atual.from) * 100 : 0;
+                return ` Resultado: ${res >= 0 ? '+' : ''}${formatMoney(res)} (${res >= 0 ? '+' : ''}${formatPercent(pct)})`;
+              } } } },
+          scales: { x: { ticks: { color: themeRgb(400), font: { size: 11 }, autoSkip: false, maxRotation: 0,
+              callback(v, i) { return (i === 0 || i === lastIdx || (i % step === 0 && lastIdx - i >= step)) ? this.getLabelForValue(v) : ''; } }, grid: { display: false } },
+            y: { display: false, grace: '10%' } } }
       });
     }
 
@@ -1881,7 +1908,7 @@
       const ctx = document.getElementById('portfolioDonutChart').getContext('2d');
       if (portfolioChart) portfolioChart.destroy();
       portfolioChart = new Chart(ctx, {
-        type: 'doughnut',
+        type: 'doughnut', plugins: [autoHideTooltipPlugin()],
         data: { labels: slices.map(s => s.label), datasets: [{ data: slices.map(s => Number(s.value.toFixed(2))), backgroundColor: slices.map(colorOf), borderColor: themeRgb(925), borderWidth: 3, hoverOffset: 6 }] },
         options: {
           responsive: true, maintainAspectRatio: false, cutout: '68%',
@@ -3874,7 +3901,7 @@
       if (provChart) { provChart.destroy(); provChart = null; }
       if (total <= 0) return;
       provChart = new Chart(canvas.getContext('2d'), {
-        type: 'bar',
+        type: 'bar', plugins: [autoHideTooltipPlugin()],
         data: { labels: months.map(m => m.label), datasets: [{ data: months.map(m => Number(m.v.toFixed(2))), backgroundColor: '#10b981', borderRadius: 6, maxBarThickness: 22 }] },
         options: { responsive: true, maintainAspectRatio: false,
           plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ` ${isPrivacyMode ? 'R$ ••••' : formatMoney(c.parsed.y)}` } } },
