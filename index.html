@@ -34,7 +34,11 @@
   <style>
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
     :focus-visible { outline: 2px solid #34d399; outline-offset: 2px; }
+    html, body, button, a, input, select { touch-action: manipulation; }   /* sem zoom por toque duplo: ele desloca a barra fixa */
+    html { height: 100%; }
+    #appScroll { overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; }   /* a rolagem acontece aqui dentro: a barra inferior não participa dela */
     body {
+      height: 100vh; height: 100dvh;
       background-color: rgb(var(--s-950));
       color: rgb(var(--s-100));
       -webkit-tap-highlight-color: transparent;
@@ -66,7 +70,7 @@
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between pb-24 selection:bg-emerald-500 selection:text-slate-950">
+<body class="flex flex-col overflow-hidden selection:bg-emerald-500 selection:text-slate-950">
 
   <!-- ================= TELA DE BLOQUEIO (LOCK SCREEN) ================= -->
   <div id="lockScreen" class="fixed inset-0 z-[100] bg-slate-950 flex flex-col items-center justify-center p-6 hidden">
@@ -115,7 +119,7 @@
   </div>
 
   <!-- ================= TOP BAR ================= -->
-  <header class="sticky top-0 z-30 bg-slate-950/90 backdrop-blur-md border-b border-slate-800/80 px-4 py-3.5">
+  <header class="relative shrink-0 z-30 bg-slate-950/90 backdrop-blur-md border-b border-slate-800/80 px-4 py-3.5">
     <div class="max-w-3xl mx-auto flex items-center justify-between">
       <div class="flex items-center gap-2.5">
         <img src="./icons/icon-192.png" alt="" width="36" height="36" class="w-9 h-9 rounded-xl shadow-md shadow-emerald-500/20" />
@@ -153,7 +157,8 @@
   </header>
 
   <!-- ================= CONTEÚDO PRINCIPAL ================= -->
-  <main class="flex-1 max-w-3xl w-full mx-auto px-4 pt-4 space-y-6">
+  <div id="appScroll" class="flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
+  <main class="max-w-3xl w-full mx-auto px-4 pt-4 pb-6 space-y-6">
 
     <!-- ===============================================================
          ABA 1: CARTEIRA (RESUMO + GRÁFICO + BOTÃO DETALHAR POSIÇÕES)
@@ -184,12 +189,12 @@
           <h2 class="text-base font-bold text-white">Evolução</h2>
           <div class="flex items-center gap-3 text-[11px] text-slate-400">
             <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full" style="background:rgb(129,140,248)"></span>Investido</span>
-            <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400"></span>Patrimônio</span>
+            <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400"></span>Patrimônio atual</span>
           </div>
         </div>
         <div id="profitChartWrap" class="relative h-52 w-full"><canvas id="profitChart" aria-label="Gráfico de evolução do investido e do patrimônio"></canvas></div>
-        <p id="profitChartNote" class="hidden text-[11px] text-slate-500"></p>
         <div id="rangeChips" class="flex gap-1.5 overflow-x-auto -mx-1 px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" role="group" aria-label="Período do gráfico">
+          <button type="button" data-r="tudo" onclick="setProfitRange('tudo')" class="shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-700 text-slate-300">Desde o início</button>
           <button type="button" data-r="1s" onclick="setProfitRange('1s')" class="shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-700 text-slate-300">1 semana</button>
           <button type="button" data-r="1m" onclick="setProfitRange('1m')" class="shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-700 text-slate-300">1 mês</button>
           <button type="button" data-r="mes" onclick="setProfitRange('mes')" class="shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-700 text-slate-300">No mês</button>
@@ -197,7 +202,6 @@
           <button type="button" data-r="sem" onclick="setProfitRange('sem')" class="shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-700 text-slate-300">No semestre</button>
           <button type="button" data-r="12m" onclick="setProfitRange('12m')" class="shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-700 text-slate-300">12 meses</button>
           <button type="button" data-r="ano" onclick="setProfitRange('ano')" class="shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-700 text-slate-300">No ano</button>
-          <button type="button" data-r="tudo" onclick="setProfitRange('tudo')" class="shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-700 text-slate-300">Desde o início</button>
         </div>
       </div>
 
@@ -1218,6 +1222,7 @@
     </section>
 
   </main>
+  </div>
 
   <!-- ================= MODAL: CALCULADORA INTEGRADA ================= -->
   <div id="calculatorModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
@@ -1328,7 +1333,7 @@
   <div id="toastContainer" class="fixed top-16 right-4 left-4 sm:left-auto sm:w-80 z-[95] pointer-events-none space-y-2"></div>
 
   <!-- ================= NAVEGAÇÃO INFERIOR (3 ABAS PRINCIPAIS VISÍVEIS) ================= -->
-  <nav class="fixed bottom-0 inset-x-0 z-40 bg-slate-950/95 backdrop-blur-lg border-t border-slate-800/90 px-2 py-1.5">
+  <nav class="relative shrink-0 z-40 bg-slate-950 border-t border-slate-800/90 px-2 pt-1.5" style="padding-bottom:max(0.375rem, env(safe-area-inset-bottom))">
     <div class="max-w-md mx-auto grid grid-cols-5 gap-1 items-end">
       <button onclick="switchTab('carteira')" id="nav-carteira" class="nav-item flex flex-col items-center justify-center py-2 rounded-2xl text-emerald-400 bg-emerald-500/10 font-semibold transition">
         <i data-lucide="pie-chart" class="w-5 h-5"></i>
@@ -1484,11 +1489,7 @@
           cnpj TEXT UNIQUE
         );
 
-        CREATE TABLE IF NOT EXISTS patrimonio_diario (
-          data TEXT PRIMARY KEY,
-          patrimonio REAL NOT NULL,
-          investido REAL NOT NULL
-        );
+        DROP TABLE IF EXISTS patrimonio_diario;
 
         CREATE TABLE IF NOT EXISTS configuracoes_seguranca (
           chave TEXT PRIMARY KEY,
@@ -1496,7 +1497,7 @@
         );
       `);
       ensureCorretoraColumns();
-      if (typeof migrateLocalSnapshots === 'function') migrateLocalSnapshots();
+      try { localStorage.removeItem('ledgerly_patrimonio_diario'); } catch (_) {}
     }
 
     // Corretora vinculada a cada nota e a cada operação (migração segura de bancos antigos)
@@ -1732,7 +1733,6 @@
       rtEl.textContent = `${sg(rentTotal)}${formatPercent(rentTotal)}`;
       rtEl.className = 'text-sm font-bold font-mono text-right ' + (rentTotal >= 0 ? 'text-emerald-400' : 'text-rose-400');
       lastPortfolio = { patrimonio: patrimonioAtual, investido: totalInvestido };
-      if (patrimonioAtual > 0) savePortfolioSnapshot(patrimonioAtual, totalInvestido);
       renderProfitChart();
       renderOnboarding();
       updateQuotesLabel();
@@ -1749,7 +1749,7 @@
 
     // ===== Gráfico de evolução: Investido x Patrimônio =====
     let profitChart = null, lastPortfolio = { patrimonio: 0, investido: 0 };
-    const PROFIT_RANGES = ['1s', '1m', 'mes', '6m', 'sem', '12m', 'ano', 'tudo'];
+    const PROFIT_RANGES = ['tudo', '1s', '1m', 'mes', '6m', 'sem', '12m', 'ano'];
     let profitRange = (() => { try { const r = localStorage.getItem('ledgerly_profit_range'); return PROFIT_RANGES.includes(r) ? r : 'tudo'; } catch (_) { return 'tudo'; } })();
     function toISODate(s) {
       s = String(s || '');
@@ -1762,7 +1762,8 @@
       try { localStorage.setItem('ledgerly_profit_range', profitRange); } catch (_) {}
       renderProfitChart();
       const b = document.querySelector(`#rangeChips button[data-r="${profitRange}"]`);
-      if (b && b.scrollIntoView) b.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
+      const box = document.getElementById('rangeChips');   // rola só o carrossel (nunca a página)
+      if (b && box && box.scrollTo) box.scrollTo({ left: Math.max(0, b.getBoundingClientRect().left - box.getBoundingClientRect().left + box.scrollLeft - (box.clientWidth - b.offsetWidth) / 2), behavior: 'smooth' });
     }
     function profitRangeStart(r, firstISO) {
       const t = new Date(), y = t.getFullYear(), m = t.getMonth(), dd = t.getDate();
@@ -1772,41 +1773,13 @@
       return iso > firstISO ? iso : firstISO;   // o gráfico começa na primeira operação
     }
     // Uma foto por dia: o patrimônio do passado não pode ser reconstruído (o app só conhece o preço de hoje)
-    const SNAP_KEY = 'ledgerly_patrimonio_diario';   // formato antigo (só neste aparelho): é migrado para o banco
-    function readSnapshots() {
-      const o = {};
-      queryAll('SELECT data, patrimonio, investido FROM patrimonio_diario ORDER BY data').forEach(r => { o[r.data] = [Number(r.patrimonio), Number(r.investido)]; });
-      return o;
-    }
-    function clearSnapshots() { try { localStorage.removeItem(SNAP_KEY); } catch (_) {} }
-    function migrateLocalSnapshots() {
-      try {
-        const raw = localStorage.getItem(SNAP_KEY); if (!raw) return;
-        const old = JSON.parse(raw) || {};
-        Object.keys(old).forEach(d => { if (Array.isArray(old[d])) db.run('INSERT OR IGNORE INTO patrimonio_diario (data, patrimonio, investido) VALUES (?, ?, ?)', [d, Number(old[d][0]) || 0, Number(old[d][1]) || 0]); });
-        localStorage.removeItem(SNAP_KEY);
-      } catch (_) {}
-    }
-    // Uma foto por dia, guardada no banco (assim vai para o Drive e para os backups): o patrimônio do passado não pode ser reconstruído
-    function savePortfolioSnapshot(patrimonio, investido) {
-      if (window.__ledgerlyApplying) return false;
-      const d = todayISO(0), p = Math.round(patrimonio * 100) / 100, i = Math.round(investido * 100) / 100;
-      const prev = queryAll('SELECT patrimonio, investido FROM patrimonio_diario WHERE data = ?', [d])[0];
-      if (prev && Math.abs(prev.patrimonio - p) < 0.005 && Math.abs(prev.investido - i) < 0.005) return false;
-      db.run('INSERT OR REPLACE INTO patrimonio_diario (data, patrimonio, investido) VALUES (?, ?, ?)', [d, p, i]);
-      window.__ledgerlySnapshotWrite = true;   // só uma foto automática: não conta como edição do usuário na regra de conflito
-      persistSQLiteToIndexedDB().catch(() => {}).finally(() => { window.__ledgerlySnapshotWrite = false; });   // grava e dispara a sincronização
-      return true;
-    }
+    // Linha do investido: degraus nas datas das compras. Único ponto de mercado: o patrimônio de hoje (último preço conhecido de cada ativo)
     function buildProfitSeries(range) {
       const opDates = Array.from(new Set(queryAll('SELECT data_operacao FROM operacoes').map(r => toISODate(r.data_operacao)).filter(Boolean))).sort();
       if (!opDates.length) return null;
       const today = todayISO(0), start = profitRangeStart(range, opDates[0]);
-      const snapObj = readSnapshots(), snaps = Object.keys(snapObj).sort().map(d => ({ data: d, patrimonio: snapObj[d][0] }));
-      const snapMap = {}; snaps.forEach(s => { snapMap[s.data] = Number(s.patrimonio); });
-      snapMap[today] = lastPortfolio.patrimonio;   // hoje: valor ao vivo
       const set = new Set([start, today]);
-      opDates.concat(snaps.map(s => s.data)).forEach(d => { if (d >= start && d <= today) set.add(d); });
+      opDates.forEach(d => { if (d >= start && d <= today) set.add(d); });
       const dates = Array.from(set).sort(), cache = {};
       const investedAt = d => {
         let key = ''; for (const od of opDates) { if (od <= d) key = od; else break; }
@@ -1814,7 +1787,9 @@
         if (!(key in cache)) cache[key] = getConsolidatedPositions(null, key).filter(p => p.qtdAtual > 0).reduce((a, p) => a + p.valorInvestido, 0);
         return cache[key];
       };
-      return { dates, start, firstSnap: snaps.length ? snaps[0].data : null, invested: dates.map(investedAt), patr: dates.map(d => (snapMap[d] > 0 ? snapMap[d] : null)) };
+      const patr = dates.map(() => null);
+      if (lastPortfolio.patrimonio > 0) patr[dates.length - 1] = lastPortfolio.patrimonio;
+      return { dates, start, invested: dates.map(investedAt), patr };
     }
     function renderProfitChart() {
       const canvas = document.getElementById('profitChart'); if (!canvas || !db) return;
@@ -1829,22 +1804,24 @@
       if (!s || typeof Chart === 'undefined') { if (wrap) wrap.classList.add('hidden'); if (note) note.classList.add('hidden'); return; }
       wrap.classList.remove('hidden');
       const n = s.dates.length, accent = lastPortfolio.patrimonio >= lastPortfolio.investido ? '16,185,129' : '244,63,94';
-      const fmtD = iso => `${iso.slice(8, 10)}/${iso.slice(5, 7)}`, radius = n <= 3 ? 3 : 0;
+      const fmtD = iso => `${iso.slice(8, 10)}/${iso.slice(5, 7)}`;
+      // Trecho tracejado entre o investido e o patrimônio de hoje: a distância é o resultado em aberto
+      const gapPlugin = { id: 'gapToPatrimonio', afterDatasetsDraw(chart) {
+        const i = chart.data.labels.length - 1, a = chart.getDatasetMeta(0).data[i], b = chart.getDatasetMeta(1).data[i];
+        if (!a || !b) return;
+        const c = chart.ctx; c.save(); c.setLineDash([4, 3]); c.strokeStyle = `rgb(${accent})`; c.lineWidth = 2;
+        c.beginPath(); c.moveTo(a.x, a.y); c.lineTo(b.x, b.y); c.stroke(); c.restore();
+      } };
       profitChart = new Chart(canvas.getContext('2d'), {
-        type: 'line',
+        type: 'line', plugins: [gapPlugin],
         data: { labels: s.dates.map(fmtD), datasets: [
-          { label: 'Investido', data: s.invested, borderColor: 'rgb(129,140,248)', borderWidth: 2, stepped: 'after', pointRadius: radius, pointHoverRadius: 4, fill: false },
-          { label: 'Patrimônio', data: s.patr, borderColor: `rgb(${accent})`, backgroundColor: `rgba(${accent},0.14)`, borderWidth: 2.5, tension: 0.25, spanGaps: true, pointRadius: Math.max(radius, 3), pointHoverRadius: 5, fill: true }
+          { label: 'Investido', data: s.invested, borderColor: 'rgb(129,140,248)', borderWidth: 2, stepped: 'after', pointRadius: n <= 3 ? 3 : 0, pointHoverRadius: 4, fill: false },
+          { label: 'Patrimônio atual', data: s.patr, borderColor: `rgb(${accent})`, backgroundColor: `rgb(${accent})`, showLine: false, pointRadius: 5, pointHoverRadius: 6, pointBorderColor: 'rgb(255,255,255)', pointBorderWidth: 1.5 }
         ] },
-        options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+        options: { responsive: true, maintainAspectRatio: false, layout: { padding: { right: 8, top: 8 } }, interaction: { mode: 'index', intersect: false },
           plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.parsed.y == null ? null : ` ${c.dataset.label}: ${isPrivacyMode ? 'R$ ••••' : formatMoney(c.parsed.y)}` } } },
           scales: { x: { ticks: { color: themeRgb(400), font: { size: 11 }, maxTicksLimit: 4, maxRotation: 0 }, grid: { display: false } }, y: { display: false, grace: '10%' } } }
       });
-      if (note) {
-        const show = Boolean(s.firstSnap) && s.firstSnap > s.start;
-        note.classList.toggle('hidden', !show);
-        if (show) note.textContent = `Histórico do patrimônio desde ${s.firstSnap.slice(8, 10)}/${s.firstSnap.slice(5, 7)}/${s.firstSnap.slice(0, 4)}: o app guarda um ponto por dia de uso.`;
-      }
     }
 
     let chartMode = (() => { try { return localStorage.getItem('ledgerly_chart_mode') === 'corretora' ? 'corretora' : 'ativo'; } catch (_) { return 'ativo'; } })();
@@ -2824,6 +2801,69 @@
       renderSavedNotesHistory();
     }
 
+    function base64ToBytes(b64) { const bin = atob(b64); const out = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i); return out; }
+    async function renderPdfPages(container, bytes) {
+      container.textContent = '';
+      if (typeof pdfjsLib === 'undefined' || !pdfjsLib.getDocument) throw new Error('visualizador indisponível');
+      const pdf = await pdfjsLib.getDocument({ data: bytes.slice() }).promise;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2), cw = Math.max(container.clientWidth, 280);
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i), base = page.getViewport({ scale: 1 }), vp = page.getViewport({ scale: (cw / base.width) * dpr });
+        const canvas = document.createElement('canvas'), ctx = canvas.getContext('2d');
+        if (!ctx) throw new Error('canvas indisponível');
+        canvas.width = Math.floor(vp.width); canvas.height = Math.floor(vp.height); canvas.className = 'w-full h-auto rounded-lg bg-white';
+        container.appendChild(canvas);
+        await page.render({ canvasContext: ctx, viewport: vp }).promise;
+      }
+    }
+    function downloadPdfBytes(bytes, name) {
+      const url = URL.createObjectURL(new Blob([bytes], { type: 'application/pdf' }));
+      const a = document.createElement('a'); a.href = url; a.download = name || 'nota-de-corretagem.pdf';
+      document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 5000);
+    }
+    // Tela de leitura da nota salva: operações, taxas e o PDF original
+    function viewSavedNote(id) {
+      const n = queryAll(`SELECT id, numero_controle, data_pregao, nome_arquivo, valor_operacoes, total_cblc_bruto, taxa_cblc, taxa_bovespa, taxa_corretagem, valor_liquido_nota, arquivo_base64,
+        (SELECT nome FROM corretoras c WHERE c.id = notas_corretagem.corretora_id) AS corretora_nome FROM notas_corretagem WHERE id = ?`, [Number(id)])[0];
+      if (!n) { showToast('Nota não encontrada.', 'error'); return; }
+      const ops = queryAll('SELECT tipo_ordem, ticker, quantidade, preco_unitario, valor_operacao FROM operacoes WHERE nota_id = ? ORDER BY id', [n.id]);
+      const el = (tag, cls, txt) => { const x = document.createElement(tag); if (cls) x.className = cls; if (txt != null) x.textContent = txt; return x; };
+      const row = (l, v, strong) => { const r = el('div', 'flex items-baseline justify-between gap-3 py-1.5'); r.append(el('span', 'text-xs text-slate-400', l), el('span', 'text-xs font-mono text-right ' + (strong ? 'font-bold text-white' : 'text-slate-200'), v)); return r; };
+      const old = document.getElementById('noteViewer'); if (old) old.remove();
+      const ov = el('div', 'fixed inset-0 z-[150] bg-slate-950 overflow-y-auto'); ov.id = 'noteViewer'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true');
+      const wrap = el('div', 'max-w-md mx-auto px-4 pb-10 space-y-5');
+      const head = el('div', 'sticky top-0 z-10 -mx-4 px-4 py-3 bg-slate-950/95 backdrop-blur border-b border-slate-800 flex items-center justify-between gap-3');
+      const ttl = el('div', 'min-w-0'); ttl.append(el('p', 'text-sm font-bold text-white truncate', 'Nota ' + n.numero_controle), el('p', 'text-[11px] text-slate-400 truncate', `Pregão ${n.data_pregao} · ${n.corretora_nome || 'Corretora não informada'}`));
+      const close = el('button', 'shrink-0 px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold', 'Fechar'); close.type = 'button';
+      const shut = () => { ov.remove(); document.body.style.overflow = ''; };
+      close.onclick = shut; head.append(ttl, close);
+      const secOps = el('section', 'space-y-1'); secOps.append(el('h3', 'text-[11px] font-bold uppercase tracking-wider text-slate-500', `Operações (${ops.length})`));
+      const list = el('div', 'divide-y divide-slate-800/70 rounded-2xl bg-slate-900/70 border border-slate-800 px-3');
+      if (!ops.length) list.append(el('p', 'py-3 text-xs text-slate-500', 'Nenhuma operação vinculada a esta nota.'));
+      ops.forEach(o => {
+        const r = el('div', 'flex items-center justify-between gap-3 py-2.5');
+        const l = el('div', 'flex items-center gap-2 min-w-0'); l.append(el('span', 'px-1.5 py-0.5 rounded text-[11px] font-semibold ' + (o.tipo_ordem === 'C' ? 'bg-slate-800 text-slate-200' : 'bg-amber-500/20 text-amber-300'), o.tipo_ordem === 'C' ? 'Compra' : 'Venda'), el('span', 'font-mono font-bold text-sm text-white truncate', o.ticker));
+        const rt = el('div', 'text-right shrink-0'); rt.append(el('p', 'text-xs font-mono text-slate-300', `${formatNumber(o.quantidade)} × ${formatMoney(o.preco_unitario)}`), el('p', 'text-xs font-mono font-bold text-white', formatMoney(o.valor_operacao)));
+        r.append(l, rt); list.append(r);
+      });
+      secOps.append(list);
+      const secTot = el('section', 'space-y-1'); secTot.append(el('h3', 'text-[11px] font-bold uppercase tracking-wider text-slate-500', 'Valores da nota'));
+      const tot = el('div', 'divide-y divide-slate-800/70 rounded-2xl bg-slate-900/70 border border-slate-800 px-3');
+      tot.append(row('Valor das operações', formatMoney(n.valor_operacoes)), row('Total CBLC bruto', formatMoney(n.total_cblc_bruto)), row('Taxa CBLC', formatMoney(n.taxa_cblc)), row('Taxa Bovespa', formatMoney(n.taxa_bovespa)), row('Corretagem / despesas', formatMoney(n.taxa_corretagem)), row('Líquido da nota', formatMoney(n.valor_liquido_nota), true));
+      secTot.append(tot);
+      const secPdf = el('section', 'space-y-2'); const ph = el('div', 'flex items-center justify-between gap-3'); ph.append(el('h3', 'text-[11px] font-bold uppercase tracking-wider text-slate-500', 'PDF original'));
+      const box = el('div', 'space-y-3');
+      if (n.arquivo_base64) {
+        const dl = el('button', 'px-3 py-1.5 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-500/30 text-indigo-200 text-xs font-semibold', 'Baixar PDF'); dl.type = 'button';
+        let bytes = null; try { bytes = base64ToBytes(n.arquivo_base64); } catch (_) {}
+        dl.onclick = () => { if (bytes) downloadPdfBytes(bytes, n.nome_arquivo); else showToast('PDF indisponível.', 'error'); };
+        ph.append(dl); box.append(el('p', 'text-xs text-slate-500', 'Carregando PDF…'));
+        secPdf.append(ph, box);
+        setTimeout(() => { if (!bytes) { box.textContent = 'Não foi possível ler o PDF guardado.'; return; }
+          renderPdfPages(box, bytes).catch(() => { box.textContent = ''; box.append(el('p', 'text-xs text-slate-500', 'Não foi possível exibir o PDF aqui. Use “Baixar PDF” para abrir em outro aplicativo.')); }); }, 30);
+      } else { box.append(el('p', 'text-xs text-slate-500', 'O PDF original não está guardado nesta nota.')); secPdf.append(ph, box); }
+      wrap.append(head, secOps, secTot, secPdf); ov.append(wrap); document.body.append(ov); document.body.style.overflow = 'hidden';
+    }
     function renderSavedNotesHistory() {
       const listEl = document.getElementById('savedNotesList');
       const countBadge = document.getElementById('savedNotesCountBadge');
@@ -2873,6 +2913,10 @@
                   <span class="text-[11px] text-slate-400 block">Líquido da Nota</span>
                   <strong class="font-mono text-white">${formatMoney(n.valor_liquido_nota)}</strong>
                 </div>
+                <button type="button" onclick="viewSavedNote(${Number(n.id)})"
+                  class="p-2 rounded-xl bg-indigo-500/15 hover:bg-indigo-500/25 text-indigo-300 transition" title="Ver nota" aria-label="Ver nota ${escapeSavedNoteText(n.numero_controle)}">
+                  <i data-lucide="eye" class="w-4 h-4"></i>
+                </button>
                 <button type="button" onclick="deleteSavedNote(${Number(n.id)})"
                   class="p-2 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 transition" title="Excluir Nota e suas Operações" aria-label="Excluir nota ${escapeSavedNoteText(n.numero_controle)}">
                   <i data-lucide="trash-2" class="w-4 h-4"></i>
@@ -3654,7 +3698,7 @@
         }
       });
 
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      { const sc = document.getElementById('appScroll'); (sc && sc.scrollTo ? sc : window).scrollTo({ top: 0, behavior: 'smooth' }); }
       refreshAllViews();
     }
 
@@ -4333,9 +4377,8 @@
     async function syncAfterPersist(data) {
       const st = syncState();
       if (!st.connected || window.__ledgerlyApplying) return;
-      const snapshotOnly = Boolean(window.__ledgerlySnapshotWrite);   // lido antes do await: a flag é limpa logo depois
       if ((await sha256Bytes(data)) === st.syncedHash) return;
-      if (!snapshotOnly) saveSyncState({ localChangedAt: new Date().toISOString() });
+      saveSyncState({ localChangedAt: new Date().toISOString() });
       syncPending = true; updateConnectionBadge();
       clearTimeout(syncTimer); syncTimer = setTimeout(() => syncNow(false), 4000);
     }
@@ -4405,7 +4448,6 @@
       try { await idbKv('del', 'conflict'); } catch (_) {}
       conflictInfo = null;
       try { localStorage.removeItem('ledgerly_pin_fails'); localStorage.removeItem('ledgerly_pin_lock'); } catch (_) {}
-      if (typeof clearSnapshots === 'function') clearSnapshots();
     }
     // scope: 'local' | 'cloud' | 'all'. A nuvem é apagada primeiro: se falhar, nada é apagado no aparelho.
     async function performDeleteDatabase(scope) {
@@ -4436,8 +4478,7 @@
     // Limpar: apaga os dados de investimentos e mantém PIN, token e configurações; guarda uma cópia para restaurar
     async function wipeAllData() {
       await saveConflictBackup(db.export(), 'limpeza');
-      db.run('DELETE FROM operacoes; DELETE FROM notas_corretagem; DELETE FROM proventos; DELETE FROM cotacoes_atuais; DELETE FROM corretoras; DELETE FROM patrimonio_diario;');
-      clearSnapshots();
+      db.run('DELETE FROM operacoes; DELETE FROM notas_corretagem; DELETE FROM proventos; DELETE FROM cotacoes_atuais; DELETE FROM corretoras;');
       await persistSQLiteToIndexedDB();
     }
     function renderSyncCard() {

@@ -2,9 +2,19 @@
 //   - suba "version" e "build" (o build define o nome do cache do service worker);
 //   - acrescente uma entrada nova no INÍCIO de "entries" com as mudanças, em linguagem simples.
 globalThis.LEDGERLY_CHANGELOG = {
-  version: '1.2.0',
-  build: 21,
+  version: '1.3.0',
+  build: 22,
   entries: [
+    {
+      version: '1.3.0',
+      date: '2026-11-09',
+      notes: [
+        'Gráfico da Carteira simplificado: a linha do investido segue as datas das suas compras e o último ponto é o patrimônio atual (último preço conhecido). O banco não guarda mais pontos diários.',
+        'O filtro "Desde o início" agora é o primeiro da lista.',
+        'Notas de corretagem: novo botão com o ícone de olho (Ver nota) mostra as operações, as taxas e o PDF original, com opção de baixar.',
+        'Barra de menu inferior refeita: agora ela fica fora da área de rolagem, então não se desloca mais ao detalhar um ativo em Meus ativos.'
+      ]
+    },
     {
       version: '1.2.0',
       date: '2026-11-07',
