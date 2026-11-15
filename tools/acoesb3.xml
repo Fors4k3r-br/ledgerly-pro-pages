@@ -1,0 +1,2915 @@
+<?xml version="1.0" ?>
+<ClassificacaoSetorial>
+  <Empresa>
+    <Setor>Petróleo, Gás e Biocombustíveis</Setor>
+    <Subsetor>Petróleo, Gás e Biocombustíveis</Subsetor>
+    <Segmento>Exploração, Refino e Distribuição</Segmento>
+    <Nome>AZT ENERGIA</Nome>
+    <Codigo>AZTE</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Petróleo, Gás e Biocombustíveis</Setor>
+    <Subsetor>Petróleo, Gás e Biocombustíveis</Subsetor>
+    <Segmento>Exploração, Refino e Distribuição</Segmento>
+    <Nome>BRAVA</Nome>
+    <Codigo>BRAV</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Petróleo, Gás e Biocombustíveis</Setor>
+    <Subsetor>Petróleo, Gás e Biocombustíveis</Subsetor>
+    <Segmento>Exploração, Refino e Distribuição</Segmento>
+    <Nome>COSAN</Nome>
+    <Codigo>CSAN</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Petróleo, Gás e Biocombustíveis</Setor>
+    <Subsetor>Petróleo, Gás e Biocombustíveis</Subsetor>
+    <Segmento>Exploração, Refino e Distribuição</Segmento>
+    <Nome>PETROBRAS</Nome>
+    <Codigo>PETR</Codigo>
+    <SegmentoNegociacao>Nível 2</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Petróleo, Gás e Biocombustíveis</Setor>
+    <Subsetor>Petróleo, Gás e Biocombustíveis</Subsetor>
+    <Segmento>Exploração, Refino e Distribuição</Segmento>
+    <Nome>PETRORECSA</Nome>
+    <Codigo>RECV</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Petróleo, Gás e Biocombustíveis</Setor>
+    <Subsetor>Petróleo, Gás e Biocombustíveis</Subsetor>
+    <Segmento>Exploração, Refino e Distribuição</Segmento>
+    <Nome>PRIO</Nome>
+    <Codigo>PRIO</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Petróleo, Gás e Biocombustíveis</Setor>
+    <Subsetor>Petróleo, Gás e Biocombustíveis</Subsetor>
+    <Segmento>Exploração, Refino e Distribuição</Segmento>
+    <Nome>RAIZEN</Nome>
+    <Codigo>RAIZ</Codigo>
+    <SegmentoNegociacao>Nível 2</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Petróleo, Gás e Biocombustíveis</Setor>
+    <Subsetor>Petróleo, Gás e Biocombustíveis</Subsetor>
+    <Segmento>Exploração, Refino e Distribuição</Segmento>
+    <Nome>ULTRAPAR</Nome>
+    <Codigo>UGPA</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Petróleo, Gás e Biocombustíveis</Setor>
+    <Subsetor>Petróleo, Gás e Biocombustíveis</Subsetor>
+    <Segmento>Equipamentos e Serviços</Segmento>
+    <Nome>LUPATECH</Nome>
+    <Codigo>LUPA</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Petróleo, Gás e Biocombustíveis</Setor>
+    <Subsetor>Petróleo, Gás e Biocombustíveis</Subsetor>
+    <Segmento>Equipamentos e Serviços</Segmento>
+    <Nome>OCEANPACT</Nome>
+    <Codigo>OPCT</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Petróleo, Gás e Biocombustíveis</Setor>
+    <Subsetor>Petróleo, Gás e Biocombustíveis</Subsetor>
+    <Segmento>Equipamentos e Serviços</Segmento>
+    <Nome>OSX BRASIL</Nome>
+    <Codigo>OSXB</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Petróleo, Gás e Biocombustíveis</Setor>
+    <Subsetor>Petróleo, Gás e Biocombustíveis</Subsetor>
+    <Segmento>Distribuição de Combustíveis</Segmento>
+    <Nome>VIBRA</Nome>
+    <Codigo>VBBR</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>SETOR ECONÔMICO</Setor>
+    <Subsetor>SUBSETOR</Subsetor>
+    <Segmento>SEGMENTO</Segmento>
+    <Nome>NOME DE PREGÃO</Nome>
+    <Codigo>CÓDIGO</Codigo>
+    <SegmentoNegociacao>SEGMENTO DE NEGOCIAÇÃO</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Materiais Básicos</Setor>
+    <Subsetor>Mineração</Subsetor>
+    <Segmento>Minerais Metálicos</Segmento>
+    <Nome>AURA 360</Nome>
+    <Codigo>AURA</Codigo>
+    <SegmentoNegociacao>BDR3</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Materiais Básicos</Setor>
+    <Subsetor>Mineração</Subsetor>
+    <Segmento>Minerais Metálicos</Segmento>
+    <Nome>BRADESPAR</Nome>
+    <Codigo>BRAP</Codigo>
+    <SegmentoNegociacao>Nível 1</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Materiais Básicos</Setor>
+    <Subsetor>Mineração</Subsetor>
+    <Segmento>Minerais Metálicos</Segmento>
+    <Nome>CBA</Nome>
+    <Codigo>CBAV</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Materiais Básicos</Setor>
+    <Subsetor>Mineração</Subsetor>
+    <Segmento>Minerais Metálicos</Segmento>
+    <Nome>CSNMINERACAO</Nome>
+    <Codigo>CMIN</Codigo>
+    <SegmentoNegociacao>Nível 2</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Materiais Básicos</Setor>
+    <Subsetor>Mineração</Subsetor>
+    <Segmento>Minerais Metálicos</Segmento>
+    <Nome>LITEL</Nome>
+    <Codigo>LTEL</Codigo>
+    <SegmentoNegociacao>Básico Balcão</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Materiais Básicos</Setor>
+    <Subsetor>Mineração</Subsetor>
+    <Segmento>Minerais Metálicos</Segmento>
+    <Nome>LITELA</Nome>
+    <Codigo>LTLA</Codigo>
+    <SegmentoNegociacao>Básico Balcão</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Materiais Básicos</Setor>
+    <Subsetor>Mineração</Subsetor>
+    <Segmento>Minerais Metálicos</Segmento>
+    <Nome>VALE</Nome>
+    <Codigo>VALE</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Materiais Básicos</Setor>
+    <Subsetor>Siderurgia e Metalurgia</Subsetor>
+    <Segmento>Siderurgia</Segmento>
+    <Nome>FERBASA</Nome>
+    <Codigo>FESA</Codigo>
+    <SegmentoNegociacao>Nível 1</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Materiais Básicos</Setor>
+    <Subsetor>Siderurgia e Metalurgia</Subsetor>
+    <Segmento>Siderurgia</Segmento>
+    <Nome>GERDAU</Nome>
+    <Codigo>GGBR</Codigo>
+    <SegmentoNegociacao>Nível 1</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Materiais Básicos</Setor>
+    <Subsetor>Siderurgia e Metalurgia</Subsetor>
+    <Segmento>Siderurgia</Segmento>
+    <Nome>GERDAU MET</Nome>
+    <Codigo>GOAU</Codigo>
+    <SegmentoNegociacao>Nível 1</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Materiais Básicos</Setor>
+    <Subsetor>Siderurgia e Metalurgia</Subsetor>
+    <Segmento>Siderurgia</Segmento>
+    <Nome>SID NACIONAL</Nome>
+    <Codigo>CSNA</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Materiais Básicos</Setor>
+    <Subsetor>Siderurgia e Metalurgia</Subsetor>
+    <Segmento>Siderurgia</Segmento>
+    <Nome>USIMINAS</Nome>
+    <Codigo>USIM</Codigo>
+    <SegmentoNegociacao>Nível 1</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Materiais Básicos</Setor>
+    <Subsetor>Siderurgia e Metalurgia</Subsetor>
+    <Segmento>Artefatos de Ferro e Aço</Segmento>
+    <Nome>HAGA S/A</Nome>
+    <Codigo>HAGA</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Materiais Básicos</Setor>
+    <Subsetor>Siderurgia e Metalurgia</Subsetor>
+    <Segmento>Artefatos de Ferro e Aço</Segmento>
+    <Nome>MANGELS INDL</Nome>
+    <Codigo>MGEL</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Materiais Básicos</Setor>
+    <Subsetor>Siderurgia e Metalurgia</Subsetor>
+    <Segmento>Artefatos de Ferro e Aço</Segmento>
+    <Nome>PANATLANTICA</Nome>
+    <Codigo>PATI</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Materiais Básicos</Setor>
+    <Subsetor>Siderurgia e Metalurgia</Subsetor>
+    <Segmento>Artefatos de Cobre</Segmento>
+    <Nome>PARANAPANEMA</Nome>
+    <Codigo>PMAM</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Materiais Básicos</Setor>
+    <Subsetor>Químicos</Subsetor>
+    <Segmento>Petroquímicos</Segmento>
+    <Nome>BRASKEM</Nome>
+    <Codigo>BRKM</Codigo>
+    <SegmentoNegociacao>Nível 1</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Materiais Básicos</Setor>
+    <Subsetor>Químicos</Subsetor>
+    <Segmento>Petroquímicos</Segmento>
+    <Nome>DEXXOS PAR</Nome>
+    <Codigo>DEXP</Codigo>
+    <SegmentoNegociacao>Nível 1</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Materiais Básicos</Setor>
+    <Subsetor>Químicos</Subsetor>
+    <Segmento>Fertilizantes e Defensivos</Segmento>
+    <Nome>FER HERINGER</Nome>
+    <Codigo>FHER</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Materiais Básicos</Setor>
+    <Subsetor>Químicos</Subsetor>
+    <Segmento>Fertilizantes e Defensivos</Segmento>
+    <Nome>NUTRIPLANT</Nome>
+    <Codigo>NUTR</Codigo>
+    <SegmentoNegociacao>Cia Menor Porte - CMP</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Materiais Básicos</Setor>
+    <Subsetor>Químicos</Subsetor>
+    <Segmento>Fertilizantes e Defensivos</Segmento>
+    <Nome>VITTIA</Nome>
+    <Codigo>VITT</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Materiais Básicos</Setor>
+    <Subsetor>Químicos</Subsetor>
+    <Segmento>Químicos Diversos</Segmento>
+    <Nome>CRISTAL</Nome>
+    <Codigo>CRPG</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Materiais Básicos</Setor>
+    <Subsetor>Químicos</Subsetor>
+    <Segmento>Químicos Diversos</Segmento>
+    <Nome>UNIPAR</Nome>
+    <Codigo>UNIP</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Materiais Básicos</Setor>
+    <Subsetor>Madeira e Papel</Subsetor>
+    <Segmento>Madeira</Segmento>
+    <Nome>DEXCO</Nome>
+    <Codigo>DXCO</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Materiais Básicos</Setor>
+    <Subsetor>Madeira e Papel</Subsetor>
+    <Segmento>Madeira</Segmento>
+    <Nome>EUCATEX</Nome>
+    <Codigo>EUCA</Codigo>
+    <SegmentoNegociacao>Nível 1</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Materiais Básicos</Setor>
+    <Subsetor>Madeira e Papel</Subsetor>
+    <Segmento>Papel e Celulose</Segmento>
+    <Nome>KLABIN S/A</Nome>
+    <Codigo>KLBN</Codigo>
+    <SegmentoNegociacao>Nível 2</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Materiais Básicos</Setor>
+    <Subsetor>Madeira e Papel</Subsetor>
+    <Segmento>Papel e Celulose</Segmento>
+    <Nome>MELHOR SP</Nome>
+    <Codigo>MSPA</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Materiais Básicos</Setor>
+    <Subsetor>Madeira e Papel</Subsetor>
+    <Segmento>Papel e Celulose</Segmento>
+    <Nome>SUZANO HOLD</Nome>
+    <Codigo>NEMO</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Materiais Básicos</Setor>
+    <Subsetor>Madeira e Papel</Subsetor>
+    <Segmento>Papel e Celulose</Segmento>
+    <Nome>SUZANO S.A.</Nome>
+    <Codigo>SUZB</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Materiais Básicos</Setor>
+    <Subsetor>Embalagens</Subsetor>
+    <Segmento>Embalagens</Segmento>
+    <Nome>IRANI</Nome>
+    <Codigo>RANI</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Materiais Básicos</Setor>
+    <Subsetor>Materiais Diversos</Subsetor>
+    <Segmento>Materiais Diversos</Segmento>
+    <Nome>SANSUY</Nome>
+    <Codigo>SNSY</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>SETOR ECONÔMICO</Setor>
+    <Subsetor>SUBSETOR</Subsetor>
+    <Segmento>SEGMENTO</Segmento>
+    <Nome>NOME DE PREGÃO</Nome>
+    <Codigo>CÓDIGO</Codigo>
+    <SegmentoNegociacao>SEGMENTO DE NEGOCIAÇÃO</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Construção e Engenharia</Subsetor>
+    <Segmento>Produtos para Construção</Segmento>
+    <Nome>ETERNIT</Nome>
+    <Codigo>ETER</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Construção e Engenharia</Subsetor>
+    <Segmento>Produtos para Construção</Segmento>
+    <Nome>PORTOBELLO</Nome>
+    <Codigo>PTBL</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Construção e Engenharia</Subsetor>
+    <Segmento>Construção Pesada</Segmento>
+    <Nome>AZEVEDO</Nome>
+    <Codigo>AZEV</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Construção e Engenharia</Subsetor>
+    <Segmento>Engenharia Consultiva</Segmento>
+    <Nome>SONDOTECNICA</Nome>
+    <Codigo>SOND</Codigo>
+    <SegmentoNegociacao>Cia Menor Porte - CMP</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Construção e Engenharia</Subsetor>
+    <Segmento>Serviços Diversos</Segmento>
+    <Nome>ARMAC</Nome>
+    <Codigo>ARML</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Construção e Engenharia</Subsetor>
+    <Segmento>Serviços Diversos</Segmento>
+    <Nome>MILLS</Nome>
+    <Codigo>MILS</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Construção e Engenharia</Subsetor>
+    <Segmento>Serviços Diversos</Segmento>
+    <Nome>PRINER</Nome>
+    <Codigo>PRNR</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Material de Transporte</Subsetor>
+    <Segmento>Material Aeronáutico e de Defesa</Segmento>
+    <Nome>EMBRAER</Nome>
+    <Codigo>EMBJ</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Material de Transporte</Subsetor>
+    <Segmento>Material Rodoviário</Segmento>
+    <Nome>FRAS-LE</Nome>
+    <Codigo>FRAS</Codigo>
+    <SegmentoNegociacao>Nível 1</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Material de Transporte</Subsetor>
+    <Segmento>Material Rodoviário</Segmento>
+    <Nome>MARCOPOLO</Nome>
+    <Codigo>POMO</Codigo>
+    <SegmentoNegociacao>Nível 2</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Material de Transporte</Subsetor>
+    <Segmento>Material Rodoviário</Segmento>
+    <Nome>RANDON PART</Nome>
+    <Codigo>RAPT</Codigo>
+    <SegmentoNegociacao>Nível 1</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Material de Transporte</Subsetor>
+    <Segmento>Material Rodoviário</Segmento>
+    <Nome>RECRUSUL</Nome>
+    <Codigo>RCSL</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Material de Transporte</Subsetor>
+    <Segmento>Material Rodoviário</Segmento>
+    <Nome>RIOSULENSE</Nome>
+    <Codigo>RSUL</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Material de Transporte</Subsetor>
+    <Segmento>Material Rodoviário</Segmento>
+    <Nome>TUPY</Nome>
+    <Codigo>TUPY</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Material de Transporte</Subsetor>
+    <Segmento>Material Rodoviário</Segmento>
+    <Nome>WETZEL S/A</Nome>
+    <Codigo>MWET</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Máquinas e Equipamentos</Subsetor>
+    <Segmento>Motores , Compressores e Outros</Segmento>
+    <Nome>SCHULZ</Nome>
+    <Codigo>SHUL</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Máquinas e Equipamentos</Subsetor>
+    <Segmento>Motores , Compressores e Outros</Segmento>
+    <Nome>WEG</Nome>
+    <Codigo>WEGE</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Máquinas e Equipamentos</Subsetor>
+    <Segmento>Máq. e Equip. Industriais</Segmento>
+    <Nome>ACO ALTONA</Nome>
+    <Codigo>EALT</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Máquinas e Equipamentos</Subsetor>
+    <Segmento>Máq. e Equip. Industriais</Segmento>
+    <Nome>AERIS</Nome>
+    <Codigo>AERI</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Máquinas e Equipamentos</Subsetor>
+    <Segmento>Máq. e Equip. Industriais</Segmento>
+    <Nome>BARDELLA</Nome>
+    <Codigo>BDLL</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Máquinas e Equipamentos</Subsetor>
+    <Segmento>Máq. e Equip. Industriais</Segmento>
+    <Nome>INEPAR</Nome>
+    <Codigo>INEP</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Máquinas e Equipamentos</Subsetor>
+    <Segmento>Máq. e Equip. Industriais</Segmento>
+    <Nome>KEPLER WEBER</Nome>
+    <Codigo>KEPL</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Máquinas e Equipamentos</Subsetor>
+    <Segmento>Máq. e Equip. Industriais</Segmento>
+    <Nome>METALFRIO</Nome>
+    <Codigo>FRIO</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Máquinas e Equipamentos</Subsetor>
+    <Segmento>Máq. e Equip. Industriais</Segmento>
+    <Nome>PRATICA</Nome>
+    <Codigo>PTCA</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Máquinas e Equipamentos</Subsetor>
+    <Segmento>Máq. e Equip. Industriais</Segmento>
+    <Nome>ROMI</Nome>
+    <Codigo>ROMI</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Máquinas e Equipamentos</Subsetor>
+    <Segmento>Máq. e Equip. Construção e Agrícolas</Segmento>
+    <Nome>METISA</Nome>
+    <Codigo>MTSA</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Máquinas e Equipamentos</Subsetor>
+    <Segmento>Armas e Munições</Segmento>
+    <Nome>TAURUS ARMAS</Nome>
+    <Codigo>TASA</Codigo>
+    <SegmentoNegociacao>Nível 2</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Transporte</Subsetor>
+    <Segmento>Linhas Aéreas de Passageiros</Segmento>
+    <Nome>AZUL</Nome>
+    <Codigo>AZUL</Codigo>
+    <SegmentoNegociacao>Nível 2</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Transporte</Subsetor>
+    <Segmento>Transporte Ferroviário</Segmento>
+    <Nome>FER C ATLANT</Nome>
+    <Codigo>VSPT</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Transporte</Subsetor>
+    <Segmento>Transporte Ferroviário</Segmento>
+    <Nome>MRS LOGIST</Nome>
+    <Codigo>MRSA</Codigo>
+    <SegmentoNegociacao>Básico Balcão</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Transporte</Subsetor>
+    <Segmento>Transporte Ferroviário</Segmento>
+    <Nome>RUMO S.A.</Nome>
+    <Codigo>RAIL</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Transporte</Subsetor>
+    <Segmento>Transporte Hidroviário</Segmento>
+    <Nome>HIDROVIAS</Nome>
+    <Codigo>HBSA</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Transporte</Subsetor>
+    <Segmento>Transporte Hidroviário</Segmento>
+    <Nome>LOG-IN</Nome>
+    <Codigo>LOGN</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Transporte</Subsetor>
+    <Segmento>Transporte Hidroviário</Segmento>
+    <Nome>TREVISA</Nome>
+    <Codigo>LUXM</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Transporte</Subsetor>
+    <Segmento>Transporte Rodoviário</Segmento>
+    <Nome>JSL</Nome>
+    <Codigo>JSLG</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Transporte</Subsetor>
+    <Segmento>Transporte Rodoviário</Segmento>
+    <Nome>SEQUOIA LOG</Nome>
+    <Codigo>SEQL</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Transporte</Subsetor>
+    <Segmento>Transporte Rodoviário</Segmento>
+    <Nome>TEGMA</Nome>
+    <Codigo>TGMA</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Transporte</Subsetor>
+    <Segmento>Exploração de Rodovias</Segmento>
+    <Nome>CONC RIO TER</Nome>
+    <Codigo>CRTE</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Transporte</Subsetor>
+    <Segmento>Exploração de Rodovias</Segmento>
+    <Nome>ECORODOVIAS</Nome>
+    <Codigo>ECOR</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Transporte</Subsetor>
+    <Segmento>Exploração de Rodovias</Segmento>
+    <Nome>MOTIVA SA</Nome>
+    <Codigo>MOTV</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Transporte</Subsetor>
+    <Segmento>Exploração de Rodovias</Segmento>
+    <Nome>TRIUNFO PART</Nome>
+    <Codigo>TPIS</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Transporte</Subsetor>
+    <Segmento>Serviços de Apoio e Armazenagem</Segmento>
+    <Nome>HMOBI S.A</Nome>
+    <Codigo>HMOB</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Transporte</Subsetor>
+    <Segmento>Serviços de Apoio e Armazenagem</Segmento>
+    <Nome>INVEPAR</Nome>
+    <Codigo>IVPR</Codigo>
+    <SegmentoNegociacao>Básico Balcão</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Transporte</Subsetor>
+    <Segmento>Serviços de Apoio e Armazenagem</Segmento>
+    <Nome>PORTO VM</Nome>
+    <Codigo>PSVM</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Serviços</Subsetor>
+    <Segmento>Serviços Diversos</Segmento>
+    <Nome>BBMLOGISTICA</Nome>
+    <Codigo>BBML</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Serviços</Subsetor>
+    <Segmento>Serviços Diversos</Segmento>
+    <Nome>CONTAX</Nome>
+    <Codigo>CTAX</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Serviços</Subsetor>
+    <Segmento>Serviços Diversos</Segmento>
+    <Nome>DTCOM-DIRECT</Nome>
+    <Codigo>DTCY</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Serviços</Subsetor>
+    <Segmento>Serviços Diversos</Segmento>
+    <Nome>ESTAPAR</Nome>
+    <Codigo>ALPK</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Serviços</Subsetor>
+    <Segmento>Serviços Diversos</Segmento>
+    <Nome>GPS</Nome>
+    <Codigo>GGPS</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Serviços</Subsetor>
+    <Segmento>Serviços Diversos</Segmento>
+    <Nome>VALID</Nome>
+    <Codigo>VLID</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Comércio Varejista</Subsetor>
+    <Segmento>Material de Transporte</Segmento>
+    <Nome>MINASMAQUINA</Nome>
+    <Codigo>MMAQ</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Comércio Varejista</Subsetor>
+    <Segmento>Material de Transporte</Segmento>
+    <Nome>RODOBENS</Nome>
+    <Codigo>RBNS</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Bens Industriais</Setor>
+    <Subsetor>Comércio Varejista</Subsetor>
+    <Segmento>Material de Transporte</Segmento>
+    <Nome>WLM IND COM</Nome>
+    <Codigo>WLMM</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>SETOR ECONÔMICO</Setor>
+    <Subsetor>SUBSETOR</Subsetor>
+    <Segmento>SEGMENTO</Segmento>
+    <Nome>NOME DE PREGÃO</Nome>
+    <Codigo>CÓDIGO</Codigo>
+    <SegmentoNegociacao>SEGMENTO DE NEGOCIAÇÃO</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo não Cíclico</Setor>
+    <Subsetor>Agropecuária</Subsetor>
+    <Segmento>Agricultura</Segmento>
+    <Nome>3TENTOS</Nome>
+    <Codigo>TTEN</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo não Cíclico</Setor>
+    <Subsetor>Agropecuária</Subsetor>
+    <Segmento>Agricultura</Segmento>
+    <Nome>AGROGALAXY</Nome>
+    <Codigo>AGXY</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo não Cíclico</Setor>
+    <Subsetor>Agropecuária</Subsetor>
+    <Segmento>Agricultura</Segmento>
+    <Nome>ALIPERTI</Nome>
+    <Codigo>APTI</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo não Cíclico</Setor>
+    <Subsetor>Agropecuária</Subsetor>
+    <Segmento>Agricultura</Segmento>
+    <Nome>BOA SAFRA</Nome>
+    <Codigo>SOJA</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo não Cíclico</Setor>
+    <Subsetor>Agropecuária</Subsetor>
+    <Segmento>Agricultura</Segmento>
+    <Nome>BRASILAGRO</Nome>
+    <Codigo>AGRO</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo não Cíclico</Setor>
+    <Subsetor>Agropecuária</Subsetor>
+    <Segmento>Agricultura</Segmento>
+    <Nome>CTC S.A.</Nome>
+    <Codigo>CTCA</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo não Cíclico</Setor>
+    <Subsetor>Agropecuária</Subsetor>
+    <Segmento>Agricultura</Segmento>
+    <Nome>GRANJA FARIA</Nome>
+    <Codigo>EGGY</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo não Cíclico</Setor>
+    <Subsetor>Agropecuária</Subsetor>
+    <Segmento>Agricultura</Segmento>
+    <Nome>SLC AGRICOLA</Nome>
+    <Codigo>SLCE</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo não Cíclico</Setor>
+    <Subsetor>Agropecuária</Subsetor>
+    <Segmento>Agricultura</Segmento>
+    <Nome>TERRASANTAPA</Nome>
+    <Codigo>LAND</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo não Cíclico</Setor>
+    <Subsetor>Alimentos Processados</Subsetor>
+    <Segmento>Açucar e Alcool</Segmento>
+    <Nome>JALLESMACHAD</Nome>
+    <Codigo>JALL</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo não Cíclico</Setor>
+    <Subsetor>Alimentos Processados</Subsetor>
+    <Segmento>Açucar e Alcool</Segmento>
+    <Nome>SAO MARTINHO</Nome>
+    <Codigo>SMTO</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo não Cíclico</Setor>
+    <Subsetor>Alimentos Processados</Subsetor>
+    <Segmento>Carnes e Derivados</Segmento>
+    <Nome>EXCELSIOR</Nome>
+    <Codigo>BAUH</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo não Cíclico</Setor>
+    <Subsetor>Alimentos Processados</Subsetor>
+    <Segmento>Carnes e Derivados</Segmento>
+    <Nome>FASA</Nome>
+    <Codigo>FASA</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo não Cíclico</Setor>
+    <Subsetor>Alimentos Processados</Subsetor>
+    <Segmento>Carnes e Derivados</Segmento>
+    <Nome>JBS N.V.</Nome>
+    <Codigo>JBSS</Codigo>
+    <SegmentoNegociacao>BDR2</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo não Cíclico</Setor>
+    <Subsetor>Alimentos Processados</Subsetor>
+    <Segmento>Carnes e Derivados</Segmento>
+    <Nome>MARFRIG</Nome>
+    <Codigo>MBRF</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo não Cíclico</Setor>
+    <Subsetor>Alimentos Processados</Subsetor>
+    <Segmento>Carnes e Derivados</Segmento>
+    <Nome>MINERVA</Nome>
+    <Codigo>BEEF</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo não Cíclico</Setor>
+    <Subsetor>Alimentos Processados</Subsetor>
+    <Segmento>Carnes e Derivados</Segmento>
+    <Nome>MINUPAR</Nome>
+    <Codigo>MNPR</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo não Cíclico</Setor>
+    <Subsetor>Alimentos Processados</Subsetor>
+    <Segmento>Alimentos Diversos</Segmento>
+    <Nome>CAMIL</Nome>
+    <Codigo>CAML</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo não Cíclico</Setor>
+    <Subsetor>Alimentos Processados</Subsetor>
+    <Segmento>Alimentos Diversos</Segmento>
+    <Nome>JOSAPAR</Nome>
+    <Codigo>JOPA</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo não Cíclico</Setor>
+    <Subsetor>Alimentos Processados</Subsetor>
+    <Segmento>Alimentos Diversos</Segmento>
+    <Nome>M.DIASBRANCO</Nome>
+    <Codigo>MDIA</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo não Cíclico</Setor>
+    <Subsetor>Alimentos Processados</Subsetor>
+    <Segmento>Alimentos Diversos</Segmento>
+    <Nome>ODERICH</Nome>
+    <Codigo>ODER</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo não Cíclico</Setor>
+    <Subsetor>Bebidas</Subsetor>
+    <Segmento>Cervejas e Refrigerantes</Segmento>
+    <Nome>AMBEV S/A</Nome>
+    <Codigo>ABEV</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo não Cíclico</Setor>
+    <Subsetor>Produtos de Cuidado Pessoal e de Limpeza</Subsetor>
+    <Segmento>Produtos de Cuidado Pessoal</Segmento>
+    <Nome>ESPACOLASER</Nome>
+    <Codigo>ESPA</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo não Cíclico</Setor>
+    <Subsetor>Produtos de Cuidado Pessoal e de Limpeza</Subsetor>
+    <Segmento>Produtos de Cuidado Pessoal</Segmento>
+    <Nome>NATURA</Nome>
+    <Codigo>NATU</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo não Cíclico</Setor>
+    <Subsetor>Produtos de Cuidado Pessoal e de Limpeza</Subsetor>
+    <Segmento>Produtos de Limpeza</Segmento>
+    <Nome>BOMBRIL</Nome>
+    <Codigo>BOBR</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo não Cíclico</Setor>
+    <Subsetor>Comércio e Distribuição</Subsetor>
+    <Segmento>Alimentos</Segmento>
+    <Nome>ASSAI</Nome>
+    <Codigo>ASAI</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo não Cíclico</Setor>
+    <Subsetor>Comércio e Distribuição</Subsetor>
+    <Segmento>Alimentos</Segmento>
+    <Nome>GRUPO MATEUS</Nome>
+    <Codigo>GMAT</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo não Cíclico</Setor>
+    <Subsetor>Comércio e Distribuição</Subsetor>
+    <Segmento>Alimentos</Segmento>
+    <Nome>P.ACUCAR-CBD</Nome>
+    <Codigo>PCAR</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>SETOR ECONÔMICO</Setor>
+    <Subsetor>SUBSETOR</Subsetor>
+    <Segmento>SEGMENTO</Segmento>
+    <Nome>NOME DE PREGÃO</Nome>
+    <Codigo>CÓDIGO</Codigo>
+    <SegmentoNegociacao>SEGMENTO DE NEGOCIAÇÃO</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Comércio Varejista</Subsetor>
+    <Segmento>Tecidos, Vestuário e Calçados</Segmento>
+    <Nome>AZZAS 2154</Nome>
+    <Codigo>AZZA</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Comércio Varejista</Subsetor>
+    <Segmento>Tecidos, Vestuário e Calçados</Segmento>
+    <Nome>CEA MODAS</Nome>
+    <Codigo>CEAB</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Comércio Varejista</Subsetor>
+    <Segmento>Tecidos, Vestuário e Calçados</Segmento>
+    <Nome>GRAZZIOTIN</Nome>
+    <Codigo>CGRA</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Comércio Varejista</Subsetor>
+    <Segmento>Tecidos, Vestuário e Calçados</Segmento>
+    <Nome>LOJAS MARISA</Nome>
+    <Codigo>AMAR</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Comércio Varejista</Subsetor>
+    <Segmento>Tecidos, Vestuário e Calçados</Segmento>
+    <Nome>LOJAS RENNER</Nome>
+    <Codigo>LREN</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Comércio Varejista</Subsetor>
+    <Segmento>Tecidos, Vestuário e Calçados</Segmento>
+    <Nome>RIACHUELO</Nome>
+    <Codigo>RIAA</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Comércio Varejista</Subsetor>
+    <Segmento>Tecidos, Vestuário e Calçados</Segmento>
+    <Nome>VESTE</Nome>
+    <Codigo>VSTE</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Comércio Varejista</Subsetor>
+    <Segmento>Eletrodomésticos</Segmento>
+    <Nome>ALLIED</Nome>
+    <Codigo>ALLD</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Comércio Varejista</Subsetor>
+    <Segmento>Eletrodomésticos</Segmento>
+    <Nome>CASAS BAHIA</Nome>
+    <Codigo>BHIA</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Comércio Varejista</Subsetor>
+    <Segmento>Eletrodomésticos</Segmento>
+    <Nome>MAGAZ LUIZA</Nome>
+    <Codigo>MGLU</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Comércio Varejista</Subsetor>
+    <Segmento>Produtos Diversos</Segmento>
+    <Nome>AMERICANAS</Nome>
+    <Codigo>AMER</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Comércio Varejista</Subsetor>
+    <Segmento>Produtos Diversos</Segmento>
+    <Nome>GRUPO SBF</Nome>
+    <Codigo>SBFG</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Comércio Varejista</Subsetor>
+    <Segmento>Produtos Diversos</Segmento>
+    <Nome>LE BISCUIT</Nome>
+    <Codigo>LLBI</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Comércio Varejista</Subsetor>
+    <Segmento>Produtos Diversos</Segmento>
+    <Nome>PETZCOBASI</Nome>
+    <Codigo>AUAU</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Comércio Varejista</Subsetor>
+    <Segmento>Produtos Diversos</Segmento>
+    <Nome>QUERO-QUERO</Nome>
+    <Codigo>LJQQ</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Construção Civil</Subsetor>
+    <Segmento>Incorporações</Segmento>
+    <Nome>ALPHAVILLE</Nome>
+    <Codigo>AVLL</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Construção Civil</Subsetor>
+    <Segmento>Incorporações</Segmento>
+    <Nome>CONST A LIND</Nome>
+    <Codigo>CALI</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Construção Civil</Subsetor>
+    <Segmento>Incorporações</Segmento>
+    <Nome>CURY S/A</Nome>
+    <Codigo>CURY</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Construção Civil</Subsetor>
+    <Segmento>Incorporações</Segmento>
+    <Nome>CYRELA REALT</Nome>
+    <Codigo>CYRE</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Construção Civil</Subsetor>
+    <Segmento>Incorporações</Segmento>
+    <Nome>DIRECIONAL</Nome>
+    <Codigo>DIRR</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Construção Civil</Subsetor>
+    <Segmento>Incorporações</Segmento>
+    <Nome>EVEN</Nome>
+    <Codigo>EVEN</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Construção Civil</Subsetor>
+    <Segmento>Incorporações</Segmento>
+    <Nome>EZTEC</Nome>
+    <Codigo>EZTC</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Construção Civil</Subsetor>
+    <Segmento>Incorporações</Segmento>
+    <Nome>FICA</Nome>
+    <Codigo>FIEI</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Construção Civil</Subsetor>
+    <Segmento>Incorporações</Segmento>
+    <Nome>GAFISA</Nome>
+    <Codigo>GFSA</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Construção Civil</Subsetor>
+    <Segmento>Incorporações</Segmento>
+    <Nome>HELBOR</Nome>
+    <Codigo>HBOR</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Construção Civil</Subsetor>
+    <Segmento>Incorporações</Segmento>
+    <Nome>INC SA</Nome>
+    <Codigo>INNC</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Construção Civil</Subsetor>
+    <Segmento>Incorporações</Segmento>
+    <Nome>JHSF PART</Nome>
+    <Codigo>JHSF</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Construção Civil</Subsetor>
+    <Segmento>Incorporações</Segmento>
+    <Nome>JOAO FORTES</Nome>
+    <Codigo>JFEN</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Construção Civil</Subsetor>
+    <Segmento>Incorporações</Segmento>
+    <Nome>KALLAS</Nome>
+    <Codigo>KLAS</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Construção Civil</Subsetor>
+    <Segmento>Incorporações</Segmento>
+    <Nome>LAVVI</Nome>
+    <Codigo>LAVV</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Construção Civil</Subsetor>
+    <Segmento>Incorporações</Segmento>
+    <Nome>MELNICK</Nome>
+    <Codigo>MELK</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Construção Civil</Subsetor>
+    <Segmento>Incorporações</Segmento>
+    <Nome>MITRE REALTY</Nome>
+    <Codigo>MTRE</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Construção Civil</Subsetor>
+    <Segmento>Incorporações</Segmento>
+    <Nome>MOURA DUBEUX</Nome>
+    <Codigo>MDNE</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Construção Civil</Subsetor>
+    <Segmento>Incorporações</Segmento>
+    <Nome>MRV</Nome>
+    <Codigo>MRVE</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Construção Civil</Subsetor>
+    <Segmento>Incorporações</Segmento>
+    <Nome>PDG REALT</Nome>
+    <Codigo>PDGR</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Construção Civil</Subsetor>
+    <Segmento>Incorporações</Segmento>
+    <Nome>PLANOEPLANO</Nome>
+    <Codigo>PLPL</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Construção Civil</Subsetor>
+    <Segmento>Incorporações</Segmento>
+    <Nome>RDVC CITY</Nome>
+    <Codigo>CCTY</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Construção Civil</Subsetor>
+    <Segmento>Incorporações</Segmento>
+    <Nome>ROSSI RESID</Nome>
+    <Codigo>RSID</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Construção Civil</Subsetor>
+    <Segmento>Incorporações</Segmento>
+    <Nome>TECNISA</Nome>
+    <Codigo>TCSA</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Construção Civil</Subsetor>
+    <Segmento>Incorporações</Segmento>
+    <Nome>TENDA</Nome>
+    <Codigo>TEND</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Construção Civil</Subsetor>
+    <Segmento>Incorporações</Segmento>
+    <Nome>TRISUL</Nome>
+    <Codigo>TRIS</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Construção Civil</Subsetor>
+    <Segmento>Incorporações</Segmento>
+    <Nome>VIVER</Nome>
+    <Codigo>VIVR</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Tecidos, Vestuário e Calçados</Subsetor>
+    <Segmento>Fios e Tecidos</Segmento>
+    <Nome>CEDRO</Nome>
+    <Codigo>CEDO</Codigo>
+    <SegmentoNegociacao>Nível 1</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Tecidos, Vestuário e Calçados</Subsetor>
+    <Segmento>Fios e Tecidos</Segmento>
+    <Nome>DOHLER</Nome>
+    <Codigo>DOHL</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Tecidos, Vestuário e Calçados</Subsetor>
+    <Segmento>Fios e Tecidos</Segmento>
+    <Nome>IND CATAGUAS</Nome>
+    <Codigo>CATA</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Tecidos, Vestuário e Calçados</Subsetor>
+    <Segmento>Fios e Tecidos</Segmento>
+    <Nome>KARSTEN</Nome>
+    <Codigo>CTKA</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Tecidos, Vestuário e Calçados</Subsetor>
+    <Segmento>Fios e Tecidos</Segmento>
+    <Nome>SANTANENSE</Nome>
+    <Codigo>CTSA</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Tecidos, Vestuário e Calçados</Subsetor>
+    <Segmento>Fios e Tecidos</Segmento>
+    <Nome>TEX RENAUX</Nome>
+    <Codigo>TXRX</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Tecidos, Vestuário e Calçados</Subsetor>
+    <Segmento>Vestuário</Segmento>
+    <Nome>TRACK FIELD</Nome>
+    <Codigo>TFCO</Codigo>
+    <SegmentoNegociacao>Nível 2</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Tecidos, Vestuário e Calçados</Subsetor>
+    <Segmento>Calçados</Segmento>
+    <Nome>ALPARGATAS</Nome>
+    <Codigo>ALPA</Codigo>
+    <SegmentoNegociacao>Nível 1</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Tecidos, Vestuário e Calçados</Subsetor>
+    <Segmento>Calçados</Segmento>
+    <Nome>CAMBUCI</Nome>
+    <Codigo>CAMB</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Tecidos, Vestuário e Calçados</Subsetor>
+    <Segmento>Calçados</Segmento>
+    <Nome>GRENDENE</Nome>
+    <Codigo>GRND</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Tecidos, Vestuário e Calçados</Subsetor>
+    <Segmento>Calçados</Segmento>
+    <Nome>VULCABRAS</Nome>
+    <Codigo>VULC</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Tecidos, Vestuário e Calçados</Subsetor>
+    <Segmento>Acessórios</Segmento>
+    <Nome>MUNDIAL</Nome>
+    <Codigo>MNDL</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Tecidos, Vestuário e Calçados</Subsetor>
+    <Segmento>Acessórios</Segmento>
+    <Nome>TECHNOS</Nome>
+    <Codigo>TECN</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Tecidos, Vestuário e Calçados</Subsetor>
+    <Segmento>Acessórios</Segmento>
+    <Nome>VIVARA S.A.</Nome>
+    <Codigo>VIVA</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Utilidades Domésticas</Subsetor>
+    <Segmento>Eletrodomésticos</Segmento>
+    <Nome>WHIRLPOOL</Nome>
+    <Codigo>WHRL</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Utilidades Domésticas</Subsetor>
+    <Segmento>Móveis</Segmento>
+    <Nome>GRUPO TOKY</Nome>
+    <Codigo>TOKY</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Utilidades Domésticas</Subsetor>
+    <Segmento>Móveis</Segmento>
+    <Nome>UNICASA</Nome>
+    <Codigo>UCAS</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Utilidades Domésticas</Subsetor>
+    <Segmento>Móveis</Segmento>
+    <Nome>WESTWING</Nome>
+    <Codigo>WEST</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Utilidades Domésticas</Subsetor>
+    <Segmento>Utensílios Domésticos</Segmento>
+    <Nome>HERCULES</Nome>
+    <Codigo>HETA</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Automóveis e Motocicletas</Subsetor>
+    <Segmento>Automóveis e Motocicletas</Segmento>
+    <Nome>AUTOMOB</Nome>
+    <Codigo>AMOB</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Automóveis e Motocicletas</Subsetor>
+    <Segmento>Automóveis e Motocicletas</Segmento>
+    <Nome>IOCHP-MAXION</Nome>
+    <Codigo>MYPK</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Automóveis e Motocicletas</Subsetor>
+    <Segmento>Automóveis e Motocicletas</Segmento>
+    <Nome>METAL LEVE</Nome>
+    <Codigo>LEVE</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Automóveis e Motocicletas</Subsetor>
+    <Segmento>Automóveis e Motocicletas</Segmento>
+    <Nome>PLASCAR PART</Nome>
+    <Codigo>PLAS</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Hoteis e Restaurantes</Subsetor>
+    <Segmento>Hotelaria</Segmento>
+    <Nome>HOTEIS OTHON</Nome>
+    <Codigo>HOOT</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Hoteis e Restaurantes</Subsetor>
+    <Segmento>Restaurante e Similares</Segmento>
+    <Nome>IMC S/A</Nome>
+    <Codigo>MEAL</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Viagens e Lazer</Subsetor>
+    <Segmento>Bicicletas</Segmento>
+    <Nome>BIC MONARK</Nome>
+    <Codigo>BMKS</Codigo>
+    <SegmentoNegociacao>Cia Menor Porte - CMP</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Viagens e Lazer</Subsetor>
+    <Segmento>Brinquedos e Jogos</Segmento>
+    <Nome>ESTRELA</Nome>
+    <Codigo>ESTR</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Viagens e Lazer</Subsetor>
+    <Segmento>Produção de Eventos e Shows</Segmento>
+    <Nome>REVEE</Nome>
+    <Codigo>RVEE</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Viagens e Lazer</Subsetor>
+    <Segmento>Produção de Eventos e Shows</Segmento>
+    <Nome>SPTURIS</Nome>
+    <Codigo>AHEB</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Viagens e Lazer</Subsetor>
+    <Segmento>Viagens e Turismo</Segmento>
+    <Nome>CVC BRASIL</Nome>
+    <Codigo>CVCB</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Viagens e Lazer</Subsetor>
+    <Segmento>Atividades Esportivas</Segmento>
+    <Nome>SMART FIT</Nome>
+    <Codigo>SMFT</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Diversos</Subsetor>
+    <Segmento>Serviços Educacionais</Segmento>
+    <Nome>ANIMA</Nome>
+    <Codigo>ANIM</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Diversos</Subsetor>
+    <Segmento>Serviços Educacionais</Segmento>
+    <Nome>ATOM EDUC</Nome>
+    <Codigo>ATED</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Diversos</Subsetor>
+    <Segmento>Serviços Educacionais</Segmento>
+    <Nome>BIOMA EDUC</Nome>
+    <Codigo>BIED</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Diversos</Subsetor>
+    <Segmento>Serviços Educacionais</Segmento>
+    <Nome>COGNA ON</Nome>
+    <Codigo>COGN</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Diversos</Subsetor>
+    <Segmento>Serviços Educacionais</Segmento>
+    <Nome>CRUZEIRO EDU</Nome>
+    <Codigo>CSED</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Diversos</Subsetor>
+    <Segmento>Serviços Educacionais</Segmento>
+    <Nome>GRUPO SALTA</Nome>
+    <Codigo>SALT</Codigo>
+    <SegmentoNegociacao>Nível 2</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Diversos</Subsetor>
+    <Segmento>Serviços Educacionais</Segmento>
+    <Nome>ORANJEBTC</Nome>
+    <Codigo>OBTC</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Diversos</Subsetor>
+    <Segmento>Serviços Educacionais</Segmento>
+    <Nome>SER EDUCA</Nome>
+    <Codigo>SEER</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Diversos</Subsetor>
+    <Segmento>Serviços Educacionais</Segmento>
+    <Nome>VITRUEDUCA</Nome>
+    <Codigo>VTRU</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Diversos</Subsetor>
+    <Segmento>Serviços Educacionais</Segmento>
+    <Nome>YDUQS PART</Nome>
+    <Codigo>YDUQ</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Diversos</Subsetor>
+    <Segmento>Aluguel de carros</Segmento>
+    <Nome>LOCALIZA</Nome>
+    <Codigo>RENT</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Diversos</Subsetor>
+    <Segmento>Aluguel de carros</Segmento>
+    <Nome>MOVIDA</Nome>
+    <Codigo>MOVI</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Diversos</Subsetor>
+    <Segmento>Aluguel de carros</Segmento>
+    <Nome>VAMOS</Nome>
+    <Codigo>VAMO</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Consumo Cíclico</Setor>
+    <Subsetor>Diversos</Subsetor>
+    <Segmento>Programas de Fidelização</Segmento>
+    <Nome>DOTZ SA</Nome>
+    <Codigo>DOTZ</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>SETOR ECONÔMICO</Setor>
+    <Subsetor>SUBSETOR</Subsetor>
+    <Segmento>SEGMENTO</Segmento>
+    <Nome>NOME DE PREGÃO</Nome>
+    <Codigo>CÓDIGO</Codigo>
+    <SegmentoNegociacao>SEGMENTO DE NEGOCIAÇÃO</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Saúde</Setor>
+    <Subsetor>Medicamentos e Outros Produtos</Subsetor>
+    <Segmento>Medicamentos e Outros Produtos</Segmento>
+    <Nome>BIOMM</Nome>
+    <Codigo>BIOM</Codigo>
+    <SegmentoNegociacao>Nível 2</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Saúde</Setor>
+    <Subsetor>Medicamentos e Outros Produtos</Subsetor>
+    <Segmento>Medicamentos e Outros Produtos</Segmento>
+    <Nome>OUROFINO S/A</Nome>
+    <Codigo>OFSA</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Saúde</Setor>
+    <Subsetor>Serv.Méd.Hospit.,Análises e Diagnósticos</Subsetor>
+    <Segmento>Serv.Méd.Hospit.,Análises e Diagnósticos</Segmento>
+    <Nome>ALLIAR</Nome>
+    <Codigo>AALR</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Saúde</Setor>
+    <Subsetor>Serv.Méd.Hospit.,Análises e Diagnósticos</Subsetor>
+    <Segmento>Serv.Méd.Hospit.,Análises e Diagnósticos</Segmento>
+    <Nome>BRADSAUDE</Nome>
+    <Codigo>SAUD</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Saúde</Setor>
+    <Subsetor>Serv.Méd.Hospit.,Análises e Diagnósticos</Subsetor>
+    <Segmento>Serv.Méd.Hospit.,Análises e Diagnósticos</Segmento>
+    <Nome>DASA</Nome>
+    <Codigo>DASA</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Saúde</Setor>
+    <Subsetor>Serv.Méd.Hospit.,Análises e Diagnósticos</Subsetor>
+    <Segmento>Serv.Méd.Hospit.,Análises e Diagnósticos</Segmento>
+    <Nome>FLEURY</Nome>
+    <Codigo>FLRY</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Saúde</Setor>
+    <Subsetor>Serv.Méd.Hospit.,Análises e Diagnósticos</Subsetor>
+    <Segmento>Serv.Méd.Hospit.,Análises e Diagnósticos</Segmento>
+    <Nome>HAPVIDA</Nome>
+    <Codigo>HAPV</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Saúde</Setor>
+    <Subsetor>Serv.Méd.Hospit.,Análises e Diagnósticos</Subsetor>
+    <Segmento>Serv.Méd.Hospit.,Análises e Diagnósticos</Segmento>
+    <Nome>MATER DEI</Nome>
+    <Codigo>MATD</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Saúde</Setor>
+    <Subsetor>Serv.Méd.Hospit.,Análises e Diagnósticos</Subsetor>
+    <Segmento>Serv.Méd.Hospit.,Análises e Diagnósticos</Segmento>
+    <Nome>ONCOCLINICAS</Nome>
+    <Codigo>ONCO</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Saúde</Setor>
+    <Subsetor>Serv.Méd.Hospit.,Análises e Diagnósticos</Subsetor>
+    <Segmento>Serv.Méd.Hospit.,Análises e Diagnósticos</Segmento>
+    <Nome>QUALICORP</Nome>
+    <Codigo>QUAL</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Saúde</Setor>
+    <Subsetor>Serv.Méd.Hospit.,Análises e Diagnósticos</Subsetor>
+    <Segmento>Serv.Méd.Hospit.,Análises e Diagnósticos</Segmento>
+    <Nome>REDE D OR</Nome>
+    <Codigo>RDOR</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Saúde</Setor>
+    <Subsetor>Equipamentos</Subsetor>
+    <Segmento>Equipamentos</Segmento>
+    <Nome>BAUMER</Nome>
+    <Codigo>BALM</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Saúde</Setor>
+    <Subsetor>Equipamentos</Subsetor>
+    <Segmento>Equipamentos</Segmento>
+    <Nome>LIFEMED</Nome>
+    <Codigo>LMED</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Saúde</Setor>
+    <Subsetor>Comércio e Distribuição</Subsetor>
+    <Segmento>Medicamentos e Outros Produtos</Segmento>
+    <Nome>BLAU</Nome>
+    <Codigo>BLAU</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Saúde</Setor>
+    <Subsetor>Comércio e Distribuição</Subsetor>
+    <Segmento>Medicamentos e Outros Produtos</Segmento>
+    <Nome>D1000VFARMA</Nome>
+    <Codigo>DMVF</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Saúde</Setor>
+    <Subsetor>Comércio e Distribuição</Subsetor>
+    <Segmento>Medicamentos e Outros Produtos</Segmento>
+    <Nome>DIMED</Nome>
+    <Codigo>PNVL</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Saúde</Setor>
+    <Subsetor>Comércio e Distribuição</Subsetor>
+    <Segmento>Medicamentos e Outros Produtos</Segmento>
+    <Nome>EUROFARMA SA</Nome>
+    <Codigo>EUFA</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Saúde</Setor>
+    <Subsetor>Comércio e Distribuição</Subsetor>
+    <Segmento>Medicamentos e Outros Produtos</Segmento>
+    <Nome>HYPERA</Nome>
+    <Codigo>HYPE</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Saúde</Setor>
+    <Subsetor>Comércio e Distribuição</Subsetor>
+    <Segmento>Medicamentos e Outros Produtos</Segmento>
+    <Nome>PAGUE MENOS</Nome>
+    <Codigo>PGMN</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Saúde</Setor>
+    <Subsetor>Comércio e Distribuição</Subsetor>
+    <Segmento>Medicamentos e Outros Produtos</Segmento>
+    <Nome>PROFARMA</Nome>
+    <Codigo>PFRM</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Saúde</Setor>
+    <Subsetor>Comércio e Distribuição</Subsetor>
+    <Segmento>Medicamentos e Outros Produtos</Segmento>
+    <Nome>RAIADROGASIL</Nome>
+    <Codigo>RADL</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Saúde</Setor>
+    <Subsetor>Comércio e Distribuição</Subsetor>
+    <Segmento>Medicamentos e Outros Produtos</Segmento>
+    <Nome>VIVEO</Nome>
+    <Codigo>VVEO</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>SETOR ECONÔMICO</Setor>
+    <Subsetor>SUBSETOR</Subsetor>
+    <Segmento>SEGMENTO</Segmento>
+    <Nome>NOME DE PREGÃO</Nome>
+    <Codigo>CÓDIGO</Codigo>
+    <SegmentoNegociacao>SEGMENTO DE NEGOCIAÇÃO</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Tecnologia da Informação</Setor>
+    <Subsetor>Computadores e Equipamentos</Subsetor>
+    <Segmento>Computadores e Equipamentos</Segmento>
+    <Nome>INTELBRAS</Nome>
+    <Codigo>INTB</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Tecnologia da Informação</Setor>
+    <Subsetor>Computadores e Equipamentos</Subsetor>
+    <Segmento>Computadores e Equipamentos</Segmento>
+    <Nome>MULTILASER</Nome>
+    <Codigo>MLAS</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Tecnologia da Informação</Setor>
+    <Subsetor>Computadores e Equipamentos</Subsetor>
+    <Segmento>Computadores e Equipamentos</Segmento>
+    <Nome>POSITIVO TEC</Nome>
+    <Codigo>POSI</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Tecnologia da Informação</Setor>
+    <Subsetor>Programas e Serviços</Subsetor>
+    <Segmento>Programas e Serviços</Segmento>
+    <Nome>BEMOBI TECH</Nome>
+    <Codigo>BMOB</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Tecnologia da Informação</Setor>
+    <Subsetor>Programas e Serviços</Subsetor>
+    <Segmento>Programas e Serviços</Segmento>
+    <Nome>BRQ</Nome>
+    <Codigo>BRQB</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Tecnologia da Informação</Setor>
+    <Subsetor>Programas e Serviços</Subsetor>
+    <Segmento>Programas e Serviços</Segmento>
+    <Nome>ECONOMATICA</Nome>
+    <Codigo>ECOM</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Tecnologia da Informação</Setor>
+    <Subsetor>Programas e Serviços</Subsetor>
+    <Segmento>Programas e Serviços</Segmento>
+    <Nome>ENJOEI</Nome>
+    <Codigo>ENJU</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Tecnologia da Informação</Setor>
+    <Subsetor>Programas e Serviços</Subsetor>
+    <Segmento>Programas e Serviços</Segmento>
+    <Nome>INFRACOMM</Nome>
+    <Codigo>IFCM</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Tecnologia da Informação</Setor>
+    <Subsetor>Programas e Serviços</Subsetor>
+    <Segmento>Programas e Serviços</Segmento>
+    <Nome>LWSA</Nome>
+    <Codigo>LWSA</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Tecnologia da Informação</Setor>
+    <Subsetor>Programas e Serviços</Subsetor>
+    <Segmento>Programas e Serviços</Segmento>
+    <Nome>MELIUZ</Nome>
+    <Codigo>CASH</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Tecnologia da Informação</Setor>
+    <Subsetor>Programas e Serviços</Subsetor>
+    <Segmento>Programas e Serviços</Segmento>
+    <Nome>PADTEC</Nome>
+    <Codigo>PDTC</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Tecnologia da Informação</Setor>
+    <Subsetor>Programas e Serviços</Subsetor>
+    <Segmento>Programas e Serviços</Segmento>
+    <Nome>QUALITY SOFT</Nome>
+    <Codigo>QUSW</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Tecnologia da Informação</Setor>
+    <Subsetor>Programas e Serviços</Subsetor>
+    <Segmento>Programas e Serviços</Segmento>
+    <Nome>TOTVS</Nome>
+    <Codigo>TOTS</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Tecnologia da Informação</Setor>
+    <Subsetor>Programas e Serviços</Subsetor>
+    <Segmento>Programas e Serviços</Segmento>
+    <Nome>WDC NETWORKS</Nome>
+    <Codigo>WDCN</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>SETOR ECONÔMICO</Setor>
+    <Subsetor>SUBSETOR</Subsetor>
+    <Segmento>SEGMENTO</Segmento>
+    <Nome>NOME DE PREGÃO</Nome>
+    <Codigo>CÓDIGO</Codigo>
+    <SegmentoNegociacao>SEGMENTO DE NEGOCIAÇÃO</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Comunicações</Setor>
+    <Subsetor>Telecomunicações</Subsetor>
+    <Segmento>Telecomunicações</Segmento>
+    <Nome>BRISANET</Nome>
+    <Codigo>BRST</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Comunicações</Setor>
+    <Subsetor>Telecomunicações</Subsetor>
+    <Segmento>Telecomunicações</Segmento>
+    <Nome>DESKTOP</Nome>
+    <Codigo>DESK</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Comunicações</Setor>
+    <Subsetor>Telecomunicações</Subsetor>
+    <Segmento>Telecomunicações</Segmento>
+    <Nome>TELEBRAS</Nome>
+    <Codigo>TELB</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Comunicações</Setor>
+    <Subsetor>Telecomunicações</Subsetor>
+    <Segmento>Telecomunicações</Segmento>
+    <Nome>TELEF BRASIL</Nome>
+    <Codigo>VIVT</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Comunicações</Setor>
+    <Subsetor>Telecomunicações</Subsetor>
+    <Segmento>Telecomunicações</Segmento>
+    <Nome>TIM</Nome>
+    <Codigo>TIMS</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Comunicações</Setor>
+    <Subsetor>Telecomunicações</Subsetor>
+    <Segmento>Telecomunicações</Segmento>
+    <Nome>UNIFIQUE</Nome>
+    <Codigo>FIQE</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>SETOR ECONÔMICO</Setor>
+    <Subsetor>SUBSETOR</Subsetor>
+    <Segmento>SEGMENTO</Segmento>
+    <Nome>NOME DE PREGÃO</Nome>
+    <Codigo>CÓDIGO</Codigo>
+    <SegmentoNegociacao>SEGMENTO DE NEGOCIAÇÃO</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Utilidade Pública</Setor>
+    <Subsetor>Energia Elétrica</Subsetor>
+    <Segmento>Energia Elétrica</Segmento>
+    <Nome>AESOPERACOES</Nome>
+    <Codigo>AESO</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Utilidade Pública</Setor>
+    <Subsetor>Energia Elétrica</Subsetor>
+    <Segmento>Energia Elétrica</Segmento>
+    <Nome>AFLUENTE T</Nome>
+    <Codigo>AFLT</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Utilidade Pública</Setor>
+    <Subsetor>Energia Elétrica</Subsetor>
+    <Segmento>Energia Elétrica</Segmento>
+    <Nome>ALUPAR</Nome>
+    <Codigo>ALUP</Codigo>
+    <SegmentoNegociacao>Nível 2</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Utilidade Pública</Setor>
+    <Subsetor>Energia Elétrica</Subsetor>
+    <Segmento>Energia Elétrica</Segmento>
+    <Nome>AMPLA ENERG</Nome>
+    <Codigo>CBEE</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Utilidade Pública</Setor>
+    <Subsetor>Energia Elétrica</Subsetor>
+    <Segmento>Energia Elétrica</Segmento>
+    <Nome>AUREN</Nome>
+    <Codigo>AURE</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Utilidade Pública</Setor>
+    <Subsetor>Energia Elétrica</Subsetor>
+    <Segmento>Energia Elétrica</Segmento>
+    <Nome>AXIA ENERGIA</Nome>
+    <Codigo>AXIA</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Utilidade Pública</Setor>
+    <Subsetor>Energia Elétrica</Subsetor>
+    <Segmento>Energia Elétrica</Segmento>
+    <Nome>CEB</Nome>
+    <Codigo>CEBR</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Utilidade Pública</Setor>
+    <Subsetor>Energia Elétrica</Subsetor>
+    <Segmento>Energia Elétrica</Segmento>
+    <Nome>CEEE-D</Nome>
+    <Codigo>CEED</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Utilidade Pública</Setor>
+    <Subsetor>Energia Elétrica</Subsetor>
+    <Segmento>Energia Elétrica</Segmento>
+    <Nome>CELESC</Nome>
+    <Codigo>CLSC</Codigo>
+    <SegmentoNegociacao>Nível 2</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Utilidade Pública</Setor>
+    <Subsetor>Energia Elétrica</Subsetor>
+    <Segmento>Energia Elétrica</Segmento>
+    <Nome>CELGPAR</Nome>
+    <Codigo>GPAR</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Utilidade Pública</Setor>
+    <Subsetor>Energia Elétrica</Subsetor>
+    <Segmento>Energia Elétrica</Segmento>
+    <Nome>CEMIG</Nome>
+    <Codigo>CMIG</Codigo>
+    <SegmentoNegociacao>Nível 1</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Utilidade Pública</Setor>
+    <Subsetor>Energia Elétrica</Subsetor>
+    <Segmento>Energia Elétrica</Segmento>
+    <Nome>COELBA</Nome>
+    <Codigo>CEEB</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Utilidade Pública</Setor>
+    <Subsetor>Energia Elétrica</Subsetor>
+    <Segmento>Energia Elétrica</Segmento>
+    <Nome>COELCE</Nome>
+    <Codigo>COCE</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Utilidade Pública</Setor>
+    <Subsetor>Energia Elétrica</Subsetor>
+    <Segmento>Energia Elétrica</Segmento>
+    <Nome>COMERC PAR</Nome>
+    <Codigo>COMR</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Utilidade Pública</Setor>
+    <Subsetor>Energia Elétrica</Subsetor>
+    <Segmento>Energia Elétrica</Segmento>
+    <Nome>COPEL</Nome>
+    <Codigo>CPLE</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Utilidade Pública</Setor>
+    <Subsetor>Energia Elétrica</Subsetor>
+    <Segmento>Energia Elétrica</Segmento>
+    <Nome>CPFL ENERGIA</Nome>
+    <Codigo>CPFE</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Utilidade Pública</Setor>
+    <Subsetor>Energia Elétrica</Subsetor>
+    <Segmento>Energia Elétrica</Segmento>
+    <Nome>ELEKTRO</Nome>
+    <Codigo>EKTR</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Utilidade Pública</Setor>
+    <Subsetor>Energia Elétrica</Subsetor>
+    <Segmento>Energia Elétrica</Segmento>
+    <Nome>ENERGISA</Nome>
+    <Codigo>ENGI</Codigo>
+    <SegmentoNegociacao>Nível 2</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Utilidade Pública</Setor>
+    <Subsetor>Energia Elétrica</Subsetor>
+    <Segmento>Energia Elétrica</Segmento>
+    <Nome>ENERGISA MT</Nome>
+    <Codigo>ENMT</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Utilidade Pública</Setor>
+    <Subsetor>Energia Elétrica</Subsetor>
+    <Segmento>Energia Elétrica</Segmento>
+    <Nome>ENEVA</Nome>
+    <Codigo>ENEV</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Utilidade Pública</Setor>
+    <Subsetor>Energia Elétrica</Subsetor>
+    <Segmento>Energia Elétrica</Segmento>
+    <Nome>ENGIE BRASIL</Nome>
+    <Codigo>EGIE</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Utilidade Pública</Setor>
+    <Subsetor>Energia Elétrica</Subsetor>
+    <Segmento>Energia Elétrica</Segmento>
+    <Nome>EQTL PARA</Nome>
+    <Codigo>EQPA</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Utilidade Pública</Setor>
+    <Subsetor>Energia Elétrica</Subsetor>
+    <Segmento>Energia Elétrica</Segmento>
+    <Nome>EQTLMARANHAO</Nome>
+    <Codigo>EQMA</Codigo>
+    <SegmentoNegociacao>Básico Balcão</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Utilidade Pública</Setor>
+    <Subsetor>Energia Elétrica</Subsetor>
+    <Segmento>Energia Elétrica</Segmento>
+    <Nome>EQUATORIAL</Nome>
+    <Codigo>EQTL</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Utilidade Pública</Setor>
+    <Subsetor>Energia Elétrica</Subsetor>
+    <Segmento>Energia Elétrica</Segmento>
+    <Nome>GER PARANAP</Nome>
+    <Codigo>GEPA</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Utilidade Pública</Setor>
+    <Subsetor>Energia Elétrica</Subsetor>
+    <Segmento>Energia Elétrica</Segmento>
+    <Nome>ISA ENERGIA</Nome>
+    <Codigo>ISAE</Codigo>
+    <SegmentoNegociacao>Nível 1</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Utilidade Pública</Setor>
+    <Subsetor>Energia Elétrica</Subsetor>
+    <Segmento>Energia Elétrica</Segmento>
+    <Nome>LIGHT</Nome>
+    <Codigo>LIGH</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Utilidade Pública</Setor>
+    <Subsetor>Energia Elétrica</Subsetor>
+    <Segmento>Energia Elétrica</Segmento>
+    <Nome>LIGHT S/A</Nome>
+    <Codigo>LIGT</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Utilidade Pública</Setor>
+    <Subsetor>Energia Elétrica</Subsetor>
+    <Segmento>Energia Elétrica</Segmento>
+    <Nome>PROMAN</Nome>
+    <Codigo>PRMN</Codigo>
+    <SegmentoNegociacao>Básico Balcão</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Utilidade Pública</Setor>
+    <Subsetor>Energia Elétrica</Subsetor>
+    <Segmento>Energia Elétrica</Segmento>
+    <Nome>REDE ENERGIA</Nome>
+    <Codigo>REDE</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Utilidade Pública</Setor>
+    <Subsetor>Energia Elétrica</Subsetor>
+    <Segmento>Energia Elétrica</Segmento>
+    <Nome>RENOVA</Nome>
+    <Codigo>RNEW</Codigo>
+    <SegmentoNegociacao>Nível 2</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Utilidade Pública</Setor>
+    <Subsetor>Energia Elétrica</Subsetor>
+    <Segmento>Energia Elétrica</Segmento>
+    <Nome>TAESA</Nome>
+    <Codigo>TAEE</Codigo>
+    <SegmentoNegociacao>Nível 2</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Utilidade Pública</Setor>
+    <Subsetor>Água e Saneamento</Subsetor>
+    <Segmento>Água e Saneamento</Segmento>
+    <Nome>AMBIPAR</Nome>
+    <Codigo>AMBP</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Utilidade Pública</Setor>
+    <Subsetor>Água e Saneamento</Subsetor>
+    <Segmento>Água e Saneamento</Segmento>
+    <Nome>CASAN</Nome>
+    <Codigo>CASN</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Utilidade Pública</Setor>
+    <Subsetor>Água e Saneamento</Subsetor>
+    <Segmento>Água e Saneamento</Segmento>
+    <Nome>COPASA</Nome>
+    <Codigo>CSMG</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Utilidade Pública</Setor>
+    <Subsetor>Água e Saneamento</Subsetor>
+    <Segmento>Água e Saneamento</Segmento>
+    <Nome>IGUA SA</Nome>
+    <Codigo>IGSN</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Utilidade Pública</Setor>
+    <Subsetor>Água e Saneamento</Subsetor>
+    <Segmento>Água e Saneamento</Segmento>
+    <Nome>ORIZON</Nome>
+    <Codigo>ORVR</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Utilidade Pública</Setor>
+    <Subsetor>Água e Saneamento</Subsetor>
+    <Segmento>Água e Saneamento</Segmento>
+    <Nome>SABESP</Nome>
+    <Codigo>SBSP</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Utilidade Pública</Setor>
+    <Subsetor>Água e Saneamento</Subsetor>
+    <Segmento>Água e Saneamento</Segmento>
+    <Nome>SANEPAR</Nome>
+    <Codigo>SAPR</Codigo>
+    <SegmentoNegociacao>Nível 2</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Utilidade Pública</Setor>
+    <Subsetor>Gás</Subsetor>
+    <Segmento>Gás</Segmento>
+    <Nome>CEG</Nome>
+    <Codigo>CEGR</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Utilidade Pública</Setor>
+    <Subsetor>Gás</Subsetor>
+    <Segmento>Gás</Segmento>
+    <Nome>COMGAS</Nome>
+    <Codigo>CGAS</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Utilidade Pública</Setor>
+    <Subsetor>Gás</Subsetor>
+    <Segmento>Gás</Segmento>
+    <Nome>COMPASS</Nome>
+    <Codigo>PASS</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>SETOR ECONÔMICO</Setor>
+    <Subsetor>SUBSETOR</Subsetor>
+    <Segmento>SEGMENTO</Segmento>
+    <Nome>NOME DE PREGÃO</Nome>
+    <Codigo>CÓDIGO</Codigo>
+    <SegmentoNegociacao>SEGMENTO DE NEGOCIAÇÃO</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Intermediários Financeiros</Subsetor>
+    <Segmento>Bancos</Segmento>
+    <Nome>ABC BRASIL</Nome>
+    <Codigo>ABCB</Codigo>
+    <SegmentoNegociacao>Nível 2</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Intermediários Financeiros</Subsetor>
+    <Segmento>Bancos</Segmento>
+    <Nome>ALFA HOLDING</Nome>
+    <Codigo>RPAD</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Intermediários Financeiros</Subsetor>
+    <Segmento>Bancos</Segmento>
+    <Nome>AMAZONIA</Nome>
+    <Codigo>BAZA</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Intermediários Financeiros</Subsetor>
+    <Segmento>Bancos</Segmento>
+    <Nome>BANCO BMG</Nome>
+    <Codigo>BMGB</Codigo>
+    <SegmentoNegociacao>Nível 1</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Intermediários Financeiros</Subsetor>
+    <Segmento>Bancos</Segmento>
+    <Nome>BANESE</Nome>
+    <Codigo>BGIP</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Intermediários Financeiros</Subsetor>
+    <Segmento>Bancos</Segmento>
+    <Nome>BANESTES</Nome>
+    <Codigo>BEES</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Intermediários Financeiros</Subsetor>
+    <Segmento>Bancos</Segmento>
+    <Nome>BANPARA</Nome>
+    <Codigo>BPAR</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Intermediários Financeiros</Subsetor>
+    <Segmento>Bancos</Segmento>
+    <Nome>BANRISUL</Nome>
+    <Codigo>BRSR</Codigo>
+    <SegmentoNegociacao>Nível 1</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Intermediários Financeiros</Subsetor>
+    <Segmento>Bancos</Segmento>
+    <Nome>BR PARTNERS</Nome>
+    <Codigo>BRBI</Codigo>
+    <SegmentoNegociacao>Nível 2</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Intermediários Financeiros</Subsetor>
+    <Segmento>Bancos</Segmento>
+    <Nome>BRADESCO</Nome>
+    <Codigo>BBDC</Codigo>
+    <SegmentoNegociacao>Nível 1</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Intermediários Financeiros</Subsetor>
+    <Segmento>Bancos</Segmento>
+    <Nome>BRASIL</Nome>
+    <Codigo>BBAS</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Intermediários Financeiros</Subsetor>
+    <Segmento>Bancos</Segmento>
+    <Nome>BRB BANCO</Nome>
+    <Codigo>BSLI</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Intermediários Financeiros</Subsetor>
+    <Segmento>Bancos</Segmento>
+    <Nome>BTGP BANCO</Nome>
+    <Codigo>BPAC</Codigo>
+    <SegmentoNegociacao>Nível 2</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Intermediários Financeiros</Subsetor>
+    <Segmento>Bancos</Segmento>
+    <Nome>ITAUUNIBANCO</Nome>
+    <Codigo>ITUB</Codigo>
+    <SegmentoNegociacao>Nível 1</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Intermediários Financeiros</Subsetor>
+    <Segmento>Bancos</Segmento>
+    <Nome>MERC INVEST</Nome>
+    <Codigo>BMIN</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Intermediários Financeiros</Subsetor>
+    <Segmento>Bancos</Segmento>
+    <Nome>MERCANTIL</Nome>
+    <Codigo>BMEB</Codigo>
+    <SegmentoNegociacao>Nível 1</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Intermediários Financeiros</Subsetor>
+    <Segmento>Bancos</Segmento>
+    <Nome>NORD BRASIL</Nome>
+    <Codigo>BNBR</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Intermediários Financeiros</Subsetor>
+    <Segmento>Bancos</Segmento>
+    <Nome>PINE</Nome>
+    <Codigo>PINE</Codigo>
+    <SegmentoNegociacao>Nível 2</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Intermediários Financeiros</Subsetor>
+    <Segmento>Bancos</Segmento>
+    <Nome>SANTANDER BR</Nome>
+    <Codigo>SANB</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Intermediários Financeiros</Subsetor>
+    <Segmento>Outros Intermediarios Financeiros</Segmento>
+    <Nome>INVEST BEMGE</Nome>
+    <Codigo>FIGE</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Securitizadoras de Recebíveis</Subsetor>
+    <Segmento>Securitizadoras de Recebíveis</Segmento>
+    <Nome>POLO CAP SEC</Nome>
+    <Codigo>PLSC</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Serviços Financeiros Diversos</Subsetor>
+    <Segmento>Gestão de Recursos e Investimentos</Segmento>
+    <Nome>G2D INVEST</Nome>
+    <Codigo>G2DI</Codigo>
+    <SegmentoNegociacao>BDR3</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Serviços Financeiros Diversos</Subsetor>
+    <Segmento>Gestão de Recursos e Investimentos</Segmento>
+    <Nome>PPLA</Nome>
+    <Codigo>PPLA</Codigo>
+    <SegmentoNegociacao>BDR3</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Serviços Financeiros Diversos</Subsetor>
+    <Segmento>Serviços Financeiros Diversos</Segmento>
+    <Nome>B3</Nome>
+    <Codigo>B3SA</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Serviços Financeiros Diversos</Subsetor>
+    <Segmento>Serviços Financeiros Diversos</Segmento>
+    <Nome>CSU DIGITAL</Nome>
+    <Codigo>CSUD</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Previdência e Seguros</Subsetor>
+    <Segmento>Seguradoras</Segmento>
+    <Nome>BBSEGURIDADE</Nome>
+    <Codigo>BBSE</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Previdência e Seguros</Subsetor>
+    <Segmento>Seguradoras</Segmento>
+    <Nome>CAIXA SEGURI</Nome>
+    <Codigo>CXSE</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Previdência e Seguros</Subsetor>
+    <Segmento>Seguradoras</Segmento>
+    <Nome>PORTO SEGURO</Nome>
+    <Codigo>PSSA</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Previdência e Seguros</Subsetor>
+    <Segmento>Resseguradoras</Segmento>
+    <Nome>IRBBRASIL RE</Nome>
+    <Codigo>IRBR</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Previdência e Seguros</Subsetor>
+    <Segmento>Corretoras de Seguros e Resseguros</Segmento>
+    <Nome>WIZ CO</Nome>
+    <Codigo>WIZC</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Exploração de Imóveis</Subsetor>
+    <Segmento>Exploração de Imóveis</Segmento>
+    <Nome>ALLOS</Nome>
+    <Codigo>ALOS</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Exploração de Imóveis</Subsetor>
+    <Segmento>Exploração de Imóveis</Segmento>
+    <Nome>GENERALSHOPP</Nome>
+    <Codigo>GSHP</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Exploração de Imóveis</Subsetor>
+    <Segmento>Exploração de Imóveis</Segmento>
+    <Nome>HABITASUL</Nome>
+    <Codigo>HBTS</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Exploração de Imóveis</Subsetor>
+    <Segmento>Exploração de Imóveis</Segmento>
+    <Nome>HBR REALTY</Nome>
+    <Codigo>HBRE</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Exploração de Imóveis</Subsetor>
+    <Segmento>Exploração de Imóveis</Segmento>
+    <Nome>IGUATEMI S.A</Nome>
+    <Codigo>IGTI</Codigo>
+    <SegmentoNegociacao>Nível 1</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Exploração de Imóveis</Subsetor>
+    <Segmento>Exploração de Imóveis</Segmento>
+    <Nome>LOG COM PROP</Nome>
+    <Codigo>LOGG</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Exploração de Imóveis</Subsetor>
+    <Segmento>Exploração de Imóveis</Segmento>
+    <Nome>MULTIPLAN</Nome>
+    <Codigo>MULT</Codigo>
+    <SegmentoNegociacao>Nível 2</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Exploração de Imóveis</Subsetor>
+    <Segmento>Exploração de Imóveis</Segmento>
+    <Nome>NORDON MET</Nome>
+    <Codigo>NORD</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Exploração de Imóveis</Subsetor>
+    <Segmento>Exploração de Imóveis</Segmento>
+    <Nome>PAR AL BAHIA</Nome>
+    <Codigo>PEAB</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Exploração de Imóveis</Subsetor>
+    <Segmento>Exploração de Imóveis</Segmento>
+    <Nome>SAO CARLOS</Nome>
+    <Codigo>SCAR</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Exploração de Imóveis</Subsetor>
+    <Segmento>Exploração de Imóveis</Segmento>
+    <Nome>SYN PROP TEC</Nome>
+    <Codigo>SYNE</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Exploração de Imóveis</Subsetor>
+    <Segmento>Intermediação Imobiliária</Segmento>
+    <Nome>LOPES BRASIL</Nome>
+    <Codigo>LPSB</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Exploração de Imóveis</Subsetor>
+    <Segmento>Intermediação Imobiliária</Segmento>
+    <Nome>NEXPE</Nome>
+    <Codigo>NEXP</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Holdings Diversificadas</Subsetor>
+    <Segmento>Holdings Diversificadas</Segmento>
+    <Nome>ARANDU</Nome>
+    <Codigo>ARND</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Holdings Diversificadas</Subsetor>
+    <Segmento>Holdings Diversificadas</Segmento>
+    <Nome>EMBPAR S/A</Nome>
+    <Codigo>EPAR</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Holdings Diversificadas</Subsetor>
+    <Segmento>Holdings Diversificadas</Segmento>
+    <Nome>ITAUSA</Nome>
+    <Codigo>ITSA</Codigo>
+    <SegmentoNegociacao>Nível 1</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Holdings Diversificadas</Subsetor>
+    <Segmento>Holdings Diversificadas</Segmento>
+    <Nome>SIMPAR</Nome>
+    <Codigo>SIMH</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Serviços Diversos</Subsetor>
+    <Segmento>Serviços Diversos</Segmento>
+    <Nome>B100 S.A.</Nome>
+    <Codigo>B100</Codigo>
+    <SegmentoNegociacao>Novo Mercado</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Outros Títulos</Subsetor>
+    <Segmento>Outros Títulos</Segmento>
+    <Nome>CEPAC - CTBA</Nome>
+    <Codigo>CTBA</Codigo>
+    <SegmentoNegociacao>Básico Balcão</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Outros Títulos</Subsetor>
+    <Segmento>Outros Títulos</Segmento>
+    <Nome>CEPAC - MCRJ</Nome>
+    <Codigo>MCRJ</Codigo>
+    <SegmentoNegociacao>Básico Balcão</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Financeiro</Setor>
+    <Subsetor>Outros Títulos</Subsetor>
+    <Segmento>Outros Títulos</Segmento>
+    <Nome>CEPAC - PMSP</Nome>
+    <Codigo>PMSP</Codigo>
+    <SegmentoNegociacao>Básico Balcão</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>SETOR ECONÔMICO</Setor>
+    <Subsetor>SUBSETOR</Subsetor>
+    <Segmento>SEGMENTO</Segmento>
+    <Nome>NOME DE PREGÃO</Nome>
+    <Codigo>CÓDIGO</Codigo>
+    <SegmentoNegociacao>SEGMENTO DE NEGOCIAÇÃO</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Outros</Setor>
+    <Subsetor>Outros</Subsetor>
+    <Segmento>Outros</Segmento>
+    <Nome>524 PARTICIP</Nome>
+    <Codigo>QVQP</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Outros</Setor>
+    <Subsetor>Outros</Subsetor>
+    <Segmento>Outros</Segmento>
+    <Nome>BETAPART</Nome>
+    <Codigo>BETP</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Outros</Setor>
+    <Subsetor>Outros</Subsetor>
+    <Segmento>Outros</Segmento>
+    <Nome>CEMEPE</Nome>
+    <Codigo>MAPT</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Outros</Setor>
+    <Subsetor>Outros</Subsetor>
+    <Segmento>Outros</Segmento>
+    <Nome>GAMA PART</Nome>
+    <Codigo>OPGM</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Outros</Setor>
+    <Subsetor>Outros</Subsetor>
+    <Segmento>Outros</Segmento>
+    <Nome>POLPAR</Nome>
+    <Codigo>PPAR</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Outros</Setor>
+    <Subsetor>Outros</Subsetor>
+    <Segmento>Outros</Segmento>
+    <Nome>PROMPT PART</Nome>
+    <Codigo>PRPT</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Outros</Setor>
+    <Subsetor>Outros</Subsetor>
+    <Segmento>Outros</Segmento>
+    <Nome>SUDESTE S/A</Nome>
+    <Codigo>OPSE</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+  <Empresa>
+    <Setor>Outros</Setor>
+    <Subsetor>Outros</Subsetor>
+    <Segmento>Outros</Segmento>
+    <Nome>SUL 116 PART</Nome>
+    <Codigo>OPTS</Codigo>
+    <SegmentoNegociacao>Básico Bolsa</SegmentoNegociacao>
+  </Empresa>
+</ClassificacaoSetorial>
