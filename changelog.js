@@ -2,9 +2,19 @@
 //   - suba "version" e "build" (o build define o nome do cache do service worker);
 //   - acrescente uma entrada nova no INÍCIO de "entries" com as mudanças, em linguagem simples.
 globalThis.LEDGERLY_CHANGELOG = {
-  version: '1.4.0',
-  build: 24,
+  version: '1.4.1',
+  build: 25,
   entries: [
+    {
+      version: '1.4.1',
+      date: '2026-11-13',
+      notes: [
+        'Corrigido o falso “Não informada” na rosca por corretora: ativos sem cotação agora usam o último preço negociado (pela data da operação), o mesmo valor em todas as visões.',
+        'Rosca por ativo mostra até 8 ativos; “Outros” só aparece acima disso e abre a lista do que está agrupado.',
+        'Meus ativos: o contador (“7 de 7 ativos”) e o “Limpar” ficam numa linha própria e não saem mais da tela ao usar os filtros Todas e Encerradas.',
+        'Rosca por corretora mostra “Sem corretora” apenas quando há operações realmente sem corretora, e ao tocar abre Meus ativos só com elas.'
+      ]
+    },
     {
       version: '1.4.0',
       date: '2026-11-13',

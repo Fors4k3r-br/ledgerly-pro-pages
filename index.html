@@ -314,13 +314,13 @@
         <select id="positionsSetor" aria-label="Filtrar por setor" onchange="applyPositionsView()" class="w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-3 py-2.5 text-xs text-white outline-none"><option value="">Todos os setores</option></select>
         <button type="button" id="sectorPendingBox" onclick="classifyNextPending()" class="hidden w-full text-left px-3 py-2.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-200 text-xs font-semibold"></button>
         <p id="positionsCorretoraNote" class="hidden text-[11px] text-slate-500">Há proventos sem corretora informada; eles só aparecem em “Todas as corretoras”.</p>
-        <div class="flex items-center justify-between gap-2">
+        <div class="space-y-2">
           <div id="positionsChips" class="flex gap-1.5" role="group" aria-label="Filtrar posições">
             <button type="button" data-f="active" onclick="setPositionsFilter('active')" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-300">Abertas</button>
             <button type="button" data-f="all" onclick="setPositionsFilter('all')" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-300">Todas</button>
             <button type="button" data-f="closed" onclick="setPositionsFilter('closed')" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-300">Encerradas</button>
           </div>
-          <div id="positionsFilterInfo" class="hidden flex items-center gap-2 shrink-0">
+          <div id="positionsFilterInfo" class="hidden flex items-center justify-between gap-3 px-1">
             <span id="positionsResultCount" class="text-xs text-slate-400"></span>
             <button type="button" onclick="clearPositionsFilters()" class="text-xs text-indigo-300 hover:text-indigo-200">Limpar</button>
           </div>
@@ -1542,7 +1542,8 @@
         const prev = el.value; el.innerHTML = html;
         if (Array.from(el.options).some(o => o.value === prev)) el.value = prev;
       };
-      set('positionsCorretora', '<option value="">Todas as corretoras</option>' + opts);
+      const temSemCorretora = Number(queryAll('SELECT COUNT(*) AS n FROM operacoes WHERE corretora_id IS NULL')[0].n) > 0;
+      set('positionsCorretora', '<option value="">Todas as corretoras</option>' + (temSemCorretora ? '<option value="none">Sem corretora</option>' : '') + opts);
       set('savedNotesCorretora', '<option value="">Todas as corretoras</option>' + opts);
       set('provCorretora', '<option value="">Não informada</option>' + opts);
       set('provFilterCorretora', '<option value="">Todas as corretoras</option>' + opts);
@@ -1618,13 +1619,22 @@
     // 2. CÁLCULO CONSOLIDADO DE CUSTÓDIA E PREÇO MÉDIO
     // =========================================================================
     function getConsolidatedPositions(corretoraId = null, asOfISO = null) {
-      let ops = corretoraId
-        ? queryAll(`SELECT * FROM operacoes WHERE corretora_id = ? ORDER BY id ASC`, [Number(corretoraId)])
-        : queryAll(`SELECT * FROM operacoes ORDER BY id ASC`);
+      let ops = corretoraId === 'none'
+        ? queryAll(`SELECT * FROM operacoes WHERE corretora_id IS NULL ORDER BY id ASC`)
+        : corretoraId
+          ? queryAll(`SELECT * FROM operacoes WHERE corretora_id = ? ORDER BY id ASC`, [Number(corretoraId)])
+          : queryAll(`SELECT * FROM operacoes ORDER BY id ASC`);
       if (asOfISO) ops = ops.filter(op => { const d = toISODate(op.data_operacao); return d && d <= asOfISO; });
       const quotesRows = queryAll(`SELECT ticker, preco_atual FROM cotacoes_atuais`);
       const quotesMap = {};
       quotesRows.forEach(r => { quotesMap[r.ticker] = Number(r.preco_atual); });
+      // Sem cotação, vale o último preço negociado do ativo (pela DATA da operação, em qualquer corretora):
+      // assim o patrimônio é o mesmo na carteira inteira e em cada corretora
+      const lastPrice = {};
+      queryAll('SELECT id, ticker, preco_unitario, data_operacao FROM operacoes').forEach(r => {
+        const t = String(r.ticker || '').toUpperCase().trim(), k = toISODate(r.data_operacao) + '|' + String(r.id).padStart(9, '0');
+        if (!lastPrice[t] || k > lastPrice[t].k) lastPrice[t] = { k, p: Number(r.preco_unitario) };
+      });
 
       const map = {};
 
@@ -1688,11 +1698,13 @@
       });
 
       const provMap = {};
-      (corretoraId
+      (corretoraId === 'none'
+        ? queryAll('SELECT ticker, SUM(valor_liquido) AS total FROM proventos WHERE corretora_id IS NULL GROUP BY ticker')
+        : corretoraId
         ? queryAll('SELECT ticker, SUM(valor_liquido) AS total FROM proventos WHERE corretora_id = ? GROUP BY ticker', [Number(corretoraId)])
         : queryAll('SELECT ticker, SUM(valor_liquido) AS total FROM proventos GROUP BY ticker')).forEach(r => { provMap[r.ticker] = Number(r.total) || 0; });
       return Object.values(map).map(pos => {
-        const cotacaoAtual = quotesMap[pos.ticker] !== undefined ? quotesMap[pos.ticker] : pos.ultimoPrecoNegociado;
+        const cotacaoAtual = quotesMap[pos.ticker] !== undefined ? quotesMap[pos.ticker] : (lastPrice[pos.ticker] ? lastPrice[pos.ticker].p : pos.ultimoPrecoNegociado);
         const valorInvestido = pos.qtdAtual * pos.precoMedio;
         const patrimonioAtual = pos.qtdAtual * cotacaoAtual;
         const lucroPrejuizo = patrimonioAtual - valorInvestido;
@@ -1966,6 +1978,11 @@
       if (s) s.value = ''; if (f) f.value = 'active'; if (c) c.value = String(id);
       switchTab('posicoes');
     }
+    let outrosAtivos = [], outrosTotal = 0;
+    function showOutrosAtivos() {
+      const lines = outrosAtivos.slice().sort((a, b) => b.value - a.value).map(o => `• ${o.ticker} — ${(outrosTotal > 0 ? (o.value / outrosTotal) * 100 : 0).toFixed(1)}%`);
+      ledgerlyModal({ title: `Outros (${outrosAtivos.length} ativos)`, message: 'Ativos menores agrupados na rosca:\n' + lines.join('\n'), buttons: [{ label: 'Fechar', value: 'ok', primary: true }] });
+    }
     function renderPortfolioChart(activePositions, totalPatrimonio) {
       const emptyState = document.getElementById('emptyChartState');
       const chartWrapper = document.getElementById('chartWrapper');
@@ -2000,16 +2017,20 @@
           const v = getConsolidatedPositions(c.id).filter(p => p.qtdAtual > 0).reduce((a, p) => a + p.patrimonioAtual, 0);
           if (v > 0) slices.push({ label: shortName(c.nome), value: v, action: `focusCorretora(${Number(c.id)})` });
         });
-        const resto = totalPatrimonio - slices.reduce((a, s) => a + s.value, 0);
-        if (resto > 0.5) slices.push({ label: 'Não informada', value: resto, action: '' });
+        const semCorr = getConsolidatedPositions('none').filter(p => p.qtdAtual > 0).reduce((a, p) => a + p.patrimonioAtual, 0);
+        if (semCorr > 0.005) slices.push({ label: 'Sem corretora', value: semCorr, action: "focusCorretora('none')" });
         slices.sort((a, b) => b.value - a.value);
       } else {
         const sorted = activePositions.slice().sort((a, b) => b.patrimonioAtual - a.patrimonioAtual);
-        sorted.slice(0, 5).forEach(p => slices.push({ label: p.ticker, value: p.patrimonioAtual, action: `focusTicker('${p.ticker}')` }));
-        const rest = sorted.slice(5);
-        if (rest.length) slices.push({ label: `Outros (${rest.length})`, value: rest.reduce((a, p) => a + p.patrimonioAtual, 0), action: '' });
+        // Até 8 ativos aparecem sozinhos; só acima disso os menores são agrupados em "Outros" (que abre a lista)
+        const head = sorted.length > 8 ? sorted.slice(0, 7) : sorted, rest = sorted.length > 8 ? sorted.slice(7) : [];
+        head.forEach(p => slices.push({ label: p.ticker, value: p.patrimonioAtual, action: `focusTicker('${p.ticker}')` }));
+        outrosAtivos = rest.map(p => ({ ticker: p.ticker, value: p.patrimonioAtual }));
+        if (rest.length) slices.push({ label: `Outros (${rest.length})`, value: rest.reduce((a, p) => a + p.patrimonioAtual, 0), action: 'showOutrosAtivos()', grey: true });
       }
-      const colorOf = (s, idx) => (!s.action ? '#64748b' : palette[idx % palette.length]);
+      const colorOf = (s, idx) => ((s.grey || !s.action) ? '#64748b' : palette[idx % palette.length]);
+      const denom = slices.reduce((a, s) => a + s.value, 0) || totalPatrimonio;   // as fatias sempre somam 100%
+      outrosTotal = denom;
 
       const ctx = document.getElementById('portfolioDonutChart').getContext('2d');
       if (portfolioChart) portfolioChart.destroy();
@@ -2020,14 +2041,14 @@
           responsive: true, maintainAspectRatio: false, cutout: '68%',
           plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(context) {
             const val = context.parsed || 0;
-            const pct = totalPatrimonio > 0 ? ((val / totalPatrimonio) * 100).toFixed(1) : 0;
+            const pct = denom > 0 ? ((val / denom) * 100).toFixed(1) : 0;
             return ` ${context.label}: ${isPrivacyMode ? 'R$ ••••' : formatMoney(val)} (${pct}%)`;
           } } } }
         }
       });
 
       legendList.innerHTML = slices.map((s, idx) => {
-        const pct = totalPatrimonio > 0 ? ((s.value / totalPatrimonio) * 100) : 0;
+        const pct = denom > 0 ? ((s.value / denom) * 100) : 0;
         return `
           <button type="button" ${s.action ? `onclick="${s.action}"` : 'disabled'} class="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/90 border border-slate-800/90 text-xs text-left transition ${s.action ? 'hover:border-emerald-500/50' : 'cursor-default'}">
             <div class="flex items-center gap-2 truncate">
