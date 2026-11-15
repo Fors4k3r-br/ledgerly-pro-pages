@@ -2,9 +2,18 @@
 //   - suba "version" e "build" (o build define o nome do cache do service worker);
 //   - acrescente uma entrada nova no INÍCIO de "entries" com as mudanças, em linguagem simples.
 globalThis.LEDGERLY_CHANGELOG = {
-  version: '1.3.1',
-  build: 23,
+  version: '1.4.0',
+  build: 24,
   entries: [
+    {
+      version: '1.4.0',
+      date: '2026-11-13',
+      notes: [
+        'Nova visão “Por setor” em Meus ativos, com a classificação setorial da B3: toque numa fatia para ver só os ativos daquele setor.',
+        'Cada ativo mostra setor e subsetor. Para empresas novas ou que mudaram de setor, toque no setor e escolha o correto (vale para todas as classes da empresa). Fundos, ETFs e BDRs ficam em grupos próprios.',
+        'Importação de notas de outras corretoras corrigida (BTG Pactual): taxas de liquidação e de transferência de ativos, número e data do pregão e nome completo da corretora.'
+      ]
+    },
     {
       version: '1.3.1',
       date: '2026-11-10',

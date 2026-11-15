@@ -7,6 +7,7 @@ const APP_SHELL = [
   "./index.html",
   "./manifest.json",
   "./changelog.js",
+  "./setores.js",
   "./assets/tailwind.css",
   "./assets/fonts.css",
   "./assets/fonts/inter-latin-400-normal.woff2",

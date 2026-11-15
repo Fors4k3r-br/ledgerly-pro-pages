@@ -23,6 +23,7 @@
 
   <!-- Lucide Icons -->
   <script src="./changelog.js"></script>
+  <script src="./setores.js"></script>
   <script src="./vendor/lucide.min.js"></script>
   <!-- Chart.js -->
   <script src="./vendor/chart.umd.js"></script>
@@ -263,6 +264,7 @@
         <div id="chartModeChips" class="flex gap-1.5" role="group" aria-label="Agrupar gráfico">
           <button type="button" data-m="ativo" onclick="setChartMode('ativo')" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-300">Por ativo</button>
           <button type="button" data-m="corretora" onclick="setChartMode('corretora')" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-300">Por corretora</button>
+          <button type="button" data-m="setor" onclick="setChartMode('setor')" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-300">Por setor</button>
         </div>
 
         <!-- Estado Vazio do Gráfico -->
@@ -309,6 +311,8 @@
           </select>
         </div>
         <select id="positionsCorretora" aria-label="Filtrar por corretora" onchange="setPositionsCorretora()" class="w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-3 py-2.5 text-xs text-white outline-none"><option value="">Todas as corretoras</option></select>
+        <select id="positionsSetor" aria-label="Filtrar por setor" onchange="applyPositionsView()" class="w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-3 py-2.5 text-xs text-white outline-none"><option value="">Todos os setores</option></select>
+        <button type="button" id="sectorPendingBox" onclick="classifyNextPending()" class="hidden w-full text-left px-3 py-2.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-200 text-xs font-semibold"></button>
         <p id="positionsCorretoraNote" class="hidden text-[11px] text-slate-500">Há proventos sem corretora informada; eles só aparecem em “Todas as corretoras”.</p>
         <div class="flex items-center justify-between gap-2">
           <div id="positionsChips" class="flex gap-1.5" role="group" aria-label="Filtrar posições">
@@ -1483,6 +1487,13 @@
         );
         CREATE INDEX IF NOT EXISTS idx_proventos_ticker ON proventos(ticker);
 
+        CREATE TABLE IF NOT EXISTS classificacao_manual (
+          codigo TEXT PRIMARY KEY,
+          setor TEXT NOT NULL,
+          subsetor TEXT DEFAULT '',
+          atualizado_em TEXT
+        );
+
         CREATE TABLE IF NOT EXISTS corretoras (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           nome TEXT NOT NULL,
@@ -1711,6 +1722,7 @@
       const positions = getConsolidatedPositions();
       allPositionsData = positions;
       fillCorretoraSelects();
+      loadManualClass(); fillSetorSelect(); renderSectorPending();
       const activePositions = positions.filter(p => p.qtdAtual > 0);
 
       // Soma dos KPIs da Carteira
@@ -1851,8 +1863,98 @@
       });
     }
 
-    let chartMode = (() => { try { return localStorage.getItem('ledgerly_chart_mode') === 'corretora' ? 'corretora' : 'ativo'; } catch (_) { return 'ativo'; } })();
-    function setChartMode(m) { chartMode = m === 'corretora' ? 'corretora' : 'ativo'; try { localStorage.setItem('ledgerly_chart_mode', chartMode); } catch (_) {} refreshAllViews(); }
+    // ===== CLASSIFICAÇÃO SETORIAL (cadastro da B3 em setores.js + correções do usuário no banco) =====
+    const SETOR_DB = globalThis.LEDGERLY_SETORES || { setores: [], subsetores: [], empresas: {} };
+    const SETOR_ESPECIAIS = ['Fundos e ETFs', 'BDRs'];
+    let manualClass = {};
+    function tickerCode(t) { return String(t || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4); }
+    function loadManualClass() {
+      manualClass = {};
+      try { queryAll('SELECT codigo, setor, subsetor FROM classificacao_manual').forEach(r => { manualClass[r.codigo] = { setor: r.setor, subsetor: r.subsetor || '' }; }); } catch (_) {}
+    }
+    // Ordem: correção do usuário > cadastro da B3 > regras automáticas (fundos/ETFs e BDRs) > sem classificação
+    function classifyTicker(ticker) {
+      const T = String(ticker || '').toUpperCase(), code = tickerCode(T);
+      const m = manualClass[code];
+      if (m) return { setor: m.setor, subsetor: m.subsetor, origem: 'manual', code };
+      const idx = SETOR_DB.empresas[code];
+      if (idx !== undefined) { const s = SETOR_DB.subsetores[idx]; return { setor: SETOR_DB.setores[s[0]], subsetor: s[1], origem: 'b3', code }; }
+      if (/11$/.test(T)) return { setor: 'Fundos e ETFs', subsetor: '', origem: 'auto', code };
+      if (/(32|33|34|35|39)$/.test(T)) return { setor: 'BDRs', subsetor: '', origem: 'auto', code };
+      return { setor: 'Sem classificação', subsetor: '', origem: 'pendente', code };
+    }
+    const setorOptions = () => SETOR_DB.setores.concat(SETOR_ESPECIAIS);
+    function subsetoresDe(setor) { const i = SETOR_DB.setores.indexOf(setor); return i < 0 ? [] : SETOR_DB.subsetores.filter(s => s[0] === i).map(s => s[1]); }
+    function pendingSectorTickers() {
+      const seen = new Set(), out = [];
+      allPositionsData.filter(p => p.qtdAtual > 0).forEach(p => { const c = classifyTicker(p.ticker); if (c.origem === 'pendente' && !seen.has(c.code)) { seen.add(c.code); out.push(p.ticker); } });
+      return out;
+    }
+    function fillSetorSelect() {
+      const el = document.getElementById('positionsSetor'); if (!el) return;
+      const prev = el.value, esc = escapeSavedNoteText;
+      const set = Array.from(new Set(allPositionsData.filter(p => p.qtdAtual > 0).map(p => classifyTicker(p.ticker).setor))).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+      el.innerHTML = '<option value="">Todos os setores</option>' + set.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join('');
+      if (set.includes(prev)) el.value = prev;
+    }
+    function renderSectorPending() {
+      const b = document.getElementById('sectorPendingBox'); if (!b) return;
+      const list = pendingSectorTickers();
+      b.classList.toggle('hidden', !list.length);
+      if (list.length) b.textContent = `⚠ ${list.length} ${list.length === 1 ? 'ativo sem classificação' : 'ativos sem classificação'} (${list.slice(0, 4).join(', ')}${list.length > 4 ? '…' : ''}). Toque para classificar.`;
+    }
+    function classifyNextPending() { const l = pendingSectorTickers(); if (l.length) openSectorEditor(l[0]); }
+    function focusSetor(nome) {
+      const s = document.getElementById('positionsSetor'), f = document.getElementById('positionsFilter'), c = document.getElementById('positionsCorretora'), q = document.getElementById('positionsSearch');
+      if (q) q.value = ''; if (f) f.value = 'active'; if (c) c.value = '';
+      if (s) s.value = nome;
+      switchTab('posicoes'); applyPositionsView();
+    }
+    // Janela para escolher setor e subsetor de um ativo (vale para todas as classes da empresa: PETR3, PETR4…)
+    function openSectorEditor(ticker) {
+      return new Promise(resolve => {
+        const c = classifyTicker(ticker), esc = escapeSavedNoteText;
+        const ov = document.createElement('div');
+        ov.className = 'fixed inset-0 z-[200] bg-black/70 flex items-center justify-center p-4';
+        ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true');
+        const box = document.createElement('div');
+        box.className = 'glass-card w-full max-w-sm max-h-[85vh] overflow-y-auto rounded-2xl p-5 space-y-3 border border-slate-700';
+        const cls = 'w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none';
+        const origem = { manual: 'sua correção', b3: 'cadastro da B3', auto: 'regra automática', pendente: 'sem classificação' }[c.origem];
+        box.innerHTML = `<h3 class="text-base font-bold text-white">Classificar ${esc(ticker)}</h3>
+          <p class="text-xs text-slate-300">Vale para todas as classes de <strong>${esc(c.code)}</strong> (${esc(c.code)}3, ${esc(c.code)}4, ${esc(c.code)}11…). Origem atual: ${origem}.</p>
+          <label class="block text-[11px] font-semibold text-slate-300" for="sectorEditSetor">Setor</label><select id="sectorEditSetor" class="${cls}"></select>
+          <div id="sectorEditSubWrap"><label class="block text-[11px] font-semibold text-slate-300 mb-1.5" for="sectorEditSub">Subsetor</label><select id="sectorEditSub" class="${cls}"></select></div>
+          <p id="sectorEditErr" class="hidden text-xs text-rose-300"></p><div id="sectorEditBtns" class="flex flex-col gap-2 pt-1"></div>`;
+        ov.appendChild(box); document.body.appendChild(ov);
+        const selS = box.querySelector('#sectorEditSetor'), selB = box.querySelector('#sectorEditSub'), wrap = box.querySelector('#sectorEditSubWrap'), err = box.querySelector('#sectorEditErr');
+        const opt = (v, t, sel) => `<option value="${esc(v)}"${sel ? ' selected' : ''}>${esc(t)}</option>`;
+        selS.innerHTML = opt('', 'Escolha o setor…', false) + setorOptions().map(s => opt(s, s, s === c.setor)).join('');
+        const fillSub = pre => { const l = subsetoresDe(selS.value); wrap.classList.toggle('hidden', !l.length); selB.innerHTML = opt('', 'Escolha o subsetor…', false) + l.map(s => opt(s, s, s === pre)).join(''); };
+        fillSub(c.subsetor); selS.addEventListener('change', () => fillSub(''));
+        const done = v => { ov.remove(); resolve(v); };
+        const mk = (label, primary, fn) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = label;
+          b.className = 'w-full px-4 py-2.5 rounded-xl text-xs font-bold ' + (primary ? 'bg-emerald-500 hover:bg-emerald-400 text-slate-950' : 'bg-slate-800 hover:bg-slate-700 text-slate-200');
+          b.onclick = fn; box.querySelector('#sectorEditBtns').appendChild(b); };
+        mk('Salvar', true, async () => {
+          const setor = selS.value; const subs = subsetoresDe(setor), sub = subs.length ? selB.value : '';
+          if (!setor || (subs.length && !sub)) { err.textContent = !setor ? 'Escolha o setor.' : 'Escolha o subsetor.'; err.classList.remove('hidden'); return; }
+          db.run('INSERT OR REPLACE INTO classificacao_manual (codigo, setor, subsetor, atualizado_em) VALUES (?, ?, ?, ?)', [c.code, setor, sub, new Date().toISOString()]);
+          loadManualClass(); done('saved'); refreshAllViews(); showToast(`${c.code} classificado em ${setor}.`, 'success');
+          persistSQLiteToIndexedDB().catch(e => console.error('Falha ao gravar a classificação:', e));
+        });
+        if (c.origem === 'manual') mk('Restaurar padrão', false, async () => {
+          db.run('DELETE FROM classificacao_manual WHERE codigo = ?', [c.code]);
+          loadManualClass(); done('restored'); refreshAllViews(); showToast(`${c.code} voltou à classificação padrão.`, 'info');
+          persistSQLiteToIndexedDB().catch(e => console.error('Falha ao gravar a classificação:', e));
+        });
+        mk('Cancelar', false, () => done('cancel'));
+      });
+    }
+    // ===== FIM DA CLASSIFICAÇÃO SETORIAL =====
+
+    let chartMode = (() => { try { const v = localStorage.getItem('ledgerly_chart_mode'); return v === 'corretora' || v === 'setor' ? v : 'ativo'; } catch (_) { return 'ativo'; } })();
+    function setChartMode(m) { chartMode = (m === 'corretora' || m === 'setor') ? m : 'ativo'; try { localStorage.setItem('ledgerly_chart_mode', chartMode); } catch (_) {} refreshAllViews(); }
     function focusTicker(t) {
       const s = document.getElementById('positionsSearch'), f = document.getElementById('positionsFilter'), c = document.getElementById('positionsCorretora');
       if (s) s.value = t; if (f) f.value = 'active'; if (c) c.value = '';
@@ -1874,7 +1976,7 @@
         b.setAttribute('aria-pressed', String(on));
       });
       const sub = document.getElementById('chartSubtitle');
-      if (sub) sub.textContent = chartMode === 'corretora' ? 'Patrimônio por corretora' : 'Por valor em custódia';
+      if (sub) sub.textContent = chartMode === 'corretora' ? 'Patrimônio por corretora' : chartMode === 'setor' ? 'Patrimônio por setor' : 'Por valor em custódia';
 
       if (activePositions.length === 0) {
         emptyState.classList.remove('hidden');
@@ -1888,7 +1990,11 @@
 
       const palette = ['#10b981', '#6366f1', '#f59e0b', '#06b6d4', '#ec4899', '#8b5cf6', '#14b8a6', '#f97316'];
       let slices = [];
-      if (chartMode === 'corretora') {
+      if (chartMode === 'setor') {
+        const by = {};
+        activePositions.forEach(p => { const s = classifyTicker(p.ticker).setor; by[s] = (by[s] || 0) + p.patrimonioAtual; });
+        slices = Object.entries(by).map(([label, value]) => ({ label, value, action: `focusSetor('${label}')` })).sort((a, b) => b.value - a.value);
+      } else if (chartMode === 'corretora') {
         const shortName = n => n.replace(/\s+(S\.?\/?A\.?|LTDA\.?|CCTVM|DTVM|CTVM)\b.*$/i, '').trim() || n;
         queryAll('SELECT id, nome FROM corretoras ORDER BY nome').forEach(c => {
           const v = getConsolidatedPositions(c.id).filter(p => p.qtdAtual > 0).reduce((a, p) => a + p.patrimonioAtual, 0);
@@ -2054,9 +2160,11 @@
       const search = (document.getElementById('positionsSearch')?.value || '').trim().toUpperCase();
       const filter = document.getElementById('positionsFilter')?.value || 'active';
       const sort = document.getElementById('positionsSort')?.value || 'ticker';
+      const setorF = document.getElementById('positionsSetor')?.value || '';
       let list = latestPositionsData.filter(p => {
         const match = !search || p.ticker.toUpperCase().includes(search) || (p.especificacao || '').toUpperCase().includes(search);
         if (!match) return false;
+        if (setorF && classifyTicker(p.ticker).setor !== setorF) return false;
         if (filter === 'active') return p.qtdAtual > 0;
         if (filter === 'positive') return p.qtdAtual > 0 && p.lucroPrejuizo > 0;
         if (filter === 'negative') return p.qtdAtual > 0 && p.lucroPrejuizo < 0;
@@ -2067,7 +2175,7 @@
       const count = document.getElementById('positionsResultCount');
       if (count) count.textContent = `${list.length} de ${latestPositionsData.length} ativos`;
       const info = document.getElementById('positionsFilterInfo');
-      if (info) info.classList.toggle('hidden', !(search || filter !== 'active'));
+      if (info) info.classList.toggle('hidden', !(search || filter !== 'active' || setorF));
       document.querySelectorAll('#positionsChips button').forEach(b => {
         const on = b.dataset.f === filter;
         b.className = 'px-3 py-1.5 rounded-full text-xs font-semibold transition ' + (on ? 'bg-emerald-500 text-slate-950' : 'bg-slate-800 text-slate-300 hover:bg-slate-700');
@@ -2095,10 +2203,13 @@
         const sec = (t, body) => `<section><h5 class="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">${t}</h5><dl class="divide-y divide-slate-800/70">${body}</dl></section>`;
         const opRow = op => `<div class="flex items-center justify-between gap-2 py-2 text-xs"><div class="flex items-center gap-2 min-w-0"><span class="px-1.5 py-0.5 rounded text-[11px] font-semibold ${op.tipo_ordem === 'C' ? 'bg-slate-800 text-slate-200' : 'bg-amber-500/20 text-amber-300'}">${op.tipo_ordem === 'C' ? 'Compra' : 'Venda'}</span><span class="font-mono text-slate-400" title="Nota: ${esc(op.numero_nota || 'Manual')}">${esc(op.data_operacao)}</span></div><div class="flex items-center gap-1.5"><span class="font-mono text-slate-200">${formatNumber(op.quantidade)} × ${formatMoney(op.preco_unitario)}</span><button type="button" onclick="deleteSingleOperation(${Number(op.id)})" class="text-rose-400 hover:text-rose-300 p-1.5" aria-label="Excluir lançamento de ${esc(op.data_operacao)}" title="Excluir lançamento"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div></div>`;
         const ops = pos.operacoes.slice().reverse();
+        const cl = classifyTicker(pos.ticker);
+        const setorBtn = `<button type="button" onclick="openSectorEditor('${esc(pos.ticker)}')" class="text-right underline decoration-dotted underline-offset-2 hover:text-emerald-300" aria-label="Alterar setor de ${esc(pos.ticker)}">${esc(cl.setor)}${cl.subsetor ? ' · ' + esc(cl.subsetor) : ''}${cl.origem === 'manual' ? ' (manual)' : cl.origem === 'pendente' ? ' — classificar' : ''}</button>`;
         const posicao = sec('Posição',
           kv('Custo da posição', formatMoney(pos.valorInvestido)) +
           kv('Comprado / vendido', `${formatNumber(pos.qtdComprada)} / ${formatNumber(pos.qtdVendida)}`) +
-          kv('Participação na carteira', `${pos.pesoCarteira.toFixed(2)}%`));
+          kv('Participação na carteira', `${pos.pesoCarteira.toFixed(2)}%`) +
+          kv('Setor', setorBtn));
         const resultado = sec('Resultado',
           (hasPosition ? kv('Não realizado', `${sgn(pos.lucroPrejuizo)}${formatMoney(pos.lucroPrejuizo)} (${formatPercent(pos.rentabilidade)})`, tone(pos.lucroPrejuizo)) : '') +
           kv('Realizado', `${sgn(pos.resultadoRealizado || 0)}${formatMoney(pos.resultadoRealizado || 0)}`, tone(pos.resultadoRealizado || 0)) +
@@ -2133,6 +2244,7 @@
       const sort = document.getElementById('positionsSort');
       if (search) search.value = '';
       if (filter) filter.value = 'active';
+      const setorSel = document.getElementById('positionsSetor'); if (setorSel) setorSel.value = '';
       if (sort) sort.value = 'ticker';
       applyPositionsView();
     }
@@ -2266,6 +2378,7 @@
       // 1. Extrai Número de Controle da Nota (ex: 29102026/3.182)
       let numeroControle = '';
       const nrNotaMatch = normalized.match(/(\d{7,8}\/\d+(?:\.\d+)?)/) ||
+                          normalized.match(/\b(\d{5,12})\s+Nr\.?\s*nota\b/i) ||
                           normalized.match(/Nr\.?\s*Nota\s*[:\-]?\s*([0-9\/.-]+)/i);
       if (nrNotaMatch) {
         numeroControle = nrNotaMatch[1].trim();
@@ -2275,7 +2388,8 @@
 
       // 2. Extrai Data do Pregão (ex: 29/10/2026)
       let dataPregao = '';
-      const dateMatch = normalized.match(/Data\s+preg[aã]o.*?(\d{2}\/\d{2}\/\d{4})/i) ||
+      const dateMatch = normalized.match(/(\d{2}\/\d{2}\/\d{4})\s+Data\s+preg[aã]o/i) ||
+                        normalized.match(/Data\s+preg[aã]o.*?(\d{2}\/\d{2}\/\d{4})/i) ||
                         normalized.match(/(\d{2}\/\d{2}\/\d{4})/);
       if (dateMatch) {
         dataPregao = dateMatch[1];
@@ -2296,43 +2410,85 @@
         return m ? parseBrFloat(m[1]) : 0;
       };
 
-      const valorLiquidoOperacoes = matchValAfterLabel(/Valor\s+l[ií]quido\s+das\s+opera[cç][oõ]es\s+([\d.,]+)/i) ||
-                                    matchValAfterLabel(/Valor\s+das\s+opera[cç][oõ]es\s+([\d.,]+)/i);
-      const taxaLiquidacao = matchValAfterLabel(/Taxa\s+de\s+liquida[cç][aã]o\s+([\d.,]+)/i);
-      const taxaRegistro = matchValAfterLabel(/Taxa\s+de\s+Registro\s+([\d.,]+)/i);
-      const totalCblcBruto = matchValAfterLabel(/Total\s+CBLC\s+([\d.,]+)/i);
+      const NUM = '(\\d{1,3}(?:\\.\\d{3})*,\\d{2})';
+      const num = m => (m ? parseBrFloat(m[1]) : 0);
+      // Algumas corretoras imprimem "rótulo valor" (BB) e outras "valor rótulo" (BTG), com o D/C no meio.
+      const valorAntes = /\d,\d{2}\s+Valor\s+l[ií]quido\s+das\s+opera[cç][oõ]es\s+[DC]\b/i.test(normalized) &&
+                         !new RegExp('Valor\\s+l[ií]quido\\s+das\\s+opera[cç][oõ]es\\s+' + NUM, 'i').test(normalized);
+      const depois = label => num(normalized.match(new RegExp(label + '\\s+(?:[DC]\\s+)?' + NUM, 'i')));
+      const antes = label => num(normalized.match(new RegExp(NUM + '\\s+' + label + '(?![A-Za-zÀ-ÿ])', 'i')));
+      const liquidoImpresso0 = num(normalized.match(new RegExp('L[ií]quido\\s+para\\s+\\d{2}\\/\\d{2}\\/\\d{4}\\s+(?:[DC]\\s+)?' + NUM, 'i')));
 
-      // A taxa CBLC real é Liquidação + Registro
-      let taxaCblcLiquida = taxaLiquidacao + taxaRegistro;
-      if (taxaCblcLiquida === 0 && totalCblcBruto > valorLiquidoOperacoes && valorLiquidoOperacoes > 0) {
-        taxaCblcLiquida = Number((totalCblcBruto - valorLiquidoOperacoes).toFixed(2));
+      let valorLiquidoOperacoes, taxaLiquidacao, taxaRegistro, totalCblcBruto, emolumentos, totalBovespa, totalCorretagem;
+      if (valorAntes) {
+        valorLiquidoOperacoes = antes('Valor\\s+l[ií]quido\\s+das\\s+opera[cç][oõ]es') || matchValAfterLabel(/Valor\s+das\s+opera[cç][oõ]es\s+([\d.,]+)/i);
+        taxaLiquidacao = antes('Taxa\\s+de\\s+liquida[cç][aã]o(?:\\s*\\/\\s*CCP)?');
+        taxaRegistro = antes('Taxa\\s+de\\s+registro');
+        totalCblcBruto = antes('Total\\s+CBLC');
+        emolumentos = antes('Emolumentos');
+        totalBovespa = antes('Total\\s+Bovespa\\s*\\/\\s*Soma') || emolumentos;
+        totalCorretagem = depois('Total\\s+corretagem\\s*\\/\\s*Despesas') || antes('Total\\s+corretagem\\s*\\/\\s*Despesas');
+      } else {
+        valorLiquidoOperacoes = matchValAfterLabel(/Valor\s+l[ií]quido\s+das\s+opera[cç][oõ]es\s+([\d.,]+)/i) ||
+                                matchValAfterLabel(/Valor\s+das\s+opera[cç][oõ]es\s+([\d.,]+)/i);
+        taxaLiquidacao = matchValAfterLabel(/Taxa\s+de\s+liquida[cç][aã]o\s+([\d.,]+)/i);
+        taxaRegistro = matchValAfterLabel(/Taxa\s+de\s+Registro\s+([\d.,]+)/i);
+        totalCblcBruto = matchValAfterLabel(/Total\s+CBLC\s+([\d.,]+)/i);
+        emolumentos = matchValAfterLabel(/Emolumentos\s+([\d.,]+)/i);
+        totalBovespa = matchValAfterLabel(/Total\s+Bovespa\s*\/\s*Soma\s+([\d.,]+)/i) || emolumentos;
+        totalCorretagem = matchValAfterLabel(/Total\s+corretagem\s*\/\s*Despesas\s+([\d.,]+)/i);
       }
 
-      const emolumentos = matchValAfterLabel(/Emolumentos\s+([\d.,]+)/i);
-      const totalBovespa = matchValAfterLabel(/Total\s+Bovespa\s*\/\s*Soma\s+([\d.,]+)/i) || emolumentos;
-      const totalCorretagem = matchValAfterLabel(/Total\s+corretagem\s*\/\s*Despesas\s+([\d.,]+)/i);
-      const valorLiquidoNota = matchValAfterLabel(/L[ií]quido\s+para\s+\d{2}\/\d{2}\/\d{4}\s+([\d.,]+)/i) ||
-                               (valorLiquidoOperacoes + taxaCblcLiquida + totalBovespa + totalCorretagem);
+      // Taxa CBLC = diferença entre o "Total CBLC" e o "Valor líquido das operações" (inclui outras taxas do bloco,
+      // como a de transferência de ativos); sem os totais, usa liquidação + registro.
+      let taxaCblcLiquida = taxaLiquidacao + taxaRegistro;
+      if (totalCblcBruto > 0 && valorLiquidoOperacoes > 0) {
+        const dif = Number(Math.abs(totalCblcBruto - valorLiquidoOperacoes).toFixed(2));
+        if (dif > 0 && dif <= valorLiquidoOperacoes * 0.05 + 1 && dif >= taxaCblcLiquida) taxaCblcLiquida = dif;
+      }
+      const valorLiquidoNota = liquidoImpresso0 || (valorLiquidoOperacoes + taxaCblcLiquida + totalBovespa + totalCorretagem);
 
       // 4. Extrai linhas de negócios realizados (Ex: BRADESCO PN N1-BBDC4 ou B3 ON NM-B3SA3)
       const operacoesExtraidas = [];
-      const regexNegocio = /1-BOVESPA\s+([CV])\s+(VISTA|FRACIONARIO|TERMO|OPCAO\s+DE\s+COMPRA|OPCAO\s+DE\s+VENDA)\s+(.+?)\s+(\d+(?:\.\d{3})*)\s+([\d.,]+)\s+([\d.,]+)\s+[DC]/gi;
+      const regexNegocio = /1-BOVESPA\s+([CV])\s+(VISTA|FRACIONARIO|TERMO|EXERC(?:ICIO)?\s+(?:DE\s+)?OPC(?:AO)?(?:\s+DE)?\s+(?:COMPRA|VENDA)|OPCAO\s+DE\s+COMPRA|OPCAO\s+DE\s+VENDA|OPC\s+COMPRA|OPC\s+VENDA)\s+(.+?)\s+(\d+(?:\.\d{3})*)\s+([\d.,]+)\s+([\d.,]+)\s+[DC]/gi;
       const regexNegocioInvertido = /([CV])\s+VISTA\s+1-BOVESPA\s+(.+?)\s+(\d+(?:\.\d{3})*)\s+([\d.,]+)\s+([\d.,]+)\s+[DC]/gi;
 
+      // Opções: o exercício vira compra/venda do ativo-objeto ao preço de exercício (ex.: CXSEG196E ON -> CXSE3);
+      // negociações de opções (prêmio) não são registradas pelo app e são ignoradas com aviso.
+      const avisosOperacoes = [], opcoesIgnoradas = [];
+      const CLASSES_ACAO = { ON: '3', PN: '4', PNA: '5', PNB: '6', PNC: '7', PND: '8', UNT: '11', UNIT: '11' };
+      const ativoObjetoDaOpcao = spec => {
+        const m = String(spec).toUpperCase().match(/\b([A-Z]{4})[A-X]\d{1,4}[A-Z]?\b\s*(ON|PNA|PNB|PNC|PND|PN|UNT|UNIT)?/);
+        if (!m) return null;
+        return { codigo: m[0].trim().split(/\s+/)[0], ticker: m[1] + CLASSES_ACAO[m[2] || 'ON'], classe: m[2] || 'ON' };
+      };
       let match;
       while ((match = regexNegocio.exec(normalized)) !== null) {
         const tipoOrdem = match[1].toUpperCase();
-        const especificacaoCompleta = match[3].trim();
+        let especificacaoCompleta = match[3].trim();
+        const mercado = match[2].toUpperCase().replace(/\s+/g, ' ');
+        let tickerDaOpcao = null;
+        if (/^EXERC/.test(mercado)) {
+          const u = ativoObjetoDaOpcao(especificacaoCompleta);
+          if (!u) { opcoesIgnoradas.push(especificacaoCompleta); continue; }
+          tickerDaOpcao = u.ticker;
+          avisosOperacoes.push(`Exercício da opção ${u.codigo}: registrado como ${tipoOrdem === 'V' ? 'venda' : 'compra'} de ${u.ticker} ao preço de exercício. Confira o ticker.`);
+          especificacaoCompleta = `${u.ticker} ${u.classe} (exerc. ${u.codigo})`;
+        } else if (/^OPCAO DE|^OPC /.test(mercado)) {
+          opcoesIgnoradas.push(especificacaoCompleta); continue;
+        }
         const qtd = parseBrFloat(match[4]);
         const precoUnit = parseBrFloat(match[5]);
         const valorOp = parseBrFloat(match[6]);
 
         // Extração robusta do Ticker a partir da especificação (busca padrão B3 ex: B3SA3, BBDC4, CMIG4)
-        let ticker = 'ATIVO';
+        let ticker = tickerDaOpcao || 'ATIVO';
         const specUpper = especificacaoCompleta.toUpperCase();
         // Procura padrão específico B3 (4 letras seguidas de 1 a 3 dígitos, podendo terminar com F)
         const explicitTickerMatch = specUpper.match(/\b([A-Z]{4}\d{1,3}F?)\b/);
-        if (explicitTickerMatch) {
+        if (tickerDaOpcao) {
+          // ticker já definido pelo ativo-objeto da opção
+        } else if (explicitTickerMatch) {
           ticker = explicitTickerMatch[1].replace(/F$/, '');
         } else {
           // Fallback buscando após hífen ou traço
@@ -2393,16 +2549,20 @@
       // Sem operações reconhecidas: não inventa dados, apenas avisa (layout de outra corretora, PDF escaneado etc.)
       if (operacoesExtraidas.length === 0) {
         const e = new Error('Nenhuma operação reconhecida na nota');
-        e.userMessage = `Layout não reconhecido em ${fileName}. Lance as operações manualmente.`;
+        e.userMessage = opcoesIgnoradas.length
+          ? `A nota ${fileName} só tem operações com opções (prêmio), que o app ainda não registra.`
+          : `Layout não reconhecido em ${fileName}. Lance as operações manualmente.`;
         throw e;
       }
 
       // Conferência automática: compara o que foi lido com os totais impressos na própria nota
       const brl = v => 'R$ ' + v.toFixed(2).replace('.', ',');
-      const liquidoImpresso = matchValAfterLabel(/L[ií]quido\s+para\s+\d{2}\/\d{2}\/\d{4}\s+([\d.,]+)/i);
+      const liquidoImpresso = liquidoImpresso0;
       const saldoOps = operacoesExtraidas.reduce((a, o) => a + (o.tipo_ordem === 'V' ? o.valor_operacao : -o.valor_operacao), 0);
       const taxasTotais = taxaCblcLiquida + totalBovespa + totalCorretagem;
       const avisosConferencia = [];
+      avisosOperacoes.forEach(a => avisosConferencia.push(a));
+      if (opcoesIgnoradas.length) avisosConferencia.push(`Operações com opções (prêmio) não são registradas pelo app e foram ignoradas: ${opcoesIgnoradas.join(', ')}. Os totais da nota incluem essas operações.`);
       if (valorLiquidoOperacoes > 0 && Math.abs(Math.abs(saldoOps) - valorLiquidoOperacoes) > 0.015) {
         avisosConferencia.push(`As operações lidas somam ${brl(Math.abs(saldoOps))}, mas a nota indica ${brl(valorLiquidoOperacoes)} em "Valor líquido das operações". Alguma operação pode não ter sido lida.`);
       }
@@ -2416,16 +2576,32 @@
         avisosConferencia.push('Não foi possível localizar os totais da nota para conferir os valores lidos.');
       }
 
-      // Identificação da corretora (CNPJ é o dado mais confiável; o nome vem do cabeçalho da nota)
+      // Identificação da corretora (o CNPJ é o dado mais confiável; o nome vem do cabeçalho da nota)
+      const CORRETORAS_CONHECIDAS = { '24.933.830/0001-30': 'BB Banco de Investimento S.A.', '43.815.158/0001-22': 'BTG Pactual CTVM S.A.' };   // notas já validadas
       const cnpjM = normalized.match(/C\.?N\.?P\.?J\.?\s*:\s*(\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2})/i);
       const corretoraCnpj = cnpjM ? cnpjM[1] : '';
-      const nomeM = normalized.match(/\b((?:[A-ZÀ-Ú][A-ZÀ-Ú.&'-]*\s+){1,8}?(?:S\.A\.|S\/A|LTDA\.?|CCTVM|DTVM|CTVM))/);
-      let corretoraNome = nomeM ? nomeM[1].replace(/^NOTA\s+DE\s+(?:CORRETAGEM|NEGOCIA[ÇC][AÃ]O)\s+/, '').trim() : '';
-      if (corretoraCnpj === '24.933.830/0001-30' && !corretoraNome) corretoraNome = 'BB BANCO DE INVESTIMENTO S.A.';
+      const extrairNomeCorretora = () => {
+        const SUF = /^(S\.?\/?A\.?|LTDA\.?|CCTVM|DTVM|CTVM|DTCVM)$/i, UFS = /^(AC|AL|AP|AM|BA|CE|DF|ES|GO|MA|MT|MS|MG|PA|PB|PR|PE|PI|RJ|RN|RS|RO|RR|SC|SP|SE|TO)$/;
+        const limpa = t => t.replace(/[,;]$/, '');
+        const toks = normalized.split(' ');
+        for (let i = 1; i < toks.length; i++) {
+          if (!SUF.test(limpa(toks[i]))) continue;
+          let fim = i; while (fim + 1 < toks.length && SUF.test(limpa(toks[fim + 1]))) fim++;
+          const nome = [];
+          for (let j = i - 1; j >= 0 && nome.length < 8; j--) {
+            const t = toks[j];
+            if (!/[A-Za-zÀ-ÿ]/.test(t) || /:$/.test(t) || UFS.test(t)) break;   // número, rótulo ("Internet:") ou sigla de estado
+            nome.unshift(t);
+          }
+          if (nome.length) return nome.concat(toks.slice(i, fim + 1)).join(' ');
+        }
+        return '';
+      };
+      const corretoraNome = CORRETORAS_CONHECIDAS[corretoraCnpj] || extrairNomeCorretora().replace(/^NOTA\s+DE\s+(?:CORRETAGEM|NEGOCIA[ÇC][AÃ]O)\s+/i, '').trim();
       if (!corretoraCnpj && !corretoraNome) {
         avisosConferencia.push('Não foi possível identificar a corretora desta nota.');
-      } else if (corretoraCnpj && corretoraCnpj !== '24.933.830/0001-30') {
-        avisosConferencia.push('Corretora diferente do BB Investimentos: o leitor foi testado apenas com notas do BB. Confira todos os valores.');
+      } else if (corretoraCnpj && !CORRETORAS_CONHECIDAS[corretoraCnpj]) {
+        avisosConferencia.push('Corretora ainda não validada pelo app (testado com BB e BTG Pactual). Confira todos os valores.');
       }
 
       // Rateio proporcional das taxas da nota para cada operação
@@ -2438,6 +2614,14 @@
           taxa_bovespa: Number((totalBovespa * peso).toFixed(2)),
           taxa_corretagem: Number((totalCorretagem * peso).toFixed(2))
         };
+      });
+
+      [['taxa_cblc', taxaCblcLiquida], ['taxa_bovespa', totalBovespa], ['taxa_corretagem', totalCorretagem]].forEach(([k, total]) => {
+        const sobra = Number((total - operacoesComRateio.reduce((a, o) => a + o[k], 0)).toFixed(2));
+        if (sobra !== 0 && Math.abs(sobra) <= 0.05) {
+          const maior = operacoesComRateio.reduce((m, o) => (o.valor_operacao > m.valor_operacao ? o : m), operacoesComRateio[0]);
+          maior[k] = Number((maior[k] + sobra).toFixed(2));
+        }
       });
 
       return {
@@ -3365,7 +3549,7 @@
       const conectado = Boolean(syncState().connected);
       openConfirmDialog({
         title: 'Limpar Todos os Dados',
-        message: 'Esta ação apagará todas as notas de corretagem, operações, proventos, cotações e corretoras. O PIN, o token da brapi e as configurações são mantidos.'
+        message: 'Esta ação apagará todas as notas de corretagem, operações, proventos, cotações e corretoras. O PIN, o token da brapi, as configurações e as classificações de setor que você corrigiu são mantidos.'
           + (conectado ? ' Como a sincronização está ativa, a limpeza também será enviada ao Google Drive e aos outros aparelhos.' : '')
           + ' Uma cópia fica guardada neste aparelho e pode ser restaurada em Banco de dados → Backup e restauração.',
         requirePin: Boolean(getSetting('security_pin_hash')),
