@@ -3,7 +3,7 @@
 //   - acrescente uma entrada nova no INÍCIO de "entries" com as mudanças, em linguagem simples.
 globalThis.LEDGERLY_CHANGELOG = {
   version: '1.4.2',
-  build: 26,
+  build: 26.1,
   entries: [
     {
       version: '1.4.2',
