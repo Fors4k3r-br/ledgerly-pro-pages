@@ -1410,6 +1410,7 @@
     }
 
     // Estado Global
+	let lastBackPressTime = 0;
     let SQL = null;
     let db = null;
     let portfolioChart = null;
@@ -1427,6 +1428,10 @@
     window.addEventListener('DOMContentLoaded', async () => {
       lucide.createIcons();
       setTodayDateOnManualForm();
+	  
+      // Define o estado inicial da carteira no histórico do navegador
+      history.replaceState({ tab: 'carteira' }, "", '#carteira');	  
+	  
       await initSQLiteDatabase();
       loadBrapiSettingsToUI();
       checkLockScreenOnStartup();
@@ -1438,6 +1443,31 @@
       if (getSetting('brapi_auto_sync') === '1' && getSetting('brapi_token')) {
         syncAllQuotesFromBrapi(true);
       }
+	  
+    // Intercepta o botão "Voltar" do celular para alternar as abas ou exigir duplo clique para fechar
+    window.addEventListener('popstate', (event) => {
+      const currentActiveTab = document.querySelector('main > section:not(.hidden)')?.id?.replace('tab-', '');
+
+      if (currentActiveTab === 'carteira' || !event.state || !event.state.tab) {
+        const now = Date.now();
+        if (now - lastBackPressTime < 2500) {
+          // Se apertar de novo em menos de 2.5 segundos, permite fechar o app / histórico
+          history.back();
+        } else {
+          lastBackPressTime = now;
+          showToast('Pressione mais uma vez para sair do aplicativo.', 'info');
+          // Empurra o estado de volta para manter o usuário na carteira no primeiro toque
+          history.pushState({ tab: 'carteira' }, "", '#carteira');
+        }
+      } else {
+        // Se estiver em outra aba, volta para a aba anterior normalmente sem empurrar novo histórico
+        const targetTab = event.state.tab || 'carteira';
+        switchTab(targetTab, false);
+      }	  
+	  
+	 } 
+	  
+
     });
 
     function setTodayDateOnManualForm() {
@@ -3957,7 +3987,7 @@
     // =========================================================================
     // 10. NAVEGAÇÃO ENTRE ABAS, SUB-ABAS E UTILITÁRIOS VISUAIS
     // =========================================================================
-    function switchTab(tabId) {
+    function switchTab(tabId, pushHistory = true) {
       const tabs = ['carteira', 'posicoes', 'adicionar', 'proventos', 'config', 'banco', 'seguranca', 'apis', 'api-brapi', 'temas', 'sync', 'sobre'];
       tabs.forEach(t => {
         const section = document.getElementById(`tab-${t}`);
@@ -3979,6 +4009,12 @@
       });
 
       { const sc = document.getElementById('appScroll'); (sc && sc.scrollTo ? sc : window).scrollTo({ top: 0, behavior: 'smooth' }); }
+      
+      // Registra a navegação no histórico do navegador/celular apenas se solicitado
+      if (pushHistory) {
+        history.pushState({ tab: tabId }, "", `#${tabId}`);
+      }
+
       refreshAllViews();
     }
 
