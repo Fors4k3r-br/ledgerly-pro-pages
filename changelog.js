@@ -2,9 +2,17 @@
 //   - suba "version" e "build" (o build define o nome do cache do service worker);
 //   - acrescente uma entrada nova no INÍCIO de "entries" com as mudanças, em linguagem simples.
 globalThis.LEDGERLY_CHANGELOG = {
-  version: '1.4.1',
-  build: 25,
+  version: '1.4.2',
+  build: 26,
   entries: [
+    {
+      version: '1.4.2',
+      date: '2026-11-14',
+      notes: [
+        'Configurações → APIs agora abre a lista “APIs & Integrações”, com o cartão da brapi.dev (Configurado / Não configurado) e espaço para futuras integrações.',
+        'Tela da brapi.dev: link “Cadastre-se na brapi.dev” logo abaixo do campo da chave, para quem ainda não tem um token (abre o site em uma nova aba).'
+      ]
+    },
     {
       version: '1.4.1',
       date: '2026-11-13',

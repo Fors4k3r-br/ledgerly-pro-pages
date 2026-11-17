@@ -813,7 +813,7 @@
             <i data-lucide="plug" class="w-5 h-5 text-emerald-400 shrink-0"></i>
             <div class="min-w-0">
               <h2 class="text-base font-bold text-white">APIs</h2>
-              <p id="apiSummaryText" class="text-xs text-slate-400 truncate">Cotações online (brapi.dev)</p>
+              <p id="apiSummaryText" class="text-xs text-slate-400">Gerenciar chaves e integrações de mercado</p>
             </div>
           </div>
           <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400 shrink-0"></i>
@@ -973,8 +973,38 @@
     </section>
 
     <section id="tab-apis" class="space-y-5 hidden">
-      <button type="button" onclick="switchTab('config')" class="flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white">
-        <i data-lucide="arrow-left" class="w-4 h-4"></i>Configurações
+      <div class="flex items-center gap-3">
+        <button type="button" onclick="switchTab('config')" aria-label="Voltar para Configurações" class="p-2 -ml-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/60 transition">
+          <i data-lucide="arrow-left" class="w-5 h-5"></i>
+        </button>
+        <h2 class="text-lg font-bold text-white">APIs &amp; Integrações</h2>
+      </div>
+      <h3 class="text-sm font-semibold text-slate-300">Integrações Disponíveis</h3>
+
+      <div class="glass-card rounded-3xl p-5">
+        <button type="button" id="apiBrapiCard" onclick="switchTab('api-brapi')" aria-label="Abrir a configuração da API de Cotações Online (brapi.dev)" class="w-full flex items-center gap-4 text-left">
+          <i data-lucide="globe" class="w-6 h-6 text-emerald-400 shrink-0"></i>
+          <div class="min-w-0 flex-1">
+            <h4 class="text-base font-bold text-white">API de Cotações Online (brapi.dev)</h4>
+            <p class="text-xs text-slate-400 mt-1">Fonte de dados de cotações de mercado</p>
+            <span id="apiBrapiBadge" class="inline-block mt-3 text-[11px] font-mono px-2.5 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700">Não configurado</span>
+          </div>
+          <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400 shrink-0"></i>
+        </button>
+      </div>
+
+      <div id="apiComingSoon" aria-disabled="true" class="glass-card rounded-3xl p-6 opacity-60 flex flex-col items-center gap-4 text-center select-none">
+        <div class="relative w-16 h-16" aria-hidden="true">
+          <div class="absolute inset-0 rounded-2xl bg-slate-800"></div>
+          <div class="absolute inset-0 translate-x-2 translate-y-2 rounded-2xl bg-slate-800/60"></div>
+        </div>
+        <p class="text-sm text-slate-400">Adicionar nova integração em breve...</p>
+      </div>
+    </section>
+
+    <section id="tab-api-brapi" class="space-y-5 hidden">
+      <button type="button" onclick="switchTab('apis')" class="flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white">
+        <i data-lucide="arrow-left" class="w-4 h-4"></i>APIs &amp; Integrações
       </button>
       <!-- Card 1: Cotação Online via API brapi.dev -->
       <div class="glass-card rounded-3xl p-5 space-y-4">
@@ -998,28 +1028,39 @@
             <label class="block text-xs font-semibold text-slate-300 mb-1">
               Token / Chave da API (brapi.dev)
             </label>
-            <div class="flex flex-col sm:flex-row gap-2">
+            <div class="flex gap-2">
               <input
                 type="password"
                 id="brapiTokenInput"
                 placeholder="Cole aqui seu token da brapi.dev"
-                class="flex-1 bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm font-mono text-white outline-none"
+                class="flex-1 min-w-0 bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm font-mono text-white outline-none"
               />
               <button
                 type="button"
                 onclick="toggleBrapiTokenVisibility()"
-                class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold"
+                class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold shrink-0"
                 title="Mostrar/Ocultar Token"
+                aria-label="Mostrar ou ocultar o token"
               >
                 <i data-lucide="eye" class="w-4 h-4 mx-auto"></i>
               </button>
-              <button
-                type="submit"
-                class="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition shrink-0"
-              >
-                Salvar Chave API
-              </button>
             </div>
+            <p id="brapiSignupHint" class="mt-2 text-xs text-slate-400 leading-relaxed">
+              Não possui um token?
+              <a
+                href="https://brapi.dev/"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Abre o site da brapi.dev em uma nova aba"
+                class="font-semibold text-emerald-400 underline decoration-emerald-400/40 underline-offset-2 hover:text-emerald-300 hover:decoration-emerald-300 transition-colors"
+              >Cadastre-se na brapi.dev</a>
+            </p>
+            <button
+              type="submit"
+              class="mt-3 w-full px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition"
+            >
+              Salvar Chave API
+            </button>
           </div>
 
           <div class="flex items-center justify-between pt-2 border-t border-slate-800/80">
@@ -1734,7 +1775,7 @@
       const positions = getConsolidatedPositions();
       allPositionsData = positions;
       fillCorretoraSelects();
-      loadManualClass(); fillSetorSelect(); renderSectorPending();
+      loadManualClass(); fillSetorSelect(); renderSectorPending(); renderApiStatus();
       const activePositions = positions.filter(p => p.qtdAtual > 0);
 
       // Soma dos KPIs da Carteira
@@ -3358,6 +3399,12 @@
     // =========================================================================
     // 7. INTEGRAÇÃO DE COTAÇÕES ONLINE (BRAPI.DEV)
     // =========================================================================
+    function renderApiStatus() {
+      const b = document.getElementById('apiBrapiBadge'); if (!b) return;
+      const ok = Boolean(getSetting('brapi_token'));
+      b.textContent = ok ? 'Configurado' : 'Não configurado';
+      b.className = 'inline-block mt-3 text-[11px] font-mono px-2.5 py-1 rounded-full border ' + (ok ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30' : 'bg-slate-800 text-slate-400 border-slate-700');
+    }
     function loadBrapiSettingsToUI() {
       const token = getSetting('brapi_token') || '';
       const autoSync = getSetting('brapi_auto_sync') === '1';
@@ -3380,6 +3427,7 @@
         }
       }
 
+      renderApiStatus();
       updateQuotesLabel();
     }
 
@@ -3910,7 +3958,7 @@
     // 10. NAVEGAÇÃO ENTRE ABAS, SUB-ABAS E UTILITÁRIOS VISUAIS
     // =========================================================================
     function switchTab(tabId) {
-      const tabs = ['carteira', 'posicoes', 'adicionar', 'proventos', 'config', 'banco', 'seguranca', 'apis', 'temas', 'sync', 'sobre'];
+      const tabs = ['carteira', 'posicoes', 'adicionar', 'proventos', 'config', 'banco', 'seguranca', 'apis', 'api-brapi', 'temas', 'sync', 'sobre'];
       tabs.forEach(t => {
         const section = document.getElementById(`tab-${t}`);
         if (section) {
@@ -3918,7 +3966,7 @@
         }
       });
 
-      const activeNavId = ['banco', 'seguranca', 'apis', 'temas', 'sync', 'sobre'].includes(tabId) ? 'config' : tabId;
+      const activeNavId = ['banco', 'seguranca', 'apis', 'api-brapi', 'temas', 'sync', 'sobre'].includes(tabId) ? 'config' : tabId;
       ['carteira', 'posicoes', 'adicionar', 'proventos', 'config'].forEach(nav => {
         const btn = document.getElementById(`nav-${nav}`);
         if (!btn) return;
