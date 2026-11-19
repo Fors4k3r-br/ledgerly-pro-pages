@@ -33,6 +33,13 @@
   <script src="./vendor/pdf.min.js"></script>
 
   <style>
+
+    .side-menu-item { width:100%; display:flex; align-items:center; gap:.9rem; min-height:48px; padding:.75rem .9rem; border-radius:.85rem; color:rgb(148 163 184); font-size:.875rem; font-weight:600; text-align:left; transition:background .15s,color .15s; }
+    .side-menu-item svg { width:1.15rem; height:1.15rem; flex:none; }
+    .side-menu-item:hover { background:rgb(30 41 59 / .75); color:rgb(226 232 240); }
+    .side-menu-item.active { background:rgb(16 185 129 / .13); color:rgb(52 211 153); box-shadow:inset 0 0 0 1px rgb(16 185 129 / .22); }
+    #sideMenu.menu-open { transform:translateX(0) !important; }
+    #sideMenuBackdrop.menu-open { opacity:1; pointer-events:auto; }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
     :focus-visible { outline: 2px solid #34d399; outline-offset: 2px; }
     html, body, button, a, input, select { touch-action: manipulation; }   /* sem zoom por toque duplo: ele desloca a barra fixa */
@@ -122,7 +129,10 @@
   <!-- ================= TOP BAR ================= -->
   <header class="relative shrink-0 z-30 bg-slate-950/90 backdrop-blur-md border-b border-slate-800/80 px-4 py-3.5">
     <div class="max-w-3xl mx-auto flex items-center justify-between">
-      <div class="flex items-center gap-2.5">
+      <div class="flex items-center gap-2.5 min-w-0">
+        <button type="button" id="menuOpenBtn" onclick="toggleSideMenu(true)" aria-label="Abrir menu de navegação" aria-controls="sideMenu" aria-expanded="false" class="shrink-0 p-2.5 -ml-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 transition">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
         <img src="./icons/icon-192.png" alt="" width="36" height="36" class="w-9 h-9 rounded-xl shadow-md shadow-emerald-500/20" />
         <div>
           <div class="flex items-center gap-2">
@@ -156,6 +166,28 @@
       </div>
     </div>
   </header>
+
+  <!-- ================= MENU LATERAL RETRÁTIL ================= -->
+  <div id="sideMenuBackdrop" class="fixed inset-0 z-[70] bg-black/60 opacity-0 pointer-events-none transition-opacity duration-200" onclick="toggleSideMenu(false)" aria-hidden="true"></div>
+  <aside id="sideMenu" class="fixed inset-y-0 left-0 z-[75] max-w-full bg-slate-950 border-r border-slate-800 shadow-2xl transition-transform duration-200 ease-out flex flex-col" style="width:min(82vw,310px);transform:translateX(-100%)" role="dialog" aria-modal="true" aria-label="Menu de navegação" aria-hidden="true">
+    <div class="flex items-center justify-between gap-3 px-5 pt-6 pb-5 border-b border-slate-800/80" style="padding-top:max(1.5rem,env(safe-area-inset-top))">
+      <div class="flex items-center gap-3 min-w-0">
+        <img src="./icons/icon-192.png" alt="" width="40" height="40" class="w-10 h-10 rounded-xl" />
+        <div class="min-w-0"><div class="font-extrabold text-white">Ledgerly Pro</div><div class="text-[11px] text-slate-500">Navegação</div></div>
+      </div>
+      <button type="button" onclick="toggleSideMenu(false)" aria-label="Fechar menu" class="p-2.5 rounded-xl bg-slate-900 text-slate-300 border border-slate-800"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+    <nav class="flex-1 overflow-y-auto p-3 space-y-1" aria-label="Seções do aplicativo">
+      <button type="button" data-menu-tab="carteira" onclick="navigateFromMenu('carteira')" class="side-menu-item active"><i data-lucide="pie-chart"></i><span>Carteira</span></button>
+      <button type="button" data-menu-tab="posicoes" onclick="navigateFromMenu('posicoes')" class="side-menu-item"><i data-lucide="layers"></i><span>Ativos</span></button>
+      <button type="button" data-menu-tab="adicionar" onclick="navigateFromMenu('adicionar')" class="side-menu-item"><i data-lucide="plus-circle"></i><span>Adicionar ativos</span></button>
+      <button type="button" data-menu-tab="relatorios" onclick="navigateFromMenu('relatorios')" class="side-menu-item"><i data-lucide="file-bar-chart"></i><span>Relatórios</span></button>
+      <button type="button" data-menu-tab="proventos" onclick="navigateFromMenu('proventos')" class="side-menu-item"><i data-lucide="coins"></i><span>Proventos</span></button>
+      <div class="my-3 border-t border-slate-800"></div>
+      <button type="button" data-menu-tab="config" onclick="navigateFromMenu('config')" class="side-menu-item"><i data-lucide="settings"></i><span>Configurações</span></button>
+    </nav>
+    <div class="px-5 py-4 border-t border-slate-800/80 text-[10px] text-slate-600" style="padding-bottom:max(1rem,env(safe-area-inset-bottom))">Ledgerly Pro</div>
+  </aside>
 
   <!-- ================= CONTEÚDO PRINCIPAL ================= -->
   <div id="appScroll" class="flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
@@ -234,6 +266,7 @@
       </div>
       <div class="glass-card rounded-2xl p-3 space-y-3">
         <label for="reportCalendarYear" class="block text-xs font-semibold text-slate-300">Ano-calendário</label>
+        <p class="text-[11px] text-slate-500">A prévia do ano atual fica no topo; os anos anteriores começam na sua primeira compra registrada.</p>
         <select id="reportCalendarYear" onchange="renderReports()" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-3 text-sm text-white">
         </select>
         <div class="grid grid-cols-2 gap-2">
@@ -1406,34 +1439,7 @@
   <!-- ================= TOAST NOTIFICATION ================= -->
   <div id="toastContainer" class="fixed top-16 right-4 left-4 sm:left-auto sm:w-80 z-[95] pointer-events-none space-y-2"></div>
 
-  <!-- ================= NAVEGAÇÃO INFERIOR (3 ABAS PRINCIPAIS VISÍVEIS) ================= -->
-  <nav class="relative shrink-0 z-40 bg-slate-950 border-t border-slate-800/90 px-2 pt-1.5" style="padding-bottom:max(0.375rem, env(safe-area-inset-bottom))">
-    <div class="max-w-lg mx-auto items-end" style="display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:2px;width:100%;">
-      <button onclick="switchTab('carteira')" id="nav-carteira" class="nav-item flex flex-col items-center justify-center py-2 px-0.5 rounded-xl text-emerald-400 bg-emerald-500/10 font-semibold transition" style="min-width:0;width:100%;">
-        <i data-lucide="pie-chart" class="w-5 h-5"></i>
-        <span class="text-[9px] mt-1">Carteira</span>
-      </button>
-      <button onclick="switchTab('posicoes')" id="nav-posicoes" class="nav-item flex flex-col items-center justify-center py-2 px-0.5 rounded-xl text-slate-400 hover:text-slate-200 font-medium transition" style="min-width:0;width:100%;">
-        <i data-lucide="layers" class="w-5 h-5"></i>
-        <span class="text-[9px] mt-1">Ativos</span>
-      </button>
-      <button onclick="switchTab('adicionar')" id="nav-adicionar" aria-label="Adicionar ativos" class="nav-item flex items-center justify-center -mt-5 pb-1" style="min-width:0;width:100%;">
-        <span class="w-14 h-14 rounded-full bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/30 flex items-center justify-center transition"><i data-lucide="plus" class="w-7 h-7"></i></span>
-      </button>
-      <button onclick="switchTab('relatorios')" id="nav-relatorios" class="nav-item flex flex-col items-center justify-center py-2 px-0.5 rounded-xl text-slate-400 hover:text-slate-200 font-medium transition" style="min-width:0;width:100%;">
-        <i data-lucide="file-bar-chart" class="w-[18px] h-[18px]"></i>
-        <span class="text-[9px] mt-1">Relatórios</span>
-      </button>
-      <button onclick="switchTab('proventos')" id="nav-proventos" class="nav-item flex flex-col items-center justify-center py-2 px-0.5 rounded-xl text-slate-400 hover:text-slate-200 font-medium transition" style="min-width:0;width:100%;">
-        <i data-lucide="coins" class="w-5 h-5"></i>
-        <span class="text-[9px] mt-1">Proventos</span>
-      </button>
-      <button onclick="switchTab('config')" id="nav-config" class="nav-item flex flex-col items-center justify-center py-2 px-0.5 rounded-xl text-slate-400 hover:text-slate-200 font-medium transition" style="min-width:0;width:100%;">
-        <i data-lucide="settings" class="w-5 h-5"></i>
-        <span class="text-[9px] mt-1">Config.</span>
-      </button>
-    </div>
-  </nav>
+  <!-- A navegação principal agora fica no menu lateral retrátil. -->
 
   <!-- ================= LÓGICA DO APLICATIVO (SQLITE, PDF, CHART, BRAPI, WEBAUTHN) ================= -->
   <script>
@@ -4020,7 +4026,26 @@
     // =========================================================================
     // 10. NAVEGAÇÃO ENTRE ABAS, SUB-ABAS E UTILITÁRIOS VISUAIS
     // =========================================================================
+    function toggleSideMenu(open) {
+      const panel = document.getElementById('sideMenu');
+      const backdrop = document.getElementById('sideMenuBackdrop');
+      const trigger = document.getElementById('menuOpenBtn');
+      if (!panel || !backdrop) return;
+      const wasOpen = panel.classList.contains('menu-open');
+      const shouldOpen = typeof open === 'boolean' ? open : !wasOpen;
+      panel.classList.toggle('menu-open', shouldOpen);
+      backdrop.classList.toggle('menu-open', shouldOpen);
+      panel.setAttribute('aria-hidden', String(!shouldOpen));
+      backdrop.setAttribute('aria-hidden', String(!shouldOpen));
+      if (trigger) trigger.setAttribute('aria-expanded', String(shouldOpen));
+      if (shouldOpen) { const closeBtn = panel.querySelector('button[aria-label="Fechar menu"]'); if (closeBtn) closeBtn.focus(); }
+      else if (trigger && wasOpen) trigger.focus({preventScroll:true});
+    }
+    function navigateFromMenu(tabId) { toggleSideMenu(false); switchTab(tabId); }
+    document.addEventListener('keydown', event => { if (event.key === 'Escape') toggleSideMenu(false); });
+
     function switchTab(tabId, pushHistory = true) {
+      toggleSideMenu(false);
       const tabs = ['carteira', 'posicoes', 'adicionar', 'relatorios', 'proventos', 'config', 'banco', 'seguranca', 'apis', 'api-brapi', 'temas', 'sync', 'sobre'];
       tabs.forEach(t => {
         const section = document.getElementById(`tab-${t}`);
@@ -4030,16 +4055,7 @@
       });
 
       const activeNavId = ['banco', 'seguranca', 'apis', 'api-brapi', 'temas', 'sync', 'sobre'].includes(tabId) ? 'config' : tabId;
-      ['carteira', 'posicoes', 'adicionar', 'relatorios', 'proventos', 'config'].forEach(nav => {
-        const btn = document.getElementById(`nav-${nav}`);
-        if (!btn) return;
-        const on = nav === activeNavId;
-        if (nav === 'adicionar') {
-          btn.firstElementChild.className = 'w-14 h-14 rounded-full bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/30 flex items-center justify-center transition' + (on ? ' ring-4 ring-emerald-400/30' : '');
-        } else {
-          btn.className = 'nav-item flex flex-col items-center justify-center py-2 px-0.5 rounded-xl transition ' + (on ? 'text-emerald-400 bg-emerald-500/10 font-semibold' : 'text-slate-400 hover:text-slate-200 font-medium');
-        }
-      });
+      document.querySelectorAll('[data-menu-tab]').forEach(btn => btn.classList.toggle('active', btn.dataset.menuTab === activeNavId));
 
       { const sc = document.getElementById('appScroll'); (sc && sc.scrollTo ? sc : window).scrollTo({ top: 0, behavior: 'smooth' }); }
       
@@ -4151,10 +4167,21 @@
     const reportBRL = v => (Number(v) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     const reportQty = v => (Number(v) || 0).toLocaleString('pt-BR', { maximumFractionDigits: 8 });
     function initReportYearOptions() {
-      const sel = document.getElementById('reportCalendarYear'); if (!sel || sel.options.length) return;
+      const sel = document.getElementById('reportCalendarYear'); if (!sel) return;
       const current = new Date().getFullYear();
-      sel.innerHTML = Array.from({length: 12}, (_,i) => current - 1 - i).map(y => `<option value="${y}">${y} (Exercício ${y+1})</option>`).join('');
-      sel.value = String(current - 1);
+      let firstYear = current;
+      try {
+        const firstPurchase = queryAll("SELECT data_operacao FROM operacoes WHERE tipo_ordem = 'C'")
+          .map(r => toISODate(r.data_operacao)).filter(Boolean).sort()[0];
+        if (firstPurchase) firstYear = Math.min(current, Number(firstPurchase.slice(0, 4)) || current);
+      } catch (e) { console.warn('Não foi possível determinar a primeira compra para o filtro do IRPF:', e); }
+      const years = [];
+      for (let y = current; y >= firstYear; y--) years.push(y);
+      const selected = sel.value && years.includes(Number(sel.value)) ? Number(sel.value) : current;
+      sel.innerHTML = years.map(y => y === current
+        ? `<option value="${y}">${y} — Exercício ${y+1} (Prévia)</option>`
+        : `<option value="${y}">${y} — Exercício ${y+1}</option>`).join('');
+      sel.value = String(selected);
     }
     function buildReportDataset(year) {
       const ops = queryAll('SELECT id, data_operacao, ticker, especificacao, tipo_ordem, quantidade, preco_unitario, valor_operacao, taxa_cblc, taxa_bovespa, taxa_corretagem FROM operacoes').sort((a,b)=>toISODate(a.data_operacao).localeCompare(toISODate(b.data_operacao)) || Number(a.id)-Number(b.id));
