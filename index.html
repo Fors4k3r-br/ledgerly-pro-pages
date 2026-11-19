@@ -1408,27 +1408,27 @@
 
   <!-- ================= NAVEGAÇÃO INFERIOR (3 ABAS PRINCIPAIS VISÍVEIS) ================= -->
   <nav class="relative shrink-0 z-40 bg-slate-950 border-t border-slate-800/90 px-2 pt-1.5" style="padding-bottom:max(0.375rem, env(safe-area-inset-bottom))">
-    <div class="max-w-lg mx-auto grid grid-cols-6 gap-0.5 items-end">
-      <button onclick="switchTab('carteira')" id="nav-carteira" class="nav-item flex flex-col items-center justify-center py-2 px-0.5 rounded-xl text-emerald-400 bg-emerald-500/10 font-semibold transition">
+    <div class="max-w-lg mx-auto items-end" style="display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:2px;width:100%;">
+      <button onclick="switchTab('carteira')" id="nav-carteira" class="nav-item flex flex-col items-center justify-center py-2 px-0.5 rounded-xl text-emerald-400 bg-emerald-500/10 font-semibold transition" style="min-width:0;width:100%;">
         <i data-lucide="pie-chart" class="w-5 h-5"></i>
         <span class="text-[9px] mt-1">Carteira</span>
       </button>
-      <button onclick="switchTab('posicoes')" id="nav-posicoes" class="nav-item flex flex-col items-center justify-center py-2 px-0.5 rounded-xl text-slate-400 hover:text-slate-200 font-medium transition">
+      <button onclick="switchTab('posicoes')" id="nav-posicoes" class="nav-item flex flex-col items-center justify-center py-2 px-0.5 rounded-xl text-slate-400 hover:text-slate-200 font-medium transition" style="min-width:0;width:100%;">
         <i data-lucide="layers" class="w-5 h-5"></i>
         <span class="text-[9px] mt-1">Ativos</span>
       </button>
-      <button onclick="switchTab('adicionar')" id="nav-adicionar" aria-label="Adicionar ativos" class="nav-item flex items-center justify-center -mt-5 pb-1">
+      <button onclick="switchTab('adicionar')" id="nav-adicionar" aria-label="Adicionar ativos" class="nav-item flex items-center justify-center -mt-5 pb-1" style="min-width:0;width:100%;">
         <span class="w-14 h-14 rounded-full bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/30 flex items-center justify-center transition"><i data-lucide="plus" class="w-7 h-7"></i></span>
       </button>
-      <button onclick="switchTab('relatorios')" id="nav-relatorios" class="nav-item flex flex-col items-center justify-center py-2 px-0.5 rounded-xl text-slate-400 hover:text-slate-200 font-medium transition">
+      <button onclick="switchTab('relatorios')" id="nav-relatorios" class="nav-item flex flex-col items-center justify-center py-2 px-0.5 rounded-xl text-slate-400 hover:text-slate-200 font-medium transition" style="min-width:0;width:100%;">
         <i data-lucide="file-bar-chart" class="w-[18px] h-[18px]"></i>
         <span class="text-[9px] mt-1">Relatórios</span>
       </button>
-      <button onclick="switchTab('proventos')" id="nav-proventos" class="nav-item flex flex-col items-center justify-center py-2 px-0.5 rounded-xl text-slate-400 hover:text-slate-200 font-medium transition">
+      <button onclick="switchTab('proventos')" id="nav-proventos" class="nav-item flex flex-col items-center justify-center py-2 px-0.5 rounded-xl text-slate-400 hover:text-slate-200 font-medium transition" style="min-width:0;width:100%;">
         <i data-lucide="coins" class="w-5 h-5"></i>
         <span class="text-[9px] mt-1">Proventos</span>
       </button>
-      <button onclick="switchTab('config')" id="nav-config" class="nav-item flex flex-col items-center justify-center py-2 px-0.5 rounded-xl text-slate-400 hover:text-slate-200 font-medium transition">
+      <button onclick="switchTab('config')" id="nav-config" class="nav-item flex flex-col items-center justify-center py-2 px-0.5 rounded-xl text-slate-400 hover:text-slate-200 font-medium transition" style="min-width:0;width:100%;">
         <i data-lucide="settings" class="w-5 h-5"></i>
         <span class="text-[9px] mt-1">Config.</span>
       </button>
