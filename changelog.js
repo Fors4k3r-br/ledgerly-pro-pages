@@ -1,10 +1,19 @@
+
 // Única fonte da versão do app. A cada entrega, edite APENAS este arquivo:
 //   - suba "version" e "build" (o build define o nome do cache do service worker);
 //   - acrescente uma entrada nova no INÍCIO de "entries" com as mudanças, em linguagem simples.
 globalThis.LEDGERLY_CHANGELOG = {
-  version: '1.4.0',
-  build: 26.1,
+  version: '1.4.3',
+  build: 27,
   entries: [
+    {
+      version: '1.4.3',
+      date: '2026-11-19',
+      notes: [
+        'Menu lateral retrátil: a navegação principal saiu da barra inferior e agora abre pelo botão de menu no topo, com acesso a Carteira, Ativos, Adicionar ativos, Relatórios, Proventos e Configurações.',
+        'Relatórios: o seletor de ano-calendário agora começa na primeira compra registrada e inclui o ano atual no topo como prévia do exercício seguinte.'
+      ]
+    },
     {
       version: '1.4.2',
       date: '2026-11-14',
