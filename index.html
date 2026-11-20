@@ -38,6 +38,19 @@
     .side-menu-item svg { width:1.15rem; height:1.15rem; flex:none; }
     .side-menu-item:hover { background:rgb(30 41 59 / .75); color:rgb(226 232 240); }
     .side-menu-item.active { background:rgb(16 185 129 / .13); color:rgb(52 211 153); box-shadow:inset 0 0 0 1px rgb(16 185 129 / .22); }
+    /* O menu e seu fundo precisam ficar acima de qualquer cartão, gráfico ou
+       contexto de empilhamento criado pelo conteúdo da aplicação. */
+    #sideMenuBackdrop {
+      position:fixed !important;
+      z-index:2147483646 !important;
+      isolation:isolate;
+    }
+    #sideMenu {
+      position:fixed !important;
+      z-index:2147483647 !important;
+      isolation:isolate;
+      will-change:transform;
+    }
     #sideMenu.menu-open { transform:translateX(0) !important; }
     #sideMenuBackdrop.menu-open { opacity:1; pointer-events:auto; }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }

@@ -3,9 +3,16 @@
 //   - suba "version" e "build" (o build define o nome do cache do service worker);
 //   - acrescente uma entrada nova no INÍCIO de "entries" com as mudanças, em linguagem simples.
 globalThis.LEDGERLY_CHANGELOG = {
-  version: '1.4.3',
-  build: 27,
+  version: '1.4.4',
+  build: 28,
   entries: [
+    {
+      version: '1.4.4',
+      date: '2026-11-19',
+      notes: [
+        'Menu lateral: corrigida a sobreposição para que o menu e o fundo escurecido apareçam sempre à frente dos cartões, gráficos e demais blocos da tela.'
+      ]
+    },
     {
       version: '1.4.3',
       date: '2026-11-19',
