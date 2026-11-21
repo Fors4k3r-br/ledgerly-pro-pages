@@ -3,9 +3,17 @@
 //   - suba "version" e "build" (o build define o nome do cache do service worker);
 //   - acrescente uma entrada nova no INÍCIO de "entries" com as mudanças, em linguagem simples.
 globalThis.LEDGERLY_CHANGELOG = {
-  version: '1.4.6',
-  build: 30,
+  version: '1.4.7',
+  build: 31,
   entries: [
+    {
+      version: '1.4.7',
+      date: '2026-11-21',
+      notes: [
+        'Relatório IRPF: incluído o preço médio de aquisição por ativo nas posições de 31/12 do ano anterior e do ano selecionado, na tela, no PDF e na planilha Excel. O custo total permanece como valor patrimonial de referência.',
+        'Sincronização: o LED laranja agora pulsa somente durante uma sincronização efetiva. Quando há apenas alterações pendentes, o LED permanece laranja e estático.'
+      ]
+    },
     {
       version: '1.4.6',
       date: '2026-11-21',
