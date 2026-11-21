@@ -2,8 +2,8 @@ name: Atualizar Dividendos (Java)
 
 on:
   schedule:
-    - cron: "0 11 * * *" # Todo dia às 08:00 (Horário de Brasília)
-  workflow_dispatch:     # Permite rodar manualmente na aba Actions
+    - cron: "0 11 * * *"
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -12,7 +12,7 @@ jobs:
   atualizar:
     runs-on: ubuntu-latest
     steps:
-      - name: Baixar repositório
+      - name: Baixar repositorio
         uses: actions/checkout@v4
 
       - name: Configurar Java 21
@@ -25,10 +25,9 @@ jobs:
       - name: Compilar e executar Scraper
         run: mvn compile exec:java -Dexec.mainClass="Scraper"
 
-      - name: Salvar JSON no repositório
+      - name: Salvar JSON no repositorio
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add dividendos.json
           git diff --quiet && git diff --staged --quiet || (git commit -m "Atualiza dividendos" && git push)
-
