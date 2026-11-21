@@ -1,0 +1,615 @@
+{
+  "atualizado_em": "2026-11-21T12:40:34.792115051Z",
+  "acoes": {
+    "PETR4": [
+      {
+        "tipo": "JCP",
+        "valor": "0,674071",
+        "data_com": "21/08/2026",
+        "pagamento": "24/08/2026"
+      },
+      {
+        "tipo": "Dividendo",
+        "valor": "0,471567",
+        "data_com": "21/08/2026",
+        "pagamento": "24/08/2026"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,202504",
+        "data_com": "21/08/2026",
+        "pagamento": "24/08/2026"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,350486",
+        "data_com": "01/06/2026",
+        "pagamento": "02/06/2026"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,350486",
+        "data_com": "01/06/2026",
+        "pagamento": "02/06/2026"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,313115",
+        "data_com": "22/04/2026",
+        "pagamento": "23/04/2026"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,313115",
+        "data_com": "22/04/2026",
+        "pagamento": "23/04/2026"
+      },
+      {
+        "tipo": "Dividendo",
+        "valor": "0,016490",
+        "data_com": "22/04/2026",
+        "pagamento": "23/04/2026"
+      },
+      {
+        "tipo": "Dividendo",
+        "valor": "0,020384",
+        "data_com": "22/04/2026",
+        "pagamento": "23/04/2026"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,175182",
+        "data_com": "22/12/2025",
+        "pagamento": "23/12/2025"
+      },
+      {
+        "tipo": "Dividendo",
+        "valor": "0,296421",
+        "data_com": "22/12/2025",
+        "pagamento": "23/12/2025"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,471604",
+        "data_com": "22/12/2025",
+        "pagamento": "23/12/2025"
+      },
+      {
+        "tipo": "Dividendo",
+        "valor": "0,008955",
+        "data_com": "22/12/2025",
+        "pagamento": "23/12/2025"
+      },
+      {
+        "tipo": "Dividendo",
+        "valor": "0,005292",
+        "data_com": "22/12/2025",
+        "pagamento": "23/12/2025"
+      },
+      {
+        "tipo": "Dividendo",
+        "valor": "0,008921",
+        "data_com": "22/12/2025",
+        "pagamento": "23/12/2025"
+      },
+      {
+        "tipo": "Dividendo",
+        "valor": "0,200922",
+        "data_com": "21/08/2025",
+        "pagamento": "22/08/2025"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,135040",
+        "data_com": "21/08/2025",
+        "pagamento": "22/08/2025"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,335962",
+        "data_com": "21/08/2025",
+        "pagamento": "22/08/2025"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,454583",
+        "data_com": "02/06/2025",
+        "pagamento": "03/06/2025"
+      },
+      {
+        "tipo": "Dividendo",
+        "valor": "0,308447",
+        "data_com": "02/06/2025",
+        "pagamento": "03/06/2025"
+      }
+    ],
+    "VALE3": [
+      {
+        "tipo": "JCP",
+        "valor": "1,568706",
+        "data_com": "11/08/2026",
+        "pagamento": "12/08/2026"
+      },
+      {
+        "tipo": "Dividendo",
+        "valor": "0,462016",
+        "data_com": "11/08/2026",
+        "pagamento": "12/08/2026"
+      },
+      {
+        "tipo": "Dividendo",
+        "valor": "1,244102",
+        "data_com": "11/12/2025",
+        "pagamento": "12/12/2025"
+      },
+      {
+        "tipo": "Dividendo",
+        "valor": "0,768134",
+        "data_com": "11/12/2025",
+        "pagamento": "12/12/2025"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "1,569535",
+        "data_com": "11/12/2025",
+        "pagamento": "12/12/2025"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "1,895387",
+        "data_com": "12/08/2025",
+        "pagamento": "13/08/2025"
+      },
+      {
+        "tipo": "Dividendo",
+        "valor": "2,141847",
+        "data_com": "07/03/2025",
+        "pagamento": "10/03/2025"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,520531",
+        "data_com": "11/12/2024",
+        "pagamento": "12/12/2024"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "2,093798",
+        "data_com": "02/08/2024",
+        "pagamento": "05/08/2024"
+      },
+      {
+        "tipo": "Dividendo",
+        "valor": "2,738548",
+        "data_com": "11/03/2024",
+        "pagamento": "12/03/2024"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,765771",
+        "data_com": "21/11/2023",
+        "pagamento": "22/11/2023"
+      },
+      {
+        "tipo": "Dividendo",
+        "valor": "1,565891",
+        "data_com": "21/11/2023",
+        "pagamento": "22/11/2023"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "1,918472",
+        "data_com": "11/08/2023",
+        "pagamento": "14/08/2023"
+      },
+      {
+        "tipo": "Dividendo",
+        "valor": "1,827646",
+        "data_com": "13/03/2023",
+        "pagamento": "14/03/2023"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,292012",
+        "data_com": "12/12/2022",
+        "pagamento": "13/12/2022"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "1,539376",
+        "data_com": "11/08/2022",
+        "pagamento": "12/08/2022"
+      },
+      {
+        "tipo": "Dividendo",
+        "valor": "2,032680",
+        "data_com": "11/08/2022",
+        "pagamento": "12/08/2022"
+      },
+      {
+        "tipo": "Dividendo",
+        "valor": "3,719256",
+        "data_com": "08/03/2022",
+        "pagamento": "09/03/2022"
+      },
+      {
+        "tipo": "Dividendo",
+        "valor": "8,197239",
+        "data_com": "22/09/2021",
+        "pagamento": "23/09/2021"
+      },
+      {
+        "tipo": "Dividendo",
+        "valor": "0,716268",
+        "data_com": "23/06/2021",
+        "pagamento": "24/06/2021"
+      }
+    ],
+    "ITUB4": [
+      {
+        "tipo": "JCP",
+        "valor": "0,018182",
+        "data_com": "30/11/2026",
+        "pagamento": "01/12/2026"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,018182",
+        "data_com": "30/10/2026",
+        "pagamento": "03/11/2026"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,018182",
+        "data_com": "30/09/2026",
+        "pagamento": "01/10/2026"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,018182",
+        "data_com": "31/08/2026",
+        "pagamento": "01/09/2026"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,018182",
+        "data_com": "31/07/2026",
+        "pagamento": "03/08/2026"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,018182",
+        "data_com": "30/06/2026",
+        "pagamento": "01/07/2026"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,361880",
+        "data_com": "18/06/2026",
+        "pagamento": "19/06/2026"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,018182",
+        "data_com": "29/05/2026",
+        "pagamento": "01/06/2026"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,018182",
+        "data_com": "30/04/2026",
+        "pagamento": "04/05/2026"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,018182",
+        "data_com": "31/03/2026",
+        "pagamento": "01/04/2026"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,348880",
+        "data_com": "19/03/2026",
+        "pagamento": "20/03/2026"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,018182",
+        "data_com": "27/02/2026",
+        "pagamento": "02/03/2026"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,018182",
+        "data_com": "30/01/2026",
+        "pagamento": "02/02/2026"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,018182",
+        "data_com": "30/12/2025",
+        "pagamento": "02/01/2026"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "* 0,358981",
+        "data_com": "09/12/2025",
+        "pagamento": "10/12/2025"
+      },
+      {
+        "tipo": "Dividendo",
+        "valor": "* 1,813809",
+        "data_com": "09/12/2025",
+        "pagamento": "10/12/2025"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "* 0,017136",
+        "data_com": "28/11/2025",
+        "pagamento": "01/12/2025"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "* 0,017136",
+        "data_com": "31/10/2025",
+        "pagamento": "03/11/2025"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "* 0,017136",
+        "data_com": "30/09/2025",
+        "pagamento": "01/10/2025"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "* 0,017136",
+        "data_com": "29/08/2025",
+        "pagamento": "01/09/2025"
+      }
+    ],
+    "BBAS3": [
+      {
+        "tipo": "JCP",
+        "valor": "0,102456",
+        "data_com": "01/09/2026",
+        "pagamento": "02/09/2026"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,034506",
+        "data_com": "01/09/2026",
+        "pagamento": "02/09/2026"
+      },
+      {
+        "tipo": "Dividendo",
+        "valor": "0,002814",
+        "data_com": "01/09/2026",
+        "pagamento": "02/09/2026"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,081578",
+        "data_com": "01/06/2026",
+        "pagamento": "02/06/2026"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,059684",
+        "data_com": "01/06/2026",
+        "pagamento": "02/06/2026"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,070142",
+        "data_com": "02/03/2026",
+        "pagamento": "03/03/2026"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,216304",
+        "data_com": "23/02/2026",
+        "pagamento": "24/02/2026"
+      },
+      {
+        "tipo": "Dividendo",
+        "valor": "0,005188",
+        "data_com": "23/02/2026",
+        "pagamento": "24/02/2026"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,045833",
+        "data_com": "02/12/2025",
+        "pagamento": "03/12/2025"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,071927",
+        "data_com": "01/12/2025",
+        "pagamento": "02/12/2025"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,334258",
+        "data_com": "02/06/2025",
+        "pagamento": "03/06/2025"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,090447",
+        "data_com": "02/06/2025",
+        "pagamento": "03/06/2025"
+      },
+      {
+        "tipo": "Dividendo",
+        "valor": "0,003545",
+        "data_com": "11/03/2025",
+        "pagamento": "12/03/2025"
+      },
+      {
+        "tipo": "Dividendo",
+        "valor": "0,008931",
+        "data_com": "11/03/2025",
+        "pagamento": "12/03/2025"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,149351",
+        "data_com": "11/03/2025",
+        "pagamento": "12/03/2025"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,342592",
+        "data_com": "11/03/2025",
+        "pagamento": "12/03/2025"
+      },
+      {
+        "tipo": "Dividendo",
+        "valor": "0,136002",
+        "data_com": "11/03/2025",
+        "pagamento": "12/03/2025"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,176490",
+        "data_com": "11/12/2024",
+        "pagamento": "12/12/2024"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,483300",
+        "data_com": "25/11/2024",
+        "pagamento": "26/11/2024"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,186602",
+        "data_com": "11/09/2024",
+        "pagamento": "12/09/2024"
+      }
+    ],
+    "WEGE3": [
+      {
+        "tipo": "JCP",
+        "valor": "0,107212",
+        "data_com": "18/09/2026",
+        "pagamento": "21/09/2026"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,104424",
+        "data_com": "19/06/2026",
+        "pagamento": "22/06/2026"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,100121",
+        "data_com": "20/03/2026",
+        "pagamento": "23/03/2026"
+      },
+      {
+        "tipo": "Dividendo",
+        "valor": "0,412832",
+        "data_com": "19/12/2025",
+        "pagamento": "22/12/2025"
+      },
+      {
+        "tipo": "Dividendo",
+        "valor": "0,412832",
+        "data_com": "19/12/2025",
+        "pagamento": "22/12/2025"
+      },
+      {
+        "tipo": "Dividendo",
+        "valor": "0,412832",
+        "data_com": "19/12/2025",
+        "pagamento": "22/12/2025"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,111294",
+        "data_com": "03/12/2025",
+        "pagamento": "04/12/2025"
+      },
+      {
+        "tipo": "Dividendo",
+        "valor": "0,341700",
+        "data_com": "03/12/2025",
+        "pagamento": "04/12/2025"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,110235",
+        "data_com": "26/09/2025",
+        "pagamento": "29/09/2025"
+      },
+      {
+        "tipo": "Dividendo",
+        "valor": "0,171450",
+        "data_com": "25/07/2025",
+        "pagamento": "28/07/2025"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,094058",
+        "data_com": "20/06/2025",
+        "pagamento": "23/06/2025"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,080706",
+        "data_com": "21/03/2025",
+        "pagamento": "24/03/2025"
+      },
+      {
+        "tipo": "Dividendo",
+        "valor": "0,302653",
+        "data_com": "28/02/2025",
+        "pagamento": "05/03/2025"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,079765",
+        "data_com": "20/12/2024",
+        "pagamento": "23/12/2024"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,070059",
+        "data_com": "27/09/2024",
+        "pagamento": "30/09/2024"
+      },
+      {
+        "tipo": "Dividendo",
+        "valor": "0,187552",
+        "data_com": "02/08/2024",
+        "pagamento": "05/08/2024"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,062765",
+        "data_com": "28/06/2024",
+        "pagamento": "01/07/2024"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,057765",
+        "data_com": "22/03/2024",
+        "pagamento": "25/03/2024"
+      },
+      {
+        "tipo": "Dividendo",
+        "valor": "0,297943",
+        "data_com": "23/02/2024",
+        "pagamento": "26/02/2024"
+      },
+      {
+        "tipo": "JCP",
+        "valor": "0,071941",
+        "data_com": "15/12/2023",
+        "pagamento": "18/12/2023"
+      }
+    ]
+  }
+}
