@@ -3,9 +3,17 @@
 //   - suba "version" e "build" (o build define o nome do cache do service worker);
 //   - acrescente uma entrada nova no INÍCIO de "entries" com as mudanças, em linguagem simples.
 globalThis.LEDGERLY_CHANGELOG = {
-  version: '1.4.5',
-  build: 29,
+  version: '1.4.6',
+  build: 30,
   entries: [
+    {
+      version: '1.4.6',
+      date: '2026-11-21',
+      notes: [
+        'Cabeçalho: o status textual foi substituído por um indicador LED discreto. Verde indica sincronização concluída, laranja indica processo ou alterações pendentes, vermelho indica erro ou conflito e cinza indica modo offline ou Google Drive desconectado.',
+        'Ao tocar no LED, um painel mostra conexão com a internet, estado do Google Drive, situação dos dados, horário da última sincronização concluída e acesso para configurar ou tentar sincronizar novamente.'
+      ]
+    },
     {
       version: '1.4.5',
       date: '2026-11-19',

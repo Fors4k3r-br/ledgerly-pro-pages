@@ -150,9 +150,9 @@
         <div>
           <div class="flex items-center gap-2">
             <h1 class="text-base font-extrabold tracking-tight text-white">Ledgerly Pro</h1>
-            <span id="dbStatusBadge" class="text-[11px] font-mono uppercase px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-              Online
-            </span>
+            <button type="button" id="dbStatusBadge" onclick="toggleSyncStatusPanel()" title="Ver status da sincronização" aria-label="Ver status da sincronização" aria-haspopup="dialog" aria-expanded="false" class="shrink-0 inline-flex items-center justify-center p-2 rounded-full hover:bg-slate-800/80 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-emerald-400">
+              <span id="syncStatusLed" class="block w-3 h-3 rounded-full bg-slate-400" style="background-color:#94a3b8;box-shadow:0 0 0 3px rgba(148,163,184,.16)"></span>
+            </button>
           </div>
         </div>
       </div>
@@ -177,6 +177,24 @@
           <i data-lucide="lock" class="w-4 h-4"></i>
         </button>
       </div>
+    </div>
+    <div id="syncStatusPopover" class="hidden absolute right-3 top-full mt-2 z-[90] glass-card rounded-2xl border border-slate-700 shadow-2xl p-4 space-y-3" style="width:min(92vw,340px)" role="dialog" aria-label="Detalhes da sincronização" aria-hidden="true">
+      <div class="flex items-center justify-between gap-3">
+        <h2 class="text-sm font-bold text-white">Status da sincronização</h2>
+        <button type="button" onclick="toggleSyncStatusPanel(false)" aria-label="Fechar detalhes" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"><i data-lucide="x" class="w-4 h-4"></i></button>
+      </div>
+      <div class="space-y-2 text-xs">
+        <div class="flex items-center justify-between gap-3"><span class="text-slate-400">Conexão com a internet</span><strong id="syncDetailInternet" class="text-slate-200">Verificando…</strong></div>
+        <div class="flex items-center justify-between gap-3"><span class="text-slate-400">Google Drive</span><strong id="syncDetailDrive" class="text-slate-200">Verificando…</strong></div>
+        <div class="flex items-center justify-between gap-3"><span class="text-slate-400">Dados deste aparelho</span><strong id="syncDetailData" class="text-slate-200 text-right">Verificando…</strong></div>
+        <div class="border-t border-slate-700/80 pt-2 space-y-1">
+          <span class="block text-slate-500">Última sincronização concluída</span>
+          <strong id="syncDetailLastSync" class="block text-slate-200">Ainda não sincronizado</strong>
+        </div>
+      </div>
+      <div id="syncDetailNotice" class="hidden rounded-xl bg-slate-900/80 border border-slate-700 px-3 py-2 text-[11px] text-slate-300" aria-live="polite"></div>
+      <button type="button" id="syncDetailAction" onclick="handleSyncStatusAction()" class="w-full px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs disabled:opacity-50 disabled:cursor-not-allowed">Sincronizar agora</button>
+      <p class="text-[10px] text-slate-500">O indicador considera a sincronização do banco SQLite com o Google Drive, não apenas a conexão com a internet.</p>
     </div>
   </header>
 
@@ -5017,28 +5035,89 @@
     }
     // ===== FIM DA SINCRONIZAÇÃO =====
 
-    function updateConnectionBadge() {
-      const b = document.getElementById('dbStatusBadge');
-      if (!b) return;
-      const on = navigator.onLine;
+    function syncVisualStatus() {
       const st = syncState();
-      const tone = { ok: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30', warn: 'bg-amber-500/15 text-amber-400 border-amber-500/30',
-        err: 'bg-rose-500/15 text-rose-400 border-rose-500/30', busy: 'bg-indigo-500/15 text-indigo-300 border-indigo-500/30' };
-      let text = on ? 'Online' : 'Offline', cls = on ? tone.ok : tone.warn;
-      if (st.connected) {
-        if (syncBusy) { text = 'Sincronizando'; cls = tone.busy; }
-        else if (!on) { text = 'Offline'; cls = tone.warn; }
-        else if (syncConflict) { text = 'Conflito'; cls = tone.err; }
-        else if (syncCloudMissing) { text = 'Sem nuvem'; cls = tone.warn; }
-        else if (syncError) { text = 'Erro de sync'; cls = tone.err; }
-        else if (syncPending || st.needsLogin) { text = 'Sincronizar'; cls = tone.warn; }
-        else { const d = st.lastSync ? new Date(st.lastSync) : null; text = 'Sinc. ' + (d ? d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : 'ok'); cls = tone.ok; }
-      }
-      b.textContent = text;
-      b.className = 'text-[11px] font-mono uppercase px-2 py-0.5 rounded-full border ' + cls + (st.connected ? ' cursor-pointer' : '');
-      b.onclick = st.connected ? () => syncNow(true) : null;
-      b.setAttribute('role', st.connected ? 'button' : 'status');
+      if (!navigator.onLine) return { key: 'offline', label: 'Offline', color: '#94a3b8', glow: 'rgba(148,163,184,.18)' };
+      if (!st.connected) return { key: 'disconnected', label: 'Drive desconectado', color: '#94a3b8', glow: 'rgba(148,163,184,.18)' };
+      if (syncConflict || syncCloudMissing || syncError) return { key: 'error', label: 'Atenção necessária', color: '#ef4444', glow: 'rgba(239,68,68,.20)' };
+      if (syncBusy || syncPending || st.needsLogin) return { key: 'busy', label: 'Sincronizando ou pendente', color: '#f59e0b', glow: 'rgba(245,158,11,.20)' };
+      return { key: 'ok', label: 'Sincronizado', color: '#22c55e', glow: 'rgba(34,197,94,.20)' };
     }
+    function renderSyncStatusPopover() {
+      const st = syncState();
+      const visual = syncVisualStatus();
+      const set = (id, value, color) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.textContent = value;
+        if (color) el.style.color = color;
+      };
+      const internet = navigator.onLine;
+      set('syncDetailInternet', internet ? 'Conectado' : 'Sem conexão', internet ? '#34d399' : '#94a3b8');
+      set('syncDetailDrive', !st.connected ? 'Não conectado neste aparelho' : (st.needsLogin ? 'Conectado · autorização necessária' : 'Conectado'), st.connected ? (st.needsLogin ? '#fbbf24' : '#34d399') : '#94a3b8');
+      let dataText = 'Somente neste aparelho';
+      if (st.connected) {
+        if (!internet) dataText = 'Aguardando conexão';
+        else if (syncBusy) dataText = 'Enviando ou recebendo dados';
+        else if (syncConflict) dataText = 'Conflito aguardando decisão';
+        else if (syncCloudMissing) dataText = 'Cópia da nuvem não encontrada';
+        else if (syncError) dataText = 'Falha na sincronização';
+        else if (st.needsLogin) dataText = 'Aguardando autorização';
+        else if (syncPending) dataText = 'Alterações aguardando envio';
+        else dataText = 'Dados atualizados';
+      }
+      const dataColor = (syncConflict || syncCloudMissing || syncError) ? '#f87171' : (syncBusy || syncPending || st.needsLogin) ? '#fbbf24' : st.connected && internet ? '#34d399' : '#cbd5e1';
+      set('syncDetailData', dataText, dataColor);
+      const last = document.getElementById('syncDetailLastSync');
+      if (last) last.textContent = st.lastSync ? new Date(st.lastSync).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : 'Ainda não houve sincronização concluída';
+      const notice = document.getElementById('syncDetailNotice');
+      let noticeText = '';
+      if (!internet) noticeText = 'O aplicativo continua usando os dados locais. A sincronização será tentada quando a internet voltar.';
+      else if (!st.connected) noticeText = 'O banco está salvo neste aparelho. Conecte o Google Drive em Configurações → Banco de dados → Sincronização para manter os aparelhos atualizados.';
+      else if (syncConflict) noticeText = 'Há alterações diferentes neste aparelho e na nuvem. Toque em “Sincronizar agora” para escolher qual versão manter.';
+      else if (syncCloudMissing) noticeText = 'A cópia do Google Drive não foi encontrada. Abra a sincronização para decidir se deseja recriá-la.';
+      else if (syncError) noticeText = 'Não foi possível concluir a sincronização: ' + syncError;
+      else if (st.needsLogin) noticeText = 'É necessária uma nova autorização da conta Google para continuar.';
+      else if (syncPending && !syncBusy) noticeText = 'Existem alterações locais aguardando envio ao Google Drive.';
+      else if (syncBusy) noticeText = 'Aguarde enquanto o banco de dados é enviado ou atualizado no Google Drive.';
+      else if (st.connected) noticeText = 'O banco deste aparelho e a cópia do Google Drive estão sincronizados.';
+      if (notice) { notice.textContent = noticeText; notice.classList.toggle('hidden', !noticeText); }
+      const action = document.getElementById('syncDetailAction');
+      if (action) {
+        action.textContent = !st.connected ? 'Configurar Google Drive' : !internet ? 'Aguardando conexão' : syncBusy ? 'Sincronizando…' : (syncConflict || syncCloudMissing || syncError || st.needsLogin) ? 'Resolver / tentar novamente' : 'Sincronizar agora';
+        action.disabled = Boolean(st.connected && (!internet || syncBusy));
+      }
+      const badge = document.getElementById('dbStatusBadge');
+      const led = document.getElementById('syncStatusLed');
+      if (led) { led.style.backgroundColor = visual.color; led.style.boxShadow = `0 0 0 3px ${visual.glow}`; }
+      if (badge) { badge.setAttribute('aria-label', 'Status: ' + visual.label + '. Toque para ver detalhes.'); badge.title = visual.label; }
+      const pop = document.getElementById('syncStatusPopover');
+      if (pop && !pop.classList.contains('hidden')) pop.setAttribute('data-status', visual.key);
+    }
+    function updateConnectionBadge() { renderSyncStatusPopover(); }
+    function toggleSyncStatusPanel(force) {
+      const panel = document.getElementById('syncStatusPopover');
+      const badge = document.getElementById('dbStatusBadge');
+      if (!panel || !badge) return;
+      const open = typeof force === 'boolean' ? force : panel.classList.contains('hidden');
+      panel.classList.toggle('hidden', !open);
+      panel.setAttribute('aria-hidden', String(!open));
+      badge.setAttribute('aria-expanded', String(open));
+      if (open) { renderSyncStatusPopover(); if (window.lucide) lucide.createIcons(); }
+    }
+    function handleSyncStatusAction() {
+      const st = syncState();
+      if (!st.connected) { toggleSyncStatusPanel(false); switchTab('sync'); return; }
+      if (!navigator.onLine) { showToast('Sem internet. A sincronização será retomada quando a conexão voltar.', 'info'); return; }
+      if (syncBusy) return;
+      syncNow(true);
+    }
+    document.addEventListener('click', event => {
+      const panel = document.getElementById('syncStatusPopover');
+      if (!panel || panel.classList.contains('hidden')) return;
+      if (!event.target.closest('#syncStatusPopover') && !event.target.closest('#dbStatusBadge')) toggleSyncStatusPanel(false);
+    });
+    document.addEventListener('keydown', event => { if (event.key === 'Escape') toggleSyncStatusPanel(false); });
     window.addEventListener('online', () => { updateConnectionBadge(); if (syncState().connected && syncPending) syncNow(false); });
     window.addEventListener('offline', updateConnectionBadge);
     document.addEventListener('visibilitychange', () => { if (!document.hidden && syncState().connected && hasValidToken()) syncNow(false); });
