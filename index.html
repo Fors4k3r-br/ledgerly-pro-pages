@@ -38,21 +38,27 @@
     .side-menu-item svg { width:1.15rem; height:1.15rem; flex:none; }
     .side-menu-item:hover { background:rgb(30 41 59 / .75); color:rgb(226 232 240); }
     .side-menu-item.active { background:rgb(16 185 129 / .13); color:rgb(52 211 153); box-shadow:inset 0 0 0 1px rgb(16 185 129 / .22); }
-    /* O menu e seu fundo precisam ficar acima de qualquer cartão, gráfico ou
-       contexto de empilhamento criado pelo conteúdo da aplicação. */
-    #sideMenuBackdrop {
-      position:fixed !important;
-      z-index:2147483646 !important;
-      isolation:isolate;
-    }
-    #sideMenu {
-      position:fixed !important;
-      z-index:2147483647 !important;
-      isolation:isolate;
-      will-change:transform;
-    }
-    #sideMenu.menu-open { transform:translateX(0) !important; }
+    /* Bottom sheet e barra inferior: respeitam a área segura do Android/iOS. */
+    #sideMenuBackdrop { z-index:2147483646 !important; isolation:isolate; }
+    #sideMenu { z-index:2147483647 !important; isolation:isolate; will-change:transform; overflow:hidden; transition:transform .32s cubic-bezier(.22,.8,.25,1); }
+    #sideMenu.menu-open { transform:translateY(0) !important; }
     #sideMenuBackdrop.menu-open { opacity:1; pointer-events:auto; }
+    .sheet-handle-wrap { display:flex; justify-content:center; padding: .65rem 0 .8rem; flex:none; }
+    .sheet-handle { width:3.6rem; height:.32rem; border-radius:999px; background:rgb(148 163 184 / .65); }
+    .bottom-navigation {
+      position:fixed; left:0; right:0; bottom:0; z-index:80;
+      display:grid; grid-template-columns:repeat(5,minmax(0,1fr));
+      padding: .45rem .5rem calc(.45rem + env(safe-area-inset-bottom));
+      min-height:4.65rem; background:rgb(2 6 23 / .97); backdrop-filter:blur(18px);
+      border-top:1px solid rgb(51 65 85 / .75);
+    }
+    .bottom-nav-item { min-width:0; min-height:3.65rem; display:flex; align-items:center; justify-content:center; color:rgb(148 163 184); border-radius:1rem; transition:color .18s,background .18s,transform .12s; }
+    .bottom-nav-item svg { width:1.85rem; height:1.85rem; stroke-width:1.8; }
+    .bottom-nav-item:active { transform:scale(.94); }
+    .bottom-nav-item.active { color:rgb(52 211 153); }
+    .bottom-nav-item.active svg { filter:drop-shadow(0 0 7px rgb(16 185 129 / .22)); }
+    @media (min-width:768px) { .bottom-navigation { left:50%; right:auto; width:min(100%,48rem); transform:translateX(-50%); border-left:1px solid rgb(51 65 85 / .45); border-right:1px solid rgb(51 65 85 / .45); } }
+    @media (prefers-reduced-motion: reduce) { #sideMenu, .bottom-nav-item { transition-duration:.01ms; } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
     :focus-visible { outline: 2px solid #34d399; outline-offset: 2px; }
     html, body, button, a, input, select { touch-action: manipulation; }   /* sem zoom por toque duplo: ele desloca a barra fixa */
@@ -151,9 +157,6 @@
   <header class="relative shrink-0 z-30 bg-slate-950/90 backdrop-blur-md border-b border-slate-800/80 px-4 py-3.5">
     <div class="max-w-3xl mx-auto flex items-center justify-between">
       <div class="flex items-center gap-2.5 min-w-0">
-        <button type="button" id="menuOpenBtn" onclick="toggleSideMenu(true)" aria-label="Abrir menu de navegação" aria-controls="sideMenu" aria-expanded="false" class="shrink-0 p-2.5 -ml-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 transition">
-          <i data-lucide="menu" class="w-5 h-5"></i>
-        </button>
         <img src="./icons/icon-192.png" alt="" width="36" height="36" class="w-9 h-9 rounded-xl shadow-md shadow-emerald-500/20" />
         <div>
           <div class="flex items-center gap-2">
@@ -206,17 +209,15 @@
     </div>
   </header>
 
-  <!-- ================= MENU LATERAL RETRÁTIL ================= -->
-  <div id="sideMenuBackdrop" class="fixed inset-0 z-[70] bg-transparent opacity-0 pointer-events-none transition-opacity duration-200" onclick="toggleSideMenu(false)" aria-hidden="true"></div>
-  <aside id="sideMenu" class="fixed inset-y-0 left-0 z-[75] max-w-full bg-slate-950 border-r border-slate-800 shadow-2xl transition-transform duration-200 ease-out flex flex-col" style="width:min(82vw,310px);transform:translateX(-100%)" role="dialog" aria-modal="true" aria-label="Menu de navegação" aria-hidden="true">
-    <div class="flex items-center justify-between gap-3 px-5 pt-6 pb-5 border-b border-slate-800/80" style="padding-top:max(1.5rem,env(safe-area-inset-top))">
-      <div class="flex items-center gap-3 min-w-0">
-        <img src="./icons/icon-192.png" alt="" width="40" height="40" class="w-10 h-10 rounded-xl" />
-        <div class="min-w-0"><div class="font-extrabold text-white">Ledgerly Pro</div><div class="text-[11px] text-slate-500">Navegação</div></div>
-      </div>
-      <button type="button" onclick="toggleSideMenu(false)" aria-label="Fechar menu" class="p-2.5 rounded-xl bg-slate-900 text-slate-300 border border-slate-800"><i data-lucide="x" class="w-5 h-5"></i></button>
+  <!-- ================= MENU COMPLETO: BOTTOM SHEET ================= -->
+  <div id="sideMenuBackdrop" class="fixed inset-0 z-[90] bg-slate-950/65 opacity-0 pointer-events-none transition-opacity duration-300" onclick="toggleSideMenu(false)" aria-hidden="true"></div>
+  <aside id="sideMenu" class="fixed inset-x-0 bottom-0 z-[95] max-h-[82dvh] bg-slate-950 border-t border-slate-800 shadow-2xl flex flex-col rounded-t-[2rem]" style="transform:translateY(105%);padding-bottom:env(safe-area-inset-bottom)" role="dialog" aria-modal="true" aria-label="Navegação" aria-hidden="true">
+    <div class="sheet-handle-wrap" aria-hidden="true"><div class="sheet-handle"></div></div>
+    <div class="flex items-center justify-between gap-3 px-5 pb-4 pt-1 border-b border-slate-800/80">
+      <h2 class="text-xl font-semibold text-white">Navegação</h2>
+      <button type="button" onclick="toggleSideMenu(false)" aria-label="Fechar menu" class="p-3 rounded-2xl bg-slate-900 text-slate-300 border border-slate-800"><i data-lucide="x" class="w-6 h-6"></i></button>
     </div>
-    <nav class="flex-1 overflow-y-auto p-3 space-y-1" aria-label="Seções do aplicativo">
+    <nav class="flex-1 overflow-y-auto p-4 space-y-1" aria-label="Seções do aplicativo">
       <button type="button" data-menu-tab="carteira" onclick="navigateFromMenu('carteira')" class="side-menu-item active"><i data-lucide="pie-chart"></i><span>Carteira</span></button>
       <button type="button" data-menu-tab="posicoes" onclick="navigateFromMenu('posicoes')" class="side-menu-item"><i data-lucide="layers"></i><span>Ativos</span></button>
       <button type="button" data-menu-tab="adicionar" onclick="navigateFromMenu('adicionar')" class="side-menu-item"><i data-lucide="plus-circle"></i><span>Adicionar ativos</span></button>
@@ -225,12 +226,11 @@
       <div class="my-3 border-t border-slate-800"></div>
       <button type="button" data-menu-tab="config" onclick="navigateFromMenu('config')" class="side-menu-item"><i data-lucide="settings"></i><span>Configurações</span></button>
     </nav>
-    <div class="px-5 py-4 border-t border-slate-800/80 text-[10px] text-slate-600" style="padding-bottom:max(1rem,env(safe-area-inset-bottom))">Ledgerly Pro</div>
   </aside>
 
   <!-- ================= CONTEÚDO PRINCIPAL ================= -->
   <div id="appScroll" class="flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
-  <main class="max-w-3xl w-full mx-auto px-4 pt-4 pb-6 space-y-6">
+  <main class="max-w-3xl w-full mx-auto px-4 pt-4 pb-28 space-y-6">
 
     <!-- ===============================================================
          ABA 1: CARTEIRA (RESUMO + GRÁFICO + BOTÃO DETALHAR POSIÇÕES)
@@ -1369,6 +1369,15 @@
 
   </main>
   </div>
+
+  <!-- ================= BARRA INFERIOR DE NAVEGAÇÃO ================= -->
+  <nav id="bottomNavigation" class="bottom-navigation" aria-label="Navegação principal">
+    <button type="button" data-bottom-tab="carteira" onclick="navigateFromBottom('carteira')" aria-label="Carteira" title="Carteira" class="bottom-nav-item active"><i data-lucide="pie-chart"></i></button>
+    <button type="button" data-bottom-tab="posicoes" onclick="navigateFromBottom('posicoes')" aria-label="Ativos" title="Ativos" class="bottom-nav-item"><i data-lucide="layers"></i></button>
+    <button type="button" data-bottom-tab="adicionar" onclick="navigateFromBottom('adicionar')" aria-label="Adicionar ativos" title="Adicionar ativos" class="bottom-nav-item"><i data-lucide="plus"></i></button>
+    <button type="button" data-bottom-tab="relatorios" onclick="navigateFromBottom('relatorios')" aria-label="Relatórios" title="Relatórios" class="bottom-nav-item"><i data-lucide="file-bar-chart"></i></button>
+    <button type="button" data-bottom-tab="menu" onclick="toggleSideMenu(true)" aria-label="Abrir menu" title="Menu" aria-controls="sideMenu" aria-expanded="false" class="bottom-nav-item"><i data-lucide="menu"></i></button>
+  </nav>
 
   <!-- ================= MODAL: CALCULADORA INTEGRADA ================= -->
   <div id="calculatorModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
@@ -4068,7 +4077,7 @@
     function toggleSideMenu(open) {
       const panel = document.getElementById('sideMenu');
       const backdrop = document.getElementById('sideMenuBackdrop');
-      const trigger = document.getElementById('menuOpenBtn');
+      const trigger = document.querySelector('[data-bottom-tab="menu"]');
       if (!panel || !backdrop) return;
       const wasOpen = panel.classList.contains('menu-open');
       const shouldOpen = typeof open === 'boolean' ? open : !wasOpen;
@@ -4077,10 +4086,12 @@
       panel.setAttribute('aria-hidden', String(!shouldOpen));
       backdrop.setAttribute('aria-hidden', String(!shouldOpen));
       if (trigger) trigger.setAttribute('aria-expanded', String(shouldOpen));
+      document.body.classList.toggle('bottom-sheet-open', shouldOpen);
       if (shouldOpen) { const closeBtn = panel.querySelector('button[aria-label="Fechar menu"]'); if (closeBtn) closeBtn.focus(); }
       else if (trigger && wasOpen) trigger.focus({preventScroll:true});
     }
     function navigateFromMenu(tabId) { toggleSideMenu(false); switchTab(tabId); }
+    function navigateFromBottom(tabId) { toggleSideMenu(false); switchTab(tabId); }
     document.addEventListener('keydown', event => { if (event.key === 'Escape') toggleSideMenu(false); });
 
     function switchTab(tabId, pushHistory = true) {
@@ -4095,6 +4106,7 @@
 
       const activeNavId = ['banco', 'seguranca', 'apis', 'api-brapi', 'temas', 'sync', 'sobre'].includes(tabId) ? 'config' : tabId;
       document.querySelectorAll('[data-menu-tab]').forEach(btn => btn.classList.toggle('active', btn.dataset.menuTab === activeNavId));
+      document.querySelectorAll('[data-bottom-tab]').forEach(btn => { const isMenu = btn.dataset.bottomTab === 'menu'; const represented = ['carteira', 'posicoes', 'adicionar', 'relatorios'].includes(activeNavId); btn.classList.toggle('active', isMenu ? !represented : btn.dataset.bottomTab === activeNavId); });
 
       { const sc = document.getElementById('appScroll'); (sc && sc.scrollTo ? sc : window).scrollTo({ top: 0, behavior: 'smooth' }); }
       

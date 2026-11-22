@@ -4,8 +4,18 @@
 //   - acrescente uma entrada nova no INÍCIO de "entries" com as mudanças, em linguagem simples.
 globalThis.LEDGERLY_CHANGELOG = {
   version: '1.4.7',
-  build: 31,
+  build: 32,
   entries: [
+    {
+      version: '1.4.8',
+      date: '2026-11-22',
+      notes: [
+        'Navegação mobile: removido o botão de menu do cabeçalho e adicionada uma barra inferior fixa com cinco ícones, sem legendas.',
+        'Navegação mobile: o menu completo agora abre em um painel deslizante de baixo para cima, com fundo de fechamento, alça, botão fechar e destaque da seção ativa.',
+        'Layout: adicionada margem inferior ao conteúdo para evitar que a barra fixa cubra os controles e o final das telas.',
+        'Estrutura: padronizado o caminho do CSS de entrada em src/input.css e removidos arquivos residuais.'
+      ]
+    },
     {
       version: '1.4.7',
       date: '2026-11-21',
