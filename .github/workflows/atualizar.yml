@@ -1,8 +1,8 @@
 name: Atualizar Dividendos (Java)
 
 on:
-  schedule:
-    - cron: "15 09 * * *"
+#  schedule:
+#    - cron: "15 09 * * *"
   workflow_dispatch:
 
 permissions:
