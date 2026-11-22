@@ -70,6 +70,24 @@ self.addEventListener('fetch', event => {
     return;
   }
 
+  // Network First para dividendos.json (sempre busca proventos atualizados; usa cache se offline)
+  if (url.pathname.endsWith('/dividendos.json')) {
+    event.respondWith((async () => {
+      try {
+        const response = await fetch(request, { cache: 'no-cache' });
+        if (response && response.ok) {
+          (await caches.open(CACHE_NAME)).put(request, response.clone());
+        }
+        return response;
+      } catch (_) {
+        const cached = await caches.match(request);
+        if (cached) return cached;
+        return new Response('[]', { headers: { 'Content-Type': 'application/json' } });
+      }
+    })());
+    return;
+  }
+
   event.respondWith((async () => {
     const cached = await caches.match(request);
     if (cached) return cached;
