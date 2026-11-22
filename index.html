@@ -34,10 +34,12 @@
 
   <style>
 
-    .side-menu-item { width:100%; display:flex; align-items:center; gap:.9rem; min-height:48px; padding:.75rem .9rem; border-radius:.85rem; color:rgb(148 163 184); font-size:.875rem; font-weight:600; text-align:left; transition:background .15s,color .15s; }
+    /* Navegação acompanha as variáveis do tema ativo (Padrão, Escuro ou Claro). */
+    .side-menu-item { width:100%; display:flex; align-items:center; gap:.9rem; min-height:48px; padding:.75rem .9rem; border-radius:.85rem; color:rgb(var(--s-400)); font-size:.875rem; font-weight:600; text-align:left; transition:background .15s,color .15s; }
     .side-menu-item svg { width:1.15rem; height:1.15rem; flex:none; }
-    .side-menu-item:hover { background:rgb(30 41 59 / .75); color:rgb(226 232 240); }
-    .side-menu-item.active { background:rgb(16 185 129 / .13); color:rgb(52 211 153); box-shadow:inset 0 0 0 1px rgb(16 185 129 / .22); }
+    .side-menu-item:hover { background:rgb(var(--s-800) / .75); color:rgb(var(--s-100)); }
+    .side-menu-item.active { background:rgb(16 185 129 / .13); color:#34d399; box-shadow:inset 0 0 0 1px rgb(16 185 129 / .22); }
+    html[data-theme="light"] .side-menu-item.active { color:#047857; }
     /* Bottom sheet e barra inferior: posicionamento explícito para não depender
        de utilitários Tailwind que podem não existir no CSS compilado. */
     #sideMenuBackdrop {
@@ -54,10 +56,18 @@
       max-height:82vh; max-height:82dvh; z-index:95; isolation:isolate;
       display:flex; flex-direction:column; overflow:hidden;
       padding-bottom:env(safe-area-inset-bottom);
+      background-color:rgb(var(--s-950)); color:rgb(var(--s-100));
+      border-color:rgb(var(--s-800));
       transform:translateY(calc(100% + env(safe-area-inset-bottom)));
       visibility:hidden; pointer-events:none; will-change:transform;
       transition:transform .32s cubic-bezier(.22,.8,.25,1), visibility 0s linear .32s;
     }
+    #sideMenu > div:nth-child(2) { border-color:rgb(var(--s-800) / .8); }
+    #sideMenu > div:nth-child(2) h2 { color:rgb(var(--s-100)); }
+    #sideMenu > div:nth-child(2) button { background-color:rgb(var(--s-900)); color:rgb(var(--s-300)); border-color:rgb(var(--s-800)); }
+    #sideMenu > div:nth-child(2) button:hover { background-color:rgb(var(--s-800)); color:rgb(var(--s-100)); }
+    #sideMenu nav > div { border-color:rgb(var(--s-800)); }
+    .sheet-handle { background:rgb(var(--s-400) / .7); }
     #sideMenu.menu-open {
       transform:translateY(0); visibility:visible; pointer-events:auto;
       transition:transform .32s cubic-bezier(.22,.8,.25,1), visibility 0s;
@@ -68,15 +78,17 @@
       position:fixed; left:0; right:0; bottom:0; width:100%; z-index:80;
       display:grid; grid-template-columns:repeat(5,minmax(0,1fr));
       padding:.45rem .5rem calc(.45rem + env(safe-area-inset-bottom));
-      min-height:4.65rem; background:rgb(2 6 23 / .97); backdrop-filter:blur(18px);
-      border-top:1px solid rgb(51 65 85 / .75);
+      min-height:4.65rem; background:rgb(var(--s-950) / .96); -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px);
+      border-top:1px solid rgb(var(--s-700) / .72);
     }
     /* Reserva espaço real no contêiner rolável para a barra fixa e a área segura. */
     #appScroll > main { padding-bottom:calc(6rem + env(safe-area-inset-bottom)); }
-    .bottom-nav-item { min-width:0; min-height:3.65rem; display:flex; align-items:center; justify-content:center; color:rgb(148 163 184); border-radius:1rem; transition:color .18s,background .18s,transform .12s; }
+    .bottom-nav-item { min-width:0; min-height:3.65rem; display:flex; align-items:center; justify-content:center; color:rgb(var(--s-400)); border-radius:1rem; transition:color .18s,background .18s,transform .12s; }
+    .bottom-nav-item:hover { background:rgb(var(--s-800) / .45); }
     .bottom-nav-item svg { width:1.85rem; height:1.85rem; stroke-width:1.8; }
     .bottom-nav-item:active { transform:scale(.94); }
-    .bottom-nav-item.active { color:rgb(52 211 153); }
+    .bottom-nav-item.active { color:#34d399; }
+    html[data-theme="light"] .bottom-nav-item.active { color:#047857; }
     .bottom-nav-item.active svg { filter:drop-shadow(0 0 7px rgb(16 185 129 / .22)); }
     @media (min-width:768px) { .bottom-navigation { left:50%; right:auto; width:min(100%,48rem); transform:translateX(-50%); border-left:1px solid rgb(51 65 85 / .45); border-right:1px solid rgb(51 65 85 / .45); } }
     @media (prefers-reduced-motion: reduce) { #sideMenu, .bottom-nav-item { transition-duration:.01ms; } }

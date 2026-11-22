@@ -3,9 +3,17 @@
 //   - suba "version" e "build" (o build define o nome do cache do service worker);
 //   - acrescente uma entrada nova no INÍCIO de "entries" com as mudanças, em linguagem simples.
 globalThis.LEDGERLY_CHANGELOG = {
-  version: '1.4.9',
-  build: 33,
+  version: '1.4.10',
+  build: 34,
   entries: [
+    {
+      version: '1.4.10',
+      date: '2026-11-22',
+      notes: [
+        'Navegação: a barra inferior agora acompanha automaticamente as cores dos temas Padrão, Escuro e Claro.',
+        'Navegação: o Bottom Sheet, seu cabeçalho, botão de fechar e itens do menu também se adaptam ao tema selecionado, mantendo o destaque verde da seção ativa.'
+      ]
+    },
     {
       version: '1.4.9',
       date: '2026-11-22',
