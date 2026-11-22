@@ -38,20 +38,41 @@
     .side-menu-item svg { width:1.15rem; height:1.15rem; flex:none; }
     .side-menu-item:hover { background:rgb(30 41 59 / .75); color:rgb(226 232 240); }
     .side-menu-item.active { background:rgb(16 185 129 / .13); color:rgb(52 211 153); box-shadow:inset 0 0 0 1px rgb(16 185 129 / .22); }
-    /* Bottom sheet e barra inferior: respeitam a área segura do Android/iOS. */
-    #sideMenuBackdrop { z-index:2147483646 !important; isolation:isolate; }
-    #sideMenu { z-index:2147483647 !important; isolation:isolate; will-change:transform; overflow:hidden; transition:transform .32s cubic-bezier(.22,.8,.25,1); }
-    #sideMenu.menu-open { transform:translateY(0) !important; }
-    #sideMenuBackdrop.menu-open { opacity:1; pointer-events:auto; }
-    .sheet-handle-wrap { display:flex; justify-content:center; padding: .65rem 0 .8rem; flex:none; }
+    /* Bottom sheet e barra inferior: posicionamento explícito para não depender
+       de utilitários Tailwind que podem não existir no CSS compilado. */
+    #sideMenuBackdrop {
+      position:fixed; inset:0; z-index:90; isolation:isolate;
+      opacity:0; visibility:hidden; pointer-events:none;
+      transition:opacity .28s ease, visibility 0s linear .28s;
+    }
+    #sideMenuBackdrop.menu-open {
+      opacity:1; visibility:visible; pointer-events:auto;
+      transition:opacity .28s ease, visibility 0s;
+    }
+    #sideMenu {
+      position:fixed; left:0; right:0; bottom:0; width:100%;
+      max-height:82vh; max-height:82dvh; z-index:95; isolation:isolate;
+      display:flex; flex-direction:column; overflow:hidden;
+      padding-bottom:env(safe-area-inset-bottom);
+      transform:translateY(calc(100% + env(safe-area-inset-bottom)));
+      visibility:hidden; pointer-events:none; will-change:transform;
+      transition:transform .32s cubic-bezier(.22,.8,.25,1), visibility 0s linear .32s;
+    }
+    #sideMenu.menu-open {
+      transform:translateY(0); visibility:visible; pointer-events:auto;
+      transition:transform .32s cubic-bezier(.22,.8,.25,1), visibility 0s;
+    }
+    .sheet-handle-wrap { display:flex; justify-content:center; padding:.65rem 0 .8rem; flex:none; }
     .sheet-handle { width:3.6rem; height:.32rem; border-radius:999px; background:rgb(148 163 184 / .65); }
     .bottom-navigation {
-      position:fixed; left:0; right:0; bottom:0; z-index:80;
+      position:fixed; left:0; right:0; bottom:0; width:100%; z-index:80;
       display:grid; grid-template-columns:repeat(5,minmax(0,1fr));
-      padding: .45rem .5rem calc(.45rem + env(safe-area-inset-bottom));
+      padding:.45rem .5rem calc(.45rem + env(safe-area-inset-bottom));
       min-height:4.65rem; background:rgb(2 6 23 / .97); backdrop-filter:blur(18px);
       border-top:1px solid rgb(51 65 85 / .75);
     }
+    /* Reserva espaço real no contêiner rolável para a barra fixa e a área segura. */
+    #appScroll > main { padding-bottom:calc(6rem + env(safe-area-inset-bottom)); }
     .bottom-nav-item { min-width:0; min-height:3.65rem; display:flex; align-items:center; justify-content:center; color:rgb(148 163 184); border-radius:1rem; transition:color .18s,background .18s,transform .12s; }
     .bottom-nav-item svg { width:1.85rem; height:1.85rem; stroke-width:1.8; }
     .bottom-nav-item:active { transform:scale(.94); }
@@ -211,7 +232,7 @@
 
   <!-- ================= MENU COMPLETO: BOTTOM SHEET ================= -->
   <div id="sideMenuBackdrop" class="fixed inset-0 z-[90] bg-slate-950/65 opacity-0 pointer-events-none transition-opacity duration-300" onclick="toggleSideMenu(false)" aria-hidden="true"></div>
-  <aside id="sideMenu" class="fixed inset-x-0 bottom-0 z-[95] max-h-[82dvh] bg-slate-950 border-t border-slate-800 shadow-2xl flex flex-col rounded-t-[2rem]" style="transform:translateY(105%);padding-bottom:env(safe-area-inset-bottom)" role="dialog" aria-modal="true" aria-label="Navegação" aria-hidden="true">
+  <aside id="sideMenu" class="bg-slate-950 border-t border-slate-800 shadow-2xl rounded-t-[2rem]" role="dialog" aria-modal="true" aria-label="Navegação" aria-hidden="true">
     <div class="sheet-handle-wrap" aria-hidden="true"><div class="sheet-handle"></div></div>
     <div class="flex items-center justify-between gap-3 px-5 pb-4 pt-1 border-b border-slate-800/80">
       <h2 class="text-xl font-semibold text-white">Navegação</h2>

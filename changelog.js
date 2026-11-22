@@ -3,9 +3,18 @@
 //   - suba "version" e "build" (o build define o nome do cache do service worker);
 //   - acrescente uma entrada nova no INÍCIO de "entries" com as mudanças, em linguagem simples.
 globalThis.LEDGERLY_CHANGELOG = {
-  version: '1.4.7',
-  build: 32,
+  version: '1.4.9',
+  build: 33,
   entries: [
+    {
+      version: '1.4.9',
+      date: '2026-11-22',
+      notes: [
+        'Navegação mobile: corrigido o posicionamento do Bottom Sheet para ocupar toda a largura e ficar ancorado na parte inferior.',
+        'Navegação mobile: o painel e o backdrop ficam realmente invisíveis e sem interação quando o menu está fechado.',
+        'Layout: reservado espaço adicional no final do conteúdo rolável para a barra inferior e a área segura do dispositivo.'
+      ]
+    },
     {
       version: '1.4.8',
       date: '2026-11-22',
