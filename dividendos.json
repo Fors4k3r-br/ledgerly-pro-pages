@@ -1,5 +1,5 @@
 {
-  "atualizado_em": "2026-11-21T13:12:22.740437659Z",
+  "atualizado_em": "2026-11-22T16:04:04.269072948Z",
   "quantidade": 94,
   "dividendos": [
     {
@@ -675,6 +675,14 @@
       "pagamento": "27/11/2026"
     },
     {
+      "codigo": "PSSA3",
+      "tipo": "Dividendo",
+      "valor": "0,886101",
+      "registro": "31/03/2026",
+      "ex": "01/04/2026",
+      "pagamento": "27/11/2026"
+    },
+    {
       "codigo": "BMOB3",
       "tipo": "JCP",
       "valor": "0,191782",
@@ -712,14 +720,6 @@
       "valor": "0,030000",
       "registro": "19/11/2026",
       "ex": "23/11/2026",
-      "pagamento": "30/11/2026"
-    },
-    {
-      "codigo": "PSSA3",
-      "tipo": "Dividendo",
-      "valor": "0,886101",
-      "registro": "31/03/2026",
-      "ex": "01/04/2026",
       "pagamento": "30/11/2026"
     },
     {
