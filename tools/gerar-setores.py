@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""Gera o setores.js do Ledgerly Pro a partir do XML de Classificação Setorial da B3.
+"""Gera o arquivo de dados setoriais do Ledgerly Pro a partir do XML de Classificação Setorial da B3.
 
-Uso (na raiz do projeto):  python3 tools/gerar-setores.py [tools/acoesb3.xml] [setores.js]
+Uso (na raiz do projeto):  python3 tools/gerar-setores.py [tools/acoesb3.xml] [src/js/portfolio/sectors-data.js]
 Descarta as linhas de cabeçalho repetidas do documento original e guarda só código -> subsetor.
 """
 import datetime, json, re, sys
 import xml.etree.ElementTree as ET
 
 src = sys.argv[1] if len(sys.argv) > 1 else 'tools/acoesb3.xml'
-dst = sys.argv[2] if len(sys.argv) > 2 else 'setores.js'
+dst = sys.argv[2] if len(sys.argv) > 2 else 'src/js/portfolio/sectors-data.js'
 norm = lambda s: re.sub(r'\s+', ' ', (s or '').strip())
 
 setores, subs, empresas, ignoradas = [], [], {}, 0
