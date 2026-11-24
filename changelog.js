@@ -3,9 +3,18 @@
 //   - suba "version" e "build" (o build define o nome do cache do service worker);
 //   - acrescente uma entrada nova no INÍCIO de "entries" com as mudanças, em linguagem simples.
 globalThis.LEDGERLY_CHANGELOG = {
-  version: '1.4.11',
-  build: 35,
+  version: '1.4.12',
+  build: 36,
   entries: [
+    {
+      version: '1.4.12',
+      date: '2026-11-24',
+      notes: [
+        'Banco de dados: separação concluída em central.db (carteira) e daily.db (histórico patrimonial), ambos iniciados vazios; dados e configurações anteriores não foram migrados nem guardados localmente, conforme a opção escolhida.',
+        'Sincronização: os dois bancos agora são enviados e restaurados juntos, com manifesto, versões de schema e hashes de integridade; a cópia antiga do Google Drive permanece separada e não é sobrescrita.',
+        'Backup e restauração: o arquivo local agora contém o conjunto completo dos dois bancos SQLite.'
+      ]
+    },
     {
       version: '1.4.11',
       date: '2026-11-24',
