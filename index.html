@@ -1311,7 +1311,7 @@
       <div class="glass-card rounded-3xl p-5 space-y-4">
         <div>
           <h2 class="text-base font-bold text-white flex items-center gap-2"><i data-lucide="hard-drive" class="w-5 h-5 text-emerald-400"></i>Backup e restauração</h2>
-          <p class="text-xs text-slate-400 mt-0.5">Exporte um único arquivo <code>.db</code> com o conjunto central.db + daily.db (lançamentos, PDFs das notas, histórico patrimonial e configurações sincronizáveis). O arquivo não é criptografado: guarde-o em um local seguro.</p>
+          <p class="text-xs text-slate-400 mt-0.5">Exporte um pacote Ledgerly <code>.lgp</code> com central.db + daily.db para restauração conjunta. Também é possível baixar cada banco SQLite separadamente para consulta em programas como DB Browser for SQLite. Os arquivos não são criptografados: guarde-os em local seguro.</p>
         </div>
         <!-- Status do Banco -->
         <div class="grid grid-cols-3 gap-2 bg-slate-900/90 rounded-2xl p-3 border border-slate-800 text-center">
@@ -1337,8 +1337,16 @@
             class="p-3.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-xs transition flex items-center justify-center gap-2"
           >
             <i data-lucide="download" class="w-4 h-4 text-indigo-400"></i>
-            <span>Baixar conjunto SQLite (.db)</span>
+            <span>Baixar backup completo (.lgp)</span>
           </button>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <button type="button" onclick="downloadIndividualSQLiteDatabase('central')" class="p-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 font-semibold text-xs transition flex items-center justify-center gap-2">
+              <i data-lucide="database" class="w-4 h-4 text-emerald-400"></i><span>Baixar central.db</span>
+            </button>
+            <button type="button" onclick="downloadIndividualSQLiteDatabase('daily')" class="p-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 font-semibold text-xs transition flex items-center justify-center gap-2">
+              <i data-lucide="database" class="w-4 h-4 text-sky-400"></i><span>Baixar daily.db</span>
+            </button>
+          </div>
         </div>
 
         <!-- Versão guardada (conflito ou limpeza) -->
@@ -1352,17 +1360,17 @@
           <input
             type="file"
             id="restoreDbInput"
-            accept=".db,.sqlite,.sqlite3,application/octet-stream"
+            accept=".lgp,.db,.sqlite,.sqlite3,application/octet-stream"
             class="hidden"
             onchange="handleRestoreSQLiteFile(event)"
           />
           <button
             type="button"
-            onclick="document.getElementById('restoreDbInput').click()"
+            onclick="requestRestoreDatabase()"
             class="p-3 rounded-xl bg-indigo-500/15 hover:bg-indigo-500/25 border border-indigo-500/30 text-indigo-300 font-semibold text-xs transition flex items-center justify-center gap-2"
           >
             <i data-lucide="upload-cloud" class="w-4 h-4"></i>
-            <span>Restaurar conjunto SQLite (.db)</span>
+            <span>Restaurar banco de dados</span>
           </button>
 
           <button
@@ -1374,7 +1382,7 @@
             <span>Limpar Todos os Dados</span>
           </button>
         </div>
-        <p class="text-[11px] text-slate-500">“Limpar” apaga notas, operações, proventos e cotações, mas mantém o PIN, o token e as configurações. “Excluir” remove o banco inteiro, inclusive PIN e token.</p>
+        <p class="text-[11px] text-slate-500">“Limpar” remove os dados de investimentos e mantém PIN e configurações. Você pode preservar o backup do Drive ou apagar também a cópia criptografada da nuvem. “Excluir” remove ainda as configurações locais.</p>
         <button type="button" onclick="requestDeleteDatabase()" class="w-full p-3 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-300 font-semibold text-xs transition flex items-center justify-center gap-2">
           <i data-lucide="trash" class="w-4 h-4"></i><span>Excluir banco de dados…</span>
         </button>
@@ -2273,7 +2281,7 @@
       }).join('');
     }
 
-    // Primeiro uso: roteiro de 3 passos quando o banco está vazio
+    // Primeiro uso: prioriza recuperação de um backup antes das configurações opcionais.
     function renderOnboarding() {
       const card = document.getElementById('onboardingCard'), home = document.getElementById('homeContent');
       if (!card || !home) return;
@@ -2281,21 +2289,25 @@
       card.classList.toggle('hidden', !empty); home.classList.toggle('hidden', empty);
       if (!empty) return;
       const steps = [
-        ['file-up', 'Importar sua primeira nota', 'Leia uma nota de corretagem em PDF', 'adicionar', false],
+        ['file-up', 'Começar uma nova carteira', 'Importe sua primeira nota de corretagem em PDF', 'adicionar', false],
         ['cloud', 'Conectar o Google Drive', 'Backup e sincronização entre aparelhos', 'sync', Boolean(syncState().connected)],
         ['shield-check', 'Definir um PIN de acesso', 'Proteja o app com PIN ou biometria', 'seguranca', Boolean(getSetting('security_pin_hash'))]
       ];
       card.innerHTML = `
-        <div><h2 class="text-lg font-extrabold text-white">Bem-vindo ao Ledgerly Pro</h2><p class="text-xs text-slate-400 mt-0.5">Comece em 3 passos:</p></div>
-        <div class="space-y-2">${steps.map(([icon, title, desc, tab, done]) => `
+        <div><h2 class="text-lg font-extrabold text-white">Bem-vindo ao Ledgerly Pro</h2><p class="text-xs text-slate-400 mt-0.5">Você pode restaurar uma carteira existente ou começar uma nova.</p></div>
+        <button type="button" onclick="requestRestoreDatabase()" class="w-full flex items-center gap-3 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/40 hover:border-emerald-400 text-left transition">
+          <span class="w-11 h-11 rounded-xl bg-emerald-500/15 flex items-center justify-center text-emerald-400 shrink-0"><i data-lucide="cloud-download" class="w-6 h-6"></i></span>
+          <span class="min-w-0 flex-1"><strong class="block text-sm text-white">Restaurar banco de dados</strong><span class="block text-xs text-slate-300">Recupere sua carteira e seu histórico de um arquivo local ou do Google Drive</span></span>
+          <i data-lucide="chevron-right" class="w-5 h-5 text-emerald-300 shrink-0"></i>
+        </button>
+        <div class="pt-1"><p class="text-[11px] text-slate-500 uppercase tracking-wider font-bold mb-2">Ou configure uma nova carteira</p><div class="space-y-2">${steps.map(([icon, title, desc, tab, done]) => `
           <button type="button" onclick="switchTab('${tab}')" class="w-full flex items-center gap-3 p-3.5 rounded-2xl bg-slate-900 border ${done ? 'border-emerald-500/40' : 'border-slate-800'} hover:border-emerald-500/50 text-left transition">
-            <span class="w-10 h-10 rounded-xl bg-emerald-500/15 flex items-center justify-center text-emerald-400 shrink-0"><i data-lucide="${icon}" class="w-5 h-5"></i></span>
+            <span class="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-slate-300 shrink-0"><i data-lucide="${icon}" class="w-5 h-5"></i></span>
             <span class="min-w-0 flex-1"><strong class="block text-sm text-white">${title}</strong><span class="block text-xs text-slate-400">${desc}</span></span>
             <i data-lucide="${done ? 'check-circle-2' : 'chevron-right'}" class="w-5 h-5 ${done ? 'text-emerald-400' : 'text-slate-400'} shrink-0"></i>
-          </button>`).join('')}</div>`;
-      if (window.lucide) lucide.createIcons();
+          </button>`).join('')}</div></div>`;
+      lucide.createIcons();
     }
-
     // Temas
     const THEMES = { default: { name: 'Padrão (atual)', meta: '#090d16' }, dark: { name: 'Escuro', meta: '#050505' }, light: { name: 'Claro', meta: '#f1f5f9' } };
     function currentTheme() { const t = document.documentElement.getAttribute('data-theme'); return THEMES[t] ? t : 'default'; }
@@ -3724,7 +3736,7 @@
       const binaryArray = await packSyncPackage(safeCentral, pair.daily);
       const now = new Date();
       const stamp = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}_${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}`;
-      const fileName = `ledgerly_conjunto_${stamp}.db`;
+      const fileName = `ledgerly_conjunto_${stamp}.lgp`;
       const blob = new Blob([binaryArray], { type: 'application/octet-stream' });
       return { blob, fileName };
     }
@@ -3738,6 +3750,28 @@
       showToast(`Backup do banco de dados (${fileName}) baixado!`, 'success');
     }
 
+    // Exporta um banco SQLite convencional para consulta externa.
+    // A cópia é sanitizada: remove configurações locais/sensíveis, sem alterar o banco ativo.
+    async function downloadIndividualSQLiteDatabase(which) {
+      const database = which === 'daily' ? dailyDb : db;
+      if (!database) { showToast('Banco de dados ainda não está disponível.', 'error'); return; }
+      let copy = null;
+      try {
+        copy = new SQL.Database(database.export());
+        if (which === 'central') {
+          copy.run('DELETE FROM configuracoes_seguranca');
+        }
+        const bytes = copy.export();
+        const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
+        const fileName = `ledgerly_${which}_${stamp}.db`;
+        triggerBlobDownload(new Blob([bytes], { type: 'application/vnd.sqlite3' }), fileName);
+        showToast(`${fileName} exportado para consulta.`, 'success');
+      } catch (error) {
+        console.error('Falha ao exportar banco SQLite individual:', error);
+        showToast('Não foi possível exportar o banco SQLite.', 'error');
+      } finally { try { copy?.close(); } catch (_) {} }
+    }
+
     function triggerBlobDownload(blob, fileName) {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -3749,8 +3783,53 @@
       URL.revokeObjectURL(url);
     }
 
+    async function requestRestoreDatabase() {
+      const choice = await ledgerlyModal({ title: 'Restaurar banco de dados', message: 'Escolha de onde deseja recuperar o conjunto central.db + daily.db.',
+        buttons: [{ label: 'Arquivo deste aparelho (.lgp)', value: 'local', primary: true }, { label: 'Google Drive (nuvem)', value: 'cloud' }, { label: 'Cancelar', value: 'cancel' }] });
+      if (choice.value === 'local') { document.getElementById('restoreDbInput')?.click(); return; }
+      if (choice.value === 'cloud') await restoreDatabaseFromDrive();
+    }
+
+    async function restoreDatabaseFromDrive() {
+      try {
+        if (!navigator.onLine) throw new Error('Conecte-se à internet para restaurar o backup do Google Drive.');
+        prefetched = null;
+        const token = await getToken('interactive');
+        const remote = await driveFind(token);
+        if (!remote) throw new Error('Nenhum backup Ledgerly foi encontrado no Google Drive.');
+        const keyResult = await ensureKey(remote, token);
+        if (keyResult.remoteDeleted) throw new Error('O backup da nuvem foi removido durante a redefinição da senha. Nenhum dado foi restaurado.');
+        const bytes = (prefetched && prefetched.rev === (remote.appProperties || {}).rev)
+          ? prefetched.bytes : await openDb(await driveDownload(remote.id, token), keyResult.kd.key);
+        openConfirmDialog({ title: 'Confirmar restauração da nuvem',
+          message: 'O backup criptografado foi descriptografado. A carteira e o histórico atuais deste aparelho serão substituídos pelos dados do Google Drive.',
+          requirePin: Boolean(getSetting('security_pin_hash')),
+          onConfirm: async () => {
+            try {
+              await applyRemoteDb(bytes);
+              const rev = (remote.appProperties || {}).rev || null;
+              const localHash = await hashCurrentPair();
+              saveSyncState({ connected: true, needsLogin: false, fileId: remote.id, baseRev: rev, syncedHash: localHash,
+                localChangedAt: (remote.appProperties || {}).ts || remote.modifiedTime || new Date().toISOString(), lastSync: new Date().toISOString() });
+              syncPending = false; syncCloudMissing = false; syncConflict = false;
+              updateConnectionBadge(); renderSyncCard(); refreshAllViews(); renderOnboarding(); switchTab('carteira');
+              showToast('Conjunto central.db + daily.db restaurado do Google Drive.', 'success');
+              try { await driveDeleteExtras(token, remote.id); } catch (cleanupError) { console.warn('Não foi possível remover backups duplicados do Drive:', cleanupError); showToast('Restauração concluída, mas não foi possível remover todas as cópias duplicadas da nuvem.', 'info'); }
+            } catch (restoreError) {
+              console.error('Falha ao aplicar backup do Google Drive:', restoreError);
+              showToast('Falha ao restaurar da nuvem: ' + ((restoreError && restoreError.message) || restoreError), 'error');
+            }
+          }
+        });
+      } catch (error) {
+        if (!(error && error.cancelled)) { console.error('Restauração do Google Drive:', error); showToast('Falha ao restaurar da nuvem: ' + ((error && error.message) || error), 'error'); }
+      } finally { prefetched = null; }
+    }
+
     async function handleRestoreSQLiteFile(event) {
       const file = event.target.files?.[0]; event.target.value = ''; if (!file) return;
+      const fileHeader = new TextDecoder().decode(new Uint8Array(await file.slice(0, 4).arrayBuffer()));
+      if (fileHeader === 'SQLi') { showToast('Este arquivo contém apenas um banco SQLite individual. Para restaurar a carteira, selecione o backup completo Ledgerly (.lgp).', 'info'); return; }
       const confirmAction = async () => {
         let nextCentral=null, nextDaily=null;
         const previousCentral=db, previousDaily=dailyDb;
@@ -3779,20 +3858,28 @@
       openConfirmDialog({ title:'Restaurar conjunto de bancos', message:`Deseja substituir central.db e daily.db pelo conjunto de backup "${file.name}"?`, requirePin:Boolean(getSetting('security_pin_hash')), onConfirm:confirmAction });
     }
 
-    function requestWipeDatabase() {
-      const conectado = Boolean(syncState().connected);
-      openConfirmDialog({
-        title: 'Limpar Todos os Dados',
-        message: 'Esta ação apagará todas as notas de corretagem, operações, proventos, cotações e corretoras. O PIN, o token da brapi, as configurações e as classificações de setor que você corrigiu são mantidos.'
-          + (conectado ? ' Como a sincronização está ativa, a limpeza também será enviada ao Google Drive e aos outros aparelhos.' : '')
-          + ' Uma cópia fica guardada neste aparelho e pode ser restaurada em Banco de dados → Backup e restauração.',
+    async function requestWipeDatabase() {
+      const choice = await ledgerlyModal({ title: 'Limpar todos os dados',
+        message: 'Escolha o alcance da limpeza. O PIN, as configurações e o token da brapi serão mantidos.',
+        buttons: [{ label: 'Somente neste aparelho', value: 'local', primary: true }, { label: 'Aparelho + Google Drive', value: 'all' }, { label: 'Cancelar', value: 'cancel' }] });
+      if (choice.value === 'cancel') return;
+      const cloud = choice.value === 'all';
+      openConfirmDialog({ title: cloud ? 'Apagar carteira e backup da nuvem?' : 'Limpar dados deste aparelho?',
+        message: cloud
+          ? 'Serão apagados os dados de investimentos deste aparelho e TODOS os backups Ledgerly encontrados no Google Drive. A cópia criptografada da nuvem também será excluída. A sincronização será desconectada para impedir que o backup seja recriado. Esta ação não pode ser desfeita.'
+          : 'Serão apagados os dados de investimentos deste aparelho. O backup do Google Drive será mantido, mas a sincronização será desconectada para impedir que a carteira vazia sobrescreva a cópia da nuvem. Uma cópia local de segurança ficará disponível para restauração.',
         requirePin: Boolean(getSetting('security_pin_hash')),
         onConfirm: async () => {
-          await wipeAllData();
-          stagedNotesQueue = [];
-          renderStagingScreen();
-          refreshAllViews();
-          showToast('Todos os dados foram limpos.', 'info');
+          try {
+            if (cloud) await deleteCloudDb();
+            await wipeAllData({ keepLocalRecovery: !cloud, suppressSync: true });
+            await disconnectSyncLocal();
+            if (cloud) { await idbKv('del', 'conflict').catch(() => {}); conflictInfo = null; }
+            stagedNotesQueue = []; renderStagingScreen(); refreshAllViews(); updateConnectionBadge(); renderSyncCard();
+            showToast(cloud ? 'Dados locais e backup do Google Drive excluídos.' : 'Dados locais limpos. O backup da nuvem foi preservado e a sincronização desconectada.', 'success');
+          } catch (error) {
+            showToast('Falha ao limpar os dados: ' + ((error && error.message) || error), 'error');
+          }
         }
       });
     }
@@ -4819,10 +4906,20 @@
       if (!r.ok) { const t = await r.text().catch(() => ''); throw new Error(`Google Drive (${r.status}) ${t.slice(0, 100)}`); }
       return r;
     }
-    async function driveFind(token) {
+    async function driveFindAll(token) {
       const q = encodeURIComponent(`name='${SYNC_FILE}' and trashed=false`);
-      const r = await driveFetch(`https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=${q}&fields=files(id,appProperties,modifiedTime)&pageSize=10`, {}, token);
-      return ((await r.json()).files || [])[0] || null;
+      const found = []; let pageToken = '';
+      do {
+        const page = pageToken ? `&pageToken=${encodeURIComponent(pageToken)}` : '';
+        const r = await driveFetch(`https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=${q}&fields=files(id,appProperties,modifiedTime),nextPageToken&orderBy=modifiedTime%20desc&pageSize=100${page}`, {}, token);
+        const data = await r.json(); found.push(...(data.files || [])); pageToken = data.nextPageToken || '';
+      } while (pageToken);
+      return found;
+    }
+    async function driveFind(token) { return (await driveFindAll(token))[0] || null; }
+    async function driveDeleteExtras(token, keepId) {
+      const files = await driveFindAll(token);
+      for (const file of files) if (file.id !== keepId) await driveDelete(file.id, token);
     }
     async function driveDownload(id, token) { return (await driveFetch(`https://www.googleapis.com/drive/v3/files/${id}?alt=media`, {}, token)).arrayBuffer(); }
     async function driveDelete(id, token) { await driveFetch(`https://www.googleapis.com/drive/v3/files/${id}`, { method: 'DELETE' }, token); }
@@ -4967,7 +5064,8 @@
           catch (_) { saveSyncState({ needsLogin: true }); armTapSync(); return false; }
         } else token = await getToken('interactive');
         saveSyncState({ needsLogin: false });
-        let remote = await driveFind(token);
+        const remoteFiles = await driveFindAll(token);
+        let remote = remoteFiles[0] || null;
         const ek = await ensureKey(remote, token);
         const kd = ek.kd;
         if (ek.remoteDeleted) remote = null;
@@ -5016,6 +5114,13 @@
           if (action === 'download') await saveConflictBackup(raw, 'este aparelho');
           else await saveConflictBackup((prefetched && prefetched.rev === remoteRev) ? prefetched.bytes : await openDb(await driveDownload(remote.id, token), kd.key), 'nuvem');
         }
+        // Antes de remover duplicatas num ciclo sem upload/download, valida o arquivo mais recente.
+        if (action === 'none' && remote && remoteFiles.length > 1) {
+          const checkBytes = (prefetched && prefetched.rev === remoteRev) ? prefetched.bytes : await openDb(await driveDownload(remote.id, token), kd.key);
+          const checkedPair = await unpackSyncPackage(checkBytes);
+          const checkCentral = new SQL.Database(checkedPair.central), checkDaily = new SQL.Database(checkedPair.daily);
+          try { validateDatabasePair(checkCentral, checkDaily); } finally { checkCentral.close(); checkDaily.close(); }
+        }
         if (action === 'upload') {
           const rev = hexOf(crypto.getRandomValues(new Uint8Array(8)));
           const pair = await unpackSyncPackage(raw);
@@ -5032,6 +5137,10 @@
           saveSyncState({ fileId: remote.id, baseRev: remoteRev, syncedHash: await hashCurrentPair(), localChangedAt: remoteTsIso || new Date().toISOString() });
         }
         saveSyncState({ lastSync: new Date().toISOString() });
+        if (remote || action === 'upload') {
+          try { await driveDeleteExtras(token, (syncState().fileId || (remote && remote.id) || null)); }
+          catch (cleanupError) { console.warn('Não foi possível remover backups duplicados do Drive:', cleanupError); }
+        }
         syncPending = false; ok = true;
         if (conflict) showToast(`Conflito resolvido: ficou a versão ${(st.conflictMode === 'manual' || !st.baseRev) ? 'escolhida' : 'mais recente'} (${action === 'download' ? 'da nuvem' : 'deste aparelho'}). A outra foi guardada em Banco de dados.`, 'info');
         else if (manual) showToast(action === 'download' ? 'Dados atualizados a partir do Google Drive.' : action === 'upload' ? 'Dados enviados ao Google Drive.' : 'Tudo já está sincronizado.', 'success');
@@ -5104,9 +5213,9 @@
     async function deleteCloudDb() {
       if (!navigator.onLine) throw new Error('Sem internet. Conecte-se para excluir a cópia da nuvem.');
       const token = await getToken('interactive');
-      const remote = await driveFind(token);
-      if (remote) await driveDelete(remote.id, token);
-      return Boolean(remote);
+      const remotes = await driveFindAll(token);
+      for (const remote of remotes) await driveDelete(remote.id, token);
+      return remotes.length > 0;
     }
     async function deleteLocalDb() {
       clearTimeout(syncTimer); window.__ledgerlyApplying=true;
@@ -5150,12 +5259,12 @@
           } catch (e) { if (!(e && e.cancelled)) showToast('Falha ao excluir: ' + ((e && e.message) || e), 'error'); }
         } });
     }
-    // Limpar: apaga os dados de investimentos e mantém PIN, token e configurações; guarda uma cópia para restaurar
-    async function wipeAllData() {
-      await saveConflictBackup(await exportSyncPackage(), 'limpeza');
+    // Limpa dados de investimentos sem remover PIN, token da brapi ou configurações locais.
+    async function wipeAllData(options = {}) {
+      if (options.keepLocalRecovery !== false) await saveConflictBackup(await exportSyncPackage(), 'limpeza');
       db.run('DELETE FROM operacoes; DELETE FROM notas_corretagem; DELETE FROM proventos; DELETE FROM cotacoes_atuais; DELETE FROM corretoras; DELETE FROM ativos;');
       dailyDb.run('DELETE FROM snapshot_patrimonio_ativos; DELETE FROM snapshots_patrimonio;');
-      await persistSQLiteToIndexedDB();
+      await persistSQLiteToIndexedDB({ suppressSync: Boolean(options.suppressSync) });
     }
     function renderSyncCard() {
       const st = syncState();

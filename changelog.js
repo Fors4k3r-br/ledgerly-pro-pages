@@ -3,9 +3,27 @@
 //   - suba "version" e "build" (o build define o nome do cache do service worker);
 //   - acrescente uma entrada nova no INÍCIO de "entries" com as mudanças, em linguagem simples.
 globalThis.LEDGERLY_CHANGELOG = {
-  version: '1.4.12',
-  build: 36,
+  version: '1.4.14',
+  build: 38,
   entries: [
+    {
+      version: '1.4.14',
+      date: '2026-11-24',
+      notes: [
+        'Backup na nuvem: o Ledgerly mantém somente um arquivo de sincronização no Google Drive; após uma sincronização ou restauração bem-sucedida, cópias duplicadas são removidas.',
+        'Restauração: agora é possível escolher entre um arquivo local .lgp e o Google Drive. A restauração da nuvem exige a senha de criptografia e valida o conjunto dos dois bancos antes de substituir os dados locais.',
+        'Limpeza: é possível apagar somente os dados deste aparelho, preservando o backup da nuvem, ou apagar os dados locais e também todos os backups Ledgerly do Google Drive. A sincronização é desconectada para evitar recriação automática do backup excluído.'
+      ]
+    },
+    {
+      version: '1.4.13',
+      date: '2026-11-24',
+      notes: [
+        'Backup: o conjunto completo dos bancos agora usa a extensão .lgp, identificando o pacote Ledgerly e evitando confusão com um arquivo SQLite individual; a restauração de pacotes antigos .db continua aceita.',
+        'Banco de dados: adicionada exportação individual de central.db e daily.db para consulta em programas SQLite. A cópia individual do central.db não inclui configurações de segurança ou credenciais.',
+        'Primeiro acesso: a tela de boas-vindas agora oferece Restaurar banco de dados em destaque, antes das opções para criar uma carteira e configurar PIN ou sincronização.'
+      ]
+    },
     {
       version: '1.4.12',
       date: '2026-11-24',
