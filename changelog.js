@@ -3,9 +3,17 @@
 //   - suba "version" e "build" (o build define o nome do cache do service worker);
 //   - acrescente uma entrada nova no INÍCIO de "entries" com as mudanças, em linguagem simples.
 globalThis.LEDGERLY_CHANGELOG = {
-  version: '1.4.10',
-  build: 34,
+  version: '1.4.11',
+  build: 35,
   entries: [
+    {
+      version: '1.4.11',
+      date: '2026-11-24',
+      notes: [
+        'Banco de dados: preparada a migração segura para o novo schema SQLite, com cadastro central de ativos, integridade referencial e preservação dos dados anteriores.',
+        'Patrimônio: criada a estrutura de histórico diário consolidado e detalhado por ativo, com backup pré-migração e validação antes da substituição do banco.'
+      ]
+    },
     {
       version: '1.4.10',
       date: '2026-11-22',

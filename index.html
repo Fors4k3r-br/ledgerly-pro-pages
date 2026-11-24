@@ -1556,6 +1556,7 @@
       loadBrapiSettingsToUI();
       checkLockScreenOnStartup();
       refreshAllViews();
+      await captureDailyPortfolioSnapshot();
       syncOnStart();
       maybeShowWhatsNew();
 
@@ -1613,8 +1614,7 @@
           db = new SQL.Database();
         }
 
-        createSchemaIfNotExists();
-        await persistSQLiteToIndexedDB();
+        await createSchemaIfNotExists();
         try { if (navigator.storage && navigator.storage.persist) await navigator.storage.persist(); } catch (_) {}
       } catch (err) {
         console.error('Erro ao inicializar SQLite:', err);
@@ -1622,11 +1622,57 @@
       }
     }
 
-    function createSchemaIfNotExists() {
-      db.run(`
-        CREATE TABLE IF NOT EXISTS notas_corretagem (
+    // Schema SQLite v2. A migração é executada em uma instância nova e só
+    // substitui o banco ativo depois de backup, cópia e validação integral.
+    const LEDGERLY_SCHEMA_VERSION = 2;
+    const LEDGERLY_SCHEMA_BACKUP_KEY = IDB_KEY + '_backup_schema_v2';
+
+    function rowsFromDatabase(database, sql, params = []) {
+      const stmt = database.prepare(sql);
+      stmt.bind(params);
+      const rows = [];
+      while (stmt.step()) rows.push(stmt.getAsObject());
+      stmt.free();
+      return rows;
+    }
+
+    async function savePreMigrationBackup(binary) {
+      const idb = await openIndexedDB();
+      return new Promise((resolve, reject) => {
+        const tx = idb.transaction(IDB_STORE, 'readwrite');
+        const store = tx.objectStore(IDB_STORE);
+        const get = store.get(LEDGERLY_SCHEMA_BACKUP_KEY);
+        get.onsuccess = () => {
+          if (!get.result) store.put(binary, LEDGERLY_SCHEMA_BACKUP_KEY);
+        };
+        tx.oncomplete = () => { idb.close(); resolve(); };
+        tx.onerror = () => { idb.close(); reject(tx.error || new Error('Falha ao guardar backup pré-migração.')); };
+        tx.onabort = () => { idb.close(); reject(tx.error || new Error('Backup pré-migração cancelado.')); };
+      });
+    }
+
+    function createLedgerlySchemaV2(target) {
+      target.run('PRAGMA foreign_keys = ON;');
+      target.run(`
+        CREATE TABLE schema_migrations (
+          version INTEGER PRIMARY KEY,
+          aplicado_em TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          descricao TEXT NOT NULL
+        );
+        CREATE TABLE corretoras (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
-          numero_controle TEXT UNIQUE NOT NULL,
+          nome TEXT NOT NULL,
+          cnpj TEXT UNIQUE
+        );
+        CREATE TABLE ativos (
+          ticker TEXT PRIMARY KEY COLLATE NOCASE,
+          nome TEXT,
+          criado_em TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          atualizado_em TEXT
+        );
+        CREATE TABLE notas_corretagem (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          numero_controle TEXT NOT NULL UNIQUE,
           data_pregao TEXT NOT NULL,
           valor_operacoes REAL DEFAULT 0,
           total_cblc_bruto REAL DEFAULT 0,
@@ -1637,15 +1683,16 @@
           nome_arquivo TEXT,
           arquivo_base64 TEXT,
           criado_em TEXT,
-          corretora_id INTEGER
+          corretora_id INTEGER,
+          FOREIGN KEY (corretora_id) REFERENCES corretoras(id)
+            ON UPDATE CASCADE ON DELETE SET NULL
         );
-
-        CREATE TABLE IF NOT EXISTS operacoes (
+        CREATE TABLE operacoes (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           nota_id INTEGER,
           numero_nota TEXT,
           data_operacao TEXT NOT NULL,
-          ticker TEXT NOT NULL,
+          ticker TEXT NOT NULL COLLATE NOCASE,
           especificacao TEXT,
           tipo_ordem TEXT NOT NULL,
           quantidade REAL NOT NULL,
@@ -1655,17 +1702,23 @@
           taxa_bovespa REAL DEFAULT 0,
           taxa_corretagem REAL DEFAULT 0,
           corretora_id INTEGER,
-          FOREIGN KEY (nota_id) REFERENCES notas_corretagem(id) ON DELETE CASCADE
+          FOREIGN KEY (nota_id) REFERENCES notas_corretagem(id)
+            ON UPDATE CASCADE ON DELETE CASCADE,
+          FOREIGN KEY (ticker) REFERENCES ativos(ticker)
+            ON UPDATE CASCADE ON DELETE RESTRICT,
+          FOREIGN KEY (corretora_id) REFERENCES corretoras(id)
+            ON UPDATE CASCADE ON DELETE SET NULL
         );
-
-        CREATE TABLE IF NOT EXISTS cotacoes_atuais (
-          ticker TEXT PRIMARY KEY,
-          preco_atual REAL NOT NULL
+        CREATE TABLE cotacoes_atuais (
+          ticker TEXT PRIMARY KEY COLLATE NOCASE,
+          preco_atual REAL NOT NULL,
+          atualizado_em TEXT,
+          FOREIGN KEY (ticker) REFERENCES ativos(ticker)
+            ON UPDATE CASCADE ON DELETE CASCADE
         );
-
-        CREATE TABLE IF NOT EXISTS proventos (
+        CREATE TABLE proventos (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
-          ticker TEXT NOT NULL,
+          ticker TEXT NOT NULL COLLATE NOCASE,
           tipo TEXT NOT NULL,
           data_pagamento TEXT NOT NULL,
           quantidade REAL DEFAULT 0,
@@ -1673,32 +1726,205 @@
           imposto REAL DEFAULT 0,
           valor_liquido REAL NOT NULL,
           observacao TEXT,
-          corretora_id INTEGER
+          corretora_id INTEGER,
+          FOREIGN KEY (ticker) REFERENCES ativos(ticker)
+            ON UPDATE CASCADE ON DELETE RESTRICT,
+          FOREIGN KEY (corretora_id) REFERENCES corretoras(id)
+            ON UPDATE CASCADE ON DELETE SET NULL
         );
-        CREATE INDEX IF NOT EXISTS idx_proventos_ticker ON proventos(ticker);
-
-        CREATE TABLE IF NOT EXISTS classificacao_manual (
-          codigo TEXT PRIMARY KEY,
+        CREATE TABLE classificacao_manual (
+          codigo TEXT PRIMARY KEY COLLATE NOCASE,
           setor TEXT NOT NULL,
           subsetor TEXT DEFAULT '',
           atualizado_em TEXT
         );
-
-        CREATE TABLE IF NOT EXISTS corretoras (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          nome TEXT NOT NULL,
-          cnpj TEXT UNIQUE
-        );
-
-        DROP TABLE IF EXISTS patrimonio_diario;
-
-        CREATE TABLE IF NOT EXISTS configuracoes_seguranca (
+        CREATE TABLE configuracoes_seguranca (
           chave TEXT PRIMARY KEY,
           valor TEXT
         );
+        CREATE TABLE snapshots_patrimonio (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          data_referencia TEXT NOT NULL UNIQUE,
+          total_investido REAL NOT NULL DEFAULT 0,
+          valor_mercado REAL NOT NULL DEFAULT 0,
+          resultado REAL NOT NULL DEFAULT 0,
+          proventos_recebidos REAL NOT NULL DEFAULT 0,
+          registrado_em TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+        );
+        CREATE TABLE snapshot_patrimonio_ativos (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          snapshot_id INTEGER NOT NULL,
+          ticker TEXT NOT NULL COLLATE NOCASE,
+          quantidade REAL NOT NULL DEFAULT 0,
+          preco_medio REAL NOT NULL DEFAULT 0,
+          custo_total REAL NOT NULL DEFAULT 0,
+          cotacao REAL NOT NULL DEFAULT 0,
+          valor_mercado REAL NOT NULL DEFAULT 0,
+          resultado REAL NOT NULL DEFAULT 0,
+          FOREIGN KEY (snapshot_id) REFERENCES snapshots_patrimonio(id)
+            ON UPDATE CASCADE ON DELETE CASCADE,
+          FOREIGN KEY (ticker) REFERENCES ativos(ticker)
+            ON UPDATE CASCADE ON DELETE RESTRICT,
+          UNIQUE (snapshot_id, ticker)
+        );
+        CREATE TABLE legacy_data_archive (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          origem TEXT NOT NULL,
+          row_json TEXT NOT NULL,
+          arquivado_em TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+        );
+        CREATE INDEX idx_notas_data ON notas_corretagem(data_pregao, id);
+        CREATE INDEX idx_notas_corretora ON notas_corretagem(corretora_id, data_pregao);
+        CREATE INDEX idx_operacoes_ticker_data ON operacoes(ticker, data_operacao, id);
+        CREATE INDEX idx_operacoes_data_ticker ON operacoes(data_operacao, ticker, id);
+        CREATE INDEX idx_operacoes_nota ON operacoes(nota_id);
+        CREATE INDEX idx_operacoes_corretora ON operacoes(corretora_id, ticker);
+        CREATE INDEX idx_proventos_ticker_data ON proventos(ticker, data_pagamento, id);
+        CREATE INDEX idx_proventos_data ON proventos(data_pagamento, id);
+        CREATE INDEX idx_proventos_corretora ON proventos(corretora_id, data_pagamento);
+        CREATE INDEX idx_snapshots_data ON snapshots_patrimonio(data_referencia DESC);
+        CREATE INDEX idx_snapshot_ativos_ticker ON snapshot_patrimonio_ativos(ticker, snapshot_id);
+        CREATE TRIGGER trg_operacoes_ensure_asset
+        BEFORE INSERT ON operacoes BEGIN
+          INSERT OR IGNORE INTO ativos(ticker) VALUES (UPPER(TRIM(NEW.ticker)));
+        END;
+        CREATE TRIGGER trg_proventos_ensure_asset
+        BEFORE INSERT ON proventos BEGIN
+          INSERT OR IGNORE INTO ativos(ticker) VALUES (UPPER(TRIM(NEW.ticker)));
+        END;
+        CREATE TRIGGER trg_cotacoes_ensure_asset
+        BEFORE INSERT ON cotacoes_atuais BEGIN
+          INSERT OR IGNORE INTO ativos(ticker) VALUES (UPPER(TRIM(NEW.ticker)));
+        END;
+        INSERT INTO schema_migrations(version, descricao)
+        VALUES (2, 'Cadastro central de ativos, integridade referencial e histórico patrimonial diário');
       `);
-      ensureCorretoraColumns();
-      try { localStorage.removeItem('ledgerly_patrimonio_diario'); } catch (_) {}
+    }
+
+    function copyRowsPreservingColumns(source, target, table, allowedColumns, transform = null) {
+      const exists = rowsFromDatabase(source,
+        "SELECT name FROM sqlite_master WHERE type='table' AND name = ?", [table]).length > 0;
+      if (!exists) return 0;
+      const sourceColumns = rowsFromDatabase(source, `PRAGMA table_info(${table})`).map(c => c.name);
+      const columns = allowedColumns.filter(c => sourceColumns.includes(c));
+      if (!columns.length) return 0;
+      const rows = rowsFromDatabase(source, `SELECT * FROM ${table}`);
+      const placeholders = columns.map(() => '?').join(',');
+      const sql = `INSERT INTO ${table} (${columns.join(',')}) VALUES (${placeholders})`;
+      rows.forEach(original => {
+        const row = transform ? transform({ ...original }) : original;
+        target.run(sql, columns.map(c => row[c] === undefined ? null : row[c]));
+      });
+      return rows.length;
+    }
+
+    function migrateDatabaseToV2(source) {
+      const target = new SQL.Database();
+      try {
+        createLedgerlySchemaV2(target);
+        target.run('BEGIN TRANSACTION;');
+
+        copyRowsPreservingColumns(source, target, 'corretoras', ['id','nome','cnpj']);
+
+        // O cadastro central é reconstruído a partir de todos os tickers existentes.
+        const tickers = new Set();
+        ['operacoes','proventos','cotacoes_atuais'].forEach(table => {
+          const exists = rowsFromDatabase(source,
+            "SELECT name FROM sqlite_master WHERE type='table' AND name = ?", [table]).length > 0;
+          if (exists) rowsFromDatabase(source, `SELECT ticker FROM ${table}`).forEach(r => {
+            const ticker = String(r.ticker || '').trim().toUpperCase();
+            if (r.ticker !== null && r.ticker !== undefined) tickers.add(ticker);
+          });
+        });
+        tickers.forEach(ticker => target.run('INSERT OR IGNORE INTO ativos(ticker) VALUES (?)', [ticker]));
+
+        copyRowsPreservingColumns(source, target, 'notas_corretagem', [
+          'id','numero_controle','data_pregao','valor_operacoes','total_cblc_bruto',
+          'taxa_cblc','taxa_bovespa','taxa_corretagem','valor_liquido_nota',
+          'nome_arquivo','arquivo_base64','criado_em','corretora_id'
+        ]);
+        copyRowsPreservingColumns(source, target, 'operacoes', [
+          'id','nota_id','numero_nota','data_operacao','ticker','especificacao',
+          'tipo_ordem','quantidade','preco_unitario','valor_operacao',
+          'taxa_cblc','taxa_bovespa','taxa_corretagem','corretora_id'
+        ], row => ({ ...row, ticker: String(row.ticker || '').trim().toUpperCase() }));
+        if (rowsFromDatabase(source, "SELECT name FROM sqlite_master WHERE type='table' AND name='cotacoes_atuais'").length) {
+          rowsFromDatabase(source, 'SELECT ticker, preco_atual FROM cotacoes_atuais ORDER BY rowid').forEach(row => {
+            const ticker = String(row.ticker || '').trim().toUpperCase();
+            target.run('INSERT OR REPLACE INTO cotacoes_atuais(ticker,preco_atual) VALUES (?,?)', [ticker, row.preco_atual]);
+          });
+        }
+        copyRowsPreservingColumns(source, target, 'proventos', [
+          'id','ticker','tipo','data_pagamento','quantidade','valor_bruto',
+          'imposto','valor_liquido','observacao','corretora_id'
+        ], row => ({ ...row, ticker: String(row.ticker || '').trim().toUpperCase() }));
+        copyRowsPreservingColumns(source, target, 'classificacao_manual',
+          ['codigo','setor','subsetor','atualizado_em']);
+        copyRowsPreservingColumns(source, target, 'configuracoes_seguranca', ['chave','valor']);
+
+        // Tabelas antigas não reconhecidas são preservadas em JSON, sem descarte silencioso.
+        const known = new Set(['sqlite_sequence','schema_migrations','corretoras','ativos',
+          'notas_corretagem','operacoes','cotacoes_atuais','proventos',
+          'classificacao_manual','configuracoes_seguranca','snapshots_patrimonio',
+          'snapshot_patrimonio_ativos','legacy_data_archive']);
+        const oldTables = rowsFromDatabase(source,
+          "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'");
+        oldTables.forEach(item => {
+          if (known.has(item.name)) return;
+          rowsFromDatabase(source, `SELECT * FROM "${String(item.name).replace(/"/g, '""')}"`).forEach(row => {
+            target.run('INSERT INTO legacy_data_archive(origem,row_json) VALUES (?,?)',
+              [item.name, JSON.stringify(row)]);
+          });
+        });
+        try {
+          const legacyLocal = localStorage.getItem('ledgerly_patrimonio_diario');
+          if (legacyLocal !== null) target.run(
+            'INSERT INTO legacy_data_archive(origem,row_json) VALUES (?,?)',
+            ['localStorage:ledgerly_patrimonio_diario', JSON.stringify({ value: legacyLocal })]);
+        } catch (_) {}
+
+        target.run('COMMIT;');
+        target.run('PRAGMA foreign_keys = ON;');
+        const fkErrors = rowsFromDatabase(target, 'PRAGMA foreign_key_check');
+        const integrity = rowsFromDatabase(target, 'PRAGMA integrity_check');
+        if (fkErrors.length) throw new Error('A migração gerou vínculos inválidos: ' + JSON.stringify(fkErrors.slice(0, 5)));
+        if (!integrity.length || integrity[0].integrity_check !== 'ok')
+          throw new Error('A verificação de integridade do novo banco falhou.');
+        return target;
+      } catch (error) {
+        try { target.run('ROLLBACK;'); } catch (_) {}
+        target.close();
+        throw error;
+      }
+    }
+
+    async function createSchemaIfNotExists() {
+      const hasVersionTable = rowsFromDatabase(db,
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='schema_migrations'").length > 0;
+      const version = hasVersionTable
+        ? Number(rowsFromDatabase(db, 'SELECT MAX(version) AS version FROM schema_migrations')[0]?.version || 0)
+        : 0;
+      if (version >= LEDGERLY_SCHEMA_VERSION) {
+        db.run('PRAGMA foreign_keys = ON;');
+        return;
+      }
+
+      const originalDb = db;
+      const originalBinary = originalDb.export();
+      let migratedDb = null;
+      try {
+        if (originalBinary && originalBinary.length) await savePreMigrationBackup(originalBinary);
+        migratedDb = migrateDatabaseToV2(originalDb);
+        db = migratedDb;
+        await persistSQLiteToIndexedDB();
+        try { localStorage.removeItem('ledgerly_patrimonio_diario'); } catch (_) {}
+        try { originalDb.close(); } catch (_) {}
+      } catch (error) {
+        db = originalDb;
+        if (migratedDb) try { migratedDb.close(); } catch (_) {}
+        console.error('Falha na migração SQLite v2; banco original preservado:', error);
+        throw error;
+      }
     }
 
     // Corretora vinculada a cada nota e a cada operação (migração segura de bancos antigos)
@@ -1920,6 +2146,42 @@
     // =========================================================================
     // 3. ATUALIZAÇÃO DA INTERFACE (CARTEIRA, GRÁFICO E ABA OCULTA POSIÇÕES)
     // =========================================================================
+    // Registra/atualiza uma fotografia por dia local, após o banco estar pronto.
+    async function captureDailyPortfolioSnapshot() {
+      if (!db) return;
+      const today = isoFromDate(new Date());
+      const positions = getConsolidatedPositions();
+      const active = positions.filter(p => p.ticker && Number.isFinite(Number(p.qtdAtual)));
+      const totalInvestido = active.reduce((sum, p) => sum + (Number(p.valorInvestido) || 0), 0);
+      const valorMercado = active.reduce((sum, p) => sum + (Number(p.patrimonioAtual) || 0), 0);
+      const proventos = Number(queryAll('SELECT COALESCE(SUM(valor_liquido),0) AS total FROM proventos WHERE data_pagamento <= ?', [today])[0]?.total) || 0;
+      db.run('BEGIN TRANSACTION;');
+      try {
+        db.run(`INSERT INTO snapshots_patrimonio
+          (data_referencia,total_investido,valor_mercado,resultado,proventos_recebidos)
+          VALUES (?,?,?,?,?)
+          ON CONFLICT(data_referencia) DO UPDATE SET
+            total_investido=excluded.total_investido,
+            valor_mercado=excluded.valor_mercado,
+            resultado=excluded.resultado,
+            proventos_recebidos=excluded.proventos_recebidos,
+            registrado_em=CURRENT_TIMESTAMP`,
+          [today, totalInvestido, valorMercado, valorMercado - totalInvestido, proventos]);
+        const snapshotId = Number(queryAll('SELECT id FROM snapshots_patrimonio WHERE data_referencia = ?', [today])[0].id);
+        db.run('DELETE FROM snapshot_patrimonio_ativos WHERE snapshot_id = ?', [snapshotId]);
+        active.forEach(p => db.run(`INSERT INTO snapshot_patrimonio_ativos
+          (snapshot_id,ticker,quantidade,preco_medio,custo_total,cotacao,valor_mercado,resultado)
+          VALUES (?,?,?,?,?,?,?,?)`, [snapshotId, p.ticker, Number(p.qtdAtual)||0,
+            Number(p.precoMedio)||0, Number(p.valorInvestido)||0, Number(p.cotacaoAtual)||0,
+            Number(p.patrimonioAtual)||0, Number(p.lucroPrejuizo)||0]));
+        db.run('COMMIT;');
+        await persistSQLiteToIndexedDB();
+      } catch (error) {
+        try { db.run('ROLLBACK;'); } catch (_) {}
+        console.error('Não foi possível registrar o histórico patrimonial diário:', error);
+      }
+    }
+
     function refreshAllViews() {
       const positions = getConsolidatedPositions();
       allPositionsData = positions;
@@ -3735,23 +3997,30 @@
       if (!file) return;
 
       const confirmAction = async () => {
+        const previousDb = db;
+        let candidateDb = null;
         try {
           const buffer = await file.arrayBuffer();
-          const candidateDb = new SQL.Database(new Uint8Array(buffer));
-          // Valida se é um banco SQLite válido criando/verificando as tabelas
+          candidateDb = new SQL.Database(new Uint8Array(buffer));
+          // Valida e migra o banco candidato antes de torná-lo definitivo.
           const keep = [['brapi_token', getSetting('brapi_token')], ['biometrics_cred_id', getSetting('biometrics_cred_id')]];
           db = candidateDb;
-          createSchemaIfNotExists();
+          await createSchemaIfNotExists();
           for (const [k, v] of keep) {
             if (v && !getSetting(k)) db.run('INSERT OR REPLACE INTO configuracoes_seguranca (chave, valor) VALUES (?, ?)', [k, v]);
           }
           if (!getSetting('biometrics_cred_id')) db.run("INSERT OR REPLACE INTO configuracoes_seguranca (chave, valor) VALUES ('biometrics_enabled', '0')");
           await persistSQLiteToIndexedDB();
+          try { if (previousDb && previousDb !== db) previousDb.close(); } catch (_) {}
           refreshAllViews();
           showToast('Banco de dados restaurado com sucesso!', 'success');
           switchTab('carteira');
         } catch (err) {
           console.error('Erro ao restaurar banco:', err);
+          if (typeof previousDb !== 'undefined' && previousDb && db !== previousDb) {
+            try { db.close(); } catch (_) {}
+            db = previousDb;
+          }
           showToast('O arquivo selecionado não é um banco de dados válido.', 'error');
         }
       };
@@ -4826,13 +5095,18 @@
       const cand = new SQL.Database(bytes);
       if (!cand.exec("SELECT name FROM sqlite_master WHERE type='table' AND name='operacoes'").length) { cand.close(); throw new Error('O arquivo da nuvem não parece ser um banco do Ledgerly.'); }
       window.__ledgerlyApplying = true;
+      const previousDb = db;
       try {
         db = cand;
-        createSchemaIfNotExists();
+        await createSchemaIfNotExists();
         for (const [k, v] of keep) if (v && !getSetting(k)) db.run('INSERT OR REPLACE INTO configuracoes_seguranca (chave, valor) VALUES (?, ?)', [k, v]);
         if (!getSetting('biometrics_cred_id')) db.run("INSERT OR REPLACE INTO configuracoes_seguranca (chave, valor) VALUES ('biometrics_enabled', '0')");
         await persistSQLiteToIndexedDB();
+        try { if (previousDb && previousDb !== db) previousDb.close(); } catch (_) {}
         refreshAllViews();
+      } catch (error) {
+        if (db !== previousDb) { try { db.close(); } catch (_) {} db = previousDb; }
+        throw error;
       } finally { window.__ledgerlyApplying = false; }
     }
 
@@ -5030,7 +5304,16 @@
     async function deleteLocalDb() {
       clearTimeout(syncTimer);
       window.__ledgerlyApplying = true;
-      try { db = new SQL.Database(); createSchemaIfNotExists(); await persistSQLiteToIndexedDB(); } finally { window.__ledgerlyApplying = false; }
+      const previousDb = db;
+      try {
+        db = new SQL.Database();
+        await createSchemaIfNotExists();
+        await persistSQLiteToIndexedDB();
+        try { if (previousDb && previousDb !== db) previousDb.close(); } catch (_) {}
+      } catch (error) {
+        if (db !== previousDb) { try { db.close(); } catch (_) {} db = previousDb; }
+        throw error;
+      } finally { window.__ledgerlyApplying = false; }
       try { await idbKv('del', 'conflict'); } catch (_) {}
       conflictInfo = null;
       try { localStorage.removeItem('ledgerly_pin_fails'); localStorage.removeItem('ledgerly_pin_lock'); } catch (_) {}
@@ -5064,7 +5347,7 @@
     // Limpar: apaga os dados de investimentos e mantém PIN, token e configurações; guarda uma cópia para restaurar
     async function wipeAllData() {
       await saveConflictBackup(db.export(), 'limpeza');
-      db.run('DELETE FROM operacoes; DELETE FROM notas_corretagem; DELETE FROM proventos; DELETE FROM cotacoes_atuais; DELETE FROM corretoras;');
+      db.run('DELETE FROM snapshot_patrimonio_ativos; DELETE FROM snapshots_patrimonio; DELETE FROM operacoes; DELETE FROM notas_corretagem; DELETE FROM proventos; DELETE FROM cotacoes_atuais; DELETE FROM corretoras; DELETE FROM ativos; DELETE FROM legacy_data_archive;');
       await persistSQLiteToIndexedDB();
     }
     function renderSyncCard() {
