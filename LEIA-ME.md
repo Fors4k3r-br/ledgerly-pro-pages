@@ -14,5 +14,5 @@
 - Se o Google estiver em modo de teste, o acesso permanente expira em 7 dias e o app pede o login de novo.
 
 ## Classificação setorial
-- `setores.js` é gerado do XML da B3 (Classificação Setorial): `python3 tools/gerar-setores.py tools/acoesb3.xml setores.js`.
+- `src/js/portfolio/sectors-data.js` contém a base de dados da Classificação Setorial da B3 e é gerado pelo comando `python3 tools/gerar-setores.py`. O classificador fica em `src/js/portfolio/sectors.js`.
 - Correções do usuário (empresas novas ou que mudaram de setor) ficam na tabela `classificacao_manual` do banco e valem mais que o cadastro da B3.

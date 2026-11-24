@@ -3,9 +3,25 @@
 //   - suba "version" e "build" (o build define o nome do cache do service worker);
 //   - acrescente uma entrada nova no INÍCIO de "entries" com as mudanças, em linguagem simples.
 globalThis.LEDGERLY_CHANGELOG = {
-  version: '1.4.14',
-  build: 38,
+  version: '1.4.16',
+  build: 40,
   entries: [
+    {
+      version: '1.4.16',
+      date: '2026-11-24',
+      notes: [
+        'Estrutura: os arquivos da classificação setorial agora ficam juntos em src/js/portfolio: sectors-data.js contém a base da B3 e sectors.js contém as funções de classificação.',
+        'PWA: corrigidos os caminhos no HTML, no Service Worker e no gerador da base setorial; removida a referência ao antigo setores.js da raiz.'
+      ]
+    },
+    {
+      version: '1.4.15',
+      date: '2026-11-24',
+      notes: [
+        'Estrutura: iniciada a modularização JavaScript. A classificação setorial foi separada em um módulo ES, preservando as regras manuais, o cadastro da B3 e as classificações automáticas.',
+        'PWA: o novo módulo setorial foi incluído no cache inicial para manter o funcionamento também sem conexão.'
+      ]
+    },
     {
       version: '1.4.14',
       date: '2026-11-24',

@@ -23,7 +23,7 @@
 
   <!-- Lucide Icons -->
   <script src="./changelog.js"></script>
-  <script src="./setores.js"></script>
+  <script src="./src/js/portfolio/sectors-data.js"></script>
   <script src="./vendor/lucide.min.js"></script>
   <!-- Chart.js -->
   <script src="./vendor/chart.umd.js"></script>
@@ -2096,28 +2096,15 @@
       });
     }
 
-    // ===== CLASSIFICAÇÃO SETORIAL (cadastro da B3 em setores.js + correções do usuário no banco) =====
-    const SETOR_DB = globalThis.LEDGERLY_SETORES || { setores: [], subsetores: [], empresas: {} };
-    const SETOR_ESPECIAIS = ['Fundos e ETFs', 'BDRs'];
-    let manualClass = {};
-    function tickerCode(t) { return String(t || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4); }
+    // ===== CLASSIFICAÇÃO SETORIAL (cadastro da B3 em sectors-data.js + correções do usuário no banco) =====
+    // O classificador puro foi extraído para src/js/portfolio/sectors.js.
+    // A leitura do SQLite permanece aqui, junto da camada de persistência.
     function loadManualClass() {
-      manualClass = {};
-      try { queryAll('SELECT codigo, setor, subsetor FROM classificacao_manual').forEach(r => { manualClass[r.codigo] = { setor: r.setor, subsetor: r.subsetor || '' }; }); } catch (_) {}
+      try {
+        const rows = queryAll('SELECT codigo, setor, subsetor FROM classificacao_manual');
+        globalThis.setManualSectorClass(rows);
+      } catch (_) { globalThis.setManualSectorClass([]); }
     }
-    // Ordem: correção do usuário > cadastro da B3 > regras automáticas (fundos/ETFs e BDRs) > sem classificação
-    function classifyTicker(ticker) {
-      const T = String(ticker || '').toUpperCase(), code = tickerCode(T);
-      const m = manualClass[code];
-      if (m) return { setor: m.setor, subsetor: m.subsetor, origem: 'manual', code };
-      const idx = SETOR_DB.empresas[code];
-      if (idx !== undefined) { const s = SETOR_DB.subsetores[idx]; return { setor: SETOR_DB.setores[s[0]], subsetor: s[1], origem: 'b3', code }; }
-      if (/11$/.test(T)) return { setor: 'Fundos e ETFs', subsetor: '', origem: 'auto', code };
-      if (/(32|33|34|35|39)$/.test(T)) return { setor: 'BDRs', subsetor: '', origem: 'auto', code };
-      return { setor: 'Sem classificação', subsetor: '', origem: 'pendente', code };
-    }
-    const setorOptions = () => SETOR_DB.setores.concat(SETOR_ESPECIAIS);
-    function subsetoresDe(setor) { const i = SETOR_DB.setores.indexOf(setor); return i < 0 ? [] : SETOR_DB.subsetores.filter(s => s[0] === i).map(s => s[1]); }
     function pendingSectorTickers() {
       const seen = new Set(), out = [];
       allPositionsData.filter(p => p.qtdAtual > 0).forEach(p => { const c = classifyTicker(p.ticker); if (c.origem === 'pendente' && !seen.has(c.code)) { seen.add(c.code); out.push(p.ticker); } });
@@ -5401,6 +5388,8 @@
       }, 3400);
     }
   </script>
+
+  <script type="module" src="./src/js/portfolio/sectors.js"></script>
 
   <div id="updateBanner" class="hidden fixed bottom-4 left-4 right-4 z-[100] max-w-sm mx-auto glass-card rounded-2xl p-3.5 border border-indigo-500/40 shadow-2xl flex items-center justify-between gap-3" role="status">
     <span class="text-xs font-semibold text-indigo-200">Nova versão disponível.</span>
