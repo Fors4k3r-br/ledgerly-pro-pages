@@ -3,9 +3,17 @@
 //   - suba "version" e "build" (o build define o nome do cache do service worker);
 //   - acrescente uma entrada nova no INÍCIO de "entries" com as mudanças, em linguagem simples.
 globalThis.LEDGERLY_CHANGELOG = {
-  version: '1.4.20',
-  build: 44,
+  version: '1.4.21',
+  build: 45,
   entries: [
+    {
+      version: '1.4.21',
+      date: '2026-11-25',
+      notes: [
+        'Estrutura: primitivas de derivação de chave, hash SHA-256, compactação e criptografia AES-GCM separadas em src/js/security/encryption.js, preservando o formato dos backups existentes.',
+        'PWA: o módulo de criptografia foi incluído no carregamento e no cache offline; a interface e a orquestração do Google Drive permanecem no código principal.'
+      ]
+    },
     {
       version: '1.4.20',
       date: '2026-11-25',
