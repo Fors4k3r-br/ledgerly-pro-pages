@@ -1,6 +1,6 @@
 {
-  "atualizado_em": "2026-11-23T10:05:22.928327313Z",
-  "quantidade": 93,
+  "atualizado_em": "2026-11-25T10:05:30.253700961Z",
+  "quantidade": 94,
   "dividendos": [
     {
       "codigo": "BBDC3",
@@ -403,6 +403,14 @@
       "pagamento": "16/11/2026"
     },
     {
+      "codigo": "INHF11",
+      "tipo": "Dividendo",
+      "valor": "0,200000",
+      "registro": "30/10/2026",
+      "ex": "03/11/2026",
+      "pagamento": "16/11/2026"
+    },
+    {
       "codigo": "MSCD34",
       "tipo": "Dividendo",
       "valor": "0,097058",
@@ -661,7 +669,7 @@
     {
       "codigo": "MTRE3",
       "tipo": "Dividendo",
-      "valor": "0,037816",
+      "valor": "0,037986",
       "registro": "13/11/2026",
       "ex": "16/11/2026",
       "pagamento": "27/11/2026"
