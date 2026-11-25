@@ -3,9 +3,17 @@
 //   - suba "version" e "build" (o build define o nome do cache do service worker);
 //   - acrescente uma entrada nova no INÍCIO de "entries" com as mudanças, em linguagem simples.
 globalThis.LEDGERLY_CHANGELOG = {
-  version: '1.4.18',
-  build: 42,
+  version: '1.4.19',
+  build: 43,
   entries: [
+    {
+      version: '1.4.19',
+      date: '2026-11-25',
+      notes: [
+        'Estrutura: leitura de texto e renderização das páginas de PDFs separadas em src/js/notes/pdf-reader.js, mantendo a interpretação financeira das notas no módulo principal.',
+        'PWA: o novo leitor de PDFs foi incluído no carregamento e no cache offline.'
+      ]
+    },
     {
       version: '1.4.18',
       date: '2026-11-25',

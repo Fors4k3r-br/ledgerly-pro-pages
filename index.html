@@ -2531,18 +2531,6 @@
       return existing.length > 0;
     }
 
-    async function extractTextFromPDFBuffer(arrayBuffer) {
-      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-      let fullText = '';
-      for (let i = 1; i <= pdf.numPages; i++) {
-        const page = await pdf.getPage(i);
-        const content = await page.getTextContent();
-        const strings = content.items.map(item => item.str);
-        fullText += strings.join(' ') + '\n';
-      }
-      return fullText;
-    }
-
     // Parser para notas no padrão SINACOR (testado com a nota 29102026/3.182)
     function parseSinacorNote(text, fileName, base64Pdf) {
       // Normaliza o texto e substitui caracteres cirílicos/especiais comuns em PDFs do BB (ex: 'З' cirílico por '3')
@@ -3189,20 +3177,6 @@
     }
 
     function base64ToBytes(b64) { const bin = atob(b64); const out = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i); return out; }
-    async function renderPdfPages(container, bytes) {
-      container.textContent = '';
-      if (typeof pdfjsLib === 'undefined' || !pdfjsLib.getDocument) throw new Error('visualizador indisponível');
-      const pdf = await pdfjsLib.getDocument({ data: bytes.slice() }).promise;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2), cw = Math.max(container.clientWidth, 280);
-      for (let i = 1; i <= pdf.numPages; i++) {
-        const page = await pdf.getPage(i), base = page.getViewport({ scale: 1 }), vp = page.getViewport({ scale: (cw / base.width) * dpr });
-        const canvas = document.createElement('canvas'), ctx = canvas.getContext('2d');
-        if (!ctx) throw new Error('canvas indisponível');
-        canvas.width = Math.floor(vp.width); canvas.height = Math.floor(vp.height); canvas.className = 'w-full h-auto rounded-lg bg-white';
-        container.appendChild(canvas);
-        await page.render({ canvasContext: ctx, viewport: vp }).promise;
-      }
-    }
     function downloadPdfBytes(bytes, name) {
       const url = URL.createObjectURL(new Blob([bytes], { type: 'application/pdf' }));
       const a = document.createElement('a'); a.href = url; a.download = name || 'nota-de-corretagem.pdf';
@@ -5334,6 +5308,7 @@
 
   <script type="module" src="./src/js/portfolio/sectors.js"></script>
   <script type="module" src="./src/js/portfolio/calculations.js"></script>
+  <script type="module" src="./src/js/notes/pdf-reader.js"></script>
 
   <div id="updateBanner" class="hidden fixed bottom-4 left-4 right-4 z-[100] max-w-sm mx-auto glass-card rounded-2xl p-3.5 border border-indigo-500/40 shadow-2xl flex items-center justify-between gap-3" role="status">
     <span class="text-xs font-semibold text-indigo-200">Nova versão disponível.</span>
