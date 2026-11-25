@@ -26,21 +26,23 @@ jobs:
           cache: maven
 
       - name: Compilar e executar Scraper
+        id: scraper
         run: mvn compile exec:java -Dexec.mainClass="Scraper"
 
       - name: Salvar JSON no repositorio
+        if: always() && steps.scraper.outcome != 'skipped'
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if [ -f dividendos.json ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add dividendos.json
+            git add dividendos.json
 
-          if ! git diff --cached --quiet; then
-            git commit -m "Atualiza dividendos"
-
-            git pull --rebase origin main || true
-
-            git push origin HEAD:main
-          else
-            echo "Nenhuma alteração encontrada."
+            if ! git diff --cached --quiet; then
+              git commit -m "Atualiza dividendos"
+              git pull --rebase origin main || true
+              git push origin HEAD:main
+            else
+              echo "Nenhuma alteração encontrada."
+            fi
           fi
