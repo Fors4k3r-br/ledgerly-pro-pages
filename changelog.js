@@ -3,9 +3,17 @@
 //   - suba "version" e "build" (o build define o nome do cache do service worker);
 //   - acrescente uma entrada nova no INÍCIO de "entries" com as mudanças, em linguagem simples.
 globalThis.LEDGERLY_CHANGELOG = {
-  version: '1.4.17',
-  build: 41,
+  version: '1.4.18',
+  build: 42,
   entries: [
+    {
+      version: '1.4.18',
+      date: '2026-11-25',
+      notes: [
+        'Estrutura: isolados em src/js/portfolio/calculations.js os cálculos consolidados de custódia, preço médio, custo da posição, resultado realizado, rentabilidade e proventos por ativo.',
+        'Manutenção: a consulta SQLite permanece na camada principal; o novo módulo recebe os dados consultados e devolve os resultados, preservando a lógica existente.'
+      ]
+    },
     {
       version: '1.4.17',
       date: '2026-11-25',

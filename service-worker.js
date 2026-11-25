@@ -9,6 +9,7 @@ const APP_SHELL = [
   "./changelog.js",
   "./src/js/portfolio/sectors-data.js",
   "./src/js/portfolio/sectors.js",
+  "./src/js/portfolio/calculations.js",
   "./assets/tailwind.css",
   "./assets/fonts.css",
   "./assets/fonts/inter-latin-400-normal.woff2",
