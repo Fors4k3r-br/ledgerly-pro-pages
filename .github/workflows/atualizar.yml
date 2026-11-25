@@ -25,24 +25,33 @@ jobs:
           java-version: "21"
           cache: maven
 
+      # Com falhar_no_erro=true o Java grava o JSON (status "erro") e sai com exit code 1.
+      # Este step falha e o workflow fica marcado como falho na aba Actions.
       - name: Compilar e executar Scraper
         id: scraper
         run: mvn compile exec:java -Dexec.mainClass="Scraper"
 
+      # Roda mesmo que o Scraper tenha falhado, para publicar o diagnóstico de erro.
+      # Não roda se o checkout/setup falhou (scraper "skipped") nem se o workflow foi cancelado.
       - name: Salvar JSON no repositorio
-        if: always() && steps.scraper.outcome != 'skipped'
+        if: ${{ !cancelled() && steps.scraper.conclusion != 'skipped' }}
         run: |
-          if [ -f dividendos.json ]; then
-            git config user.name "github-actions[bot]"
-            git config user.email "github-actions[bot]@users.noreply.github.com"
+          if [ ! -f dividendos.json ]; then
+            echo "dividendos.json não foi gerado; nada para commitar."
+            exit 0
+          fi
 
-            git add dividendos.json
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
 
-            if ! git diff --cached --quiet; then
-              git commit -m "Atualiza dividendos"
-              git pull --rebase origin main || true
-              git push origin HEAD:main
-            else
-              echo "Nenhuma alteração encontrada."
-            fi
+          git add dividendos.json
+
+          if ! git diff --cached --quiet; then
+            git commit -m "Atualiza dividendos"
+
+            git pull --rebase origin main || git rebase --abort
+
+            git push origin HEAD:main
+          else
+            echo "Nenhuma alteração encontrada."
           fi
