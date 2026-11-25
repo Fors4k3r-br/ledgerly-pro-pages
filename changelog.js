@@ -3,9 +3,17 @@
 //   - suba "version" e "build" (o build define o nome do cache do service worker);
 //   - acrescente uma entrada nova no INÍCIO de "entries" com as mudanças, em linguagem simples.
 globalThis.LEDGERLY_CHANGELOG = {
-  version: '1.4.19',
-  build: 43,
+  version: '1.4.20',
+  build: 44,
   entries: [
+    {
+      version: '1.4.20',
+      date: '2026-11-25',
+      notes: [
+        'Estrutura: interpretação financeira de notas de corretagem SINACOR separada em src/js/notes/note-parser.js, mantendo extração, conferência, identificação da corretora e rateio das taxas.',
+        'PWA: o novo módulo de interpretação foi incluído no carregamento e no cache offline.'
+      ]
+    },
     {
       version: '1.4.19',
       date: '2026-11-25',

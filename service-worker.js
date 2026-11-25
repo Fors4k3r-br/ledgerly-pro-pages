@@ -11,6 +11,7 @@ const APP_SHELL = [
   "./src/js/portfolio/sectors.js",
   "./src/js/portfolio/calculations.js",
   "./src/js/notes/pdf-reader.js",
+  "./src/js/notes/note-parser.js",
   "./assets/tailwind.css",
   "./assets/fonts.css",
   "./assets/fonts/inter-latin-400-normal.woff2",
