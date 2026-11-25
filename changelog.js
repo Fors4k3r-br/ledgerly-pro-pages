@@ -3,9 +3,17 @@
 //   - suba "version" e "build" (o build define o nome do cache do service worker);
 //   - acrescente uma entrada nova no INÍCIO de "entries" com as mudanças, em linguagem simples.
 globalThis.LEDGERLY_CHANGELOG = {
-  version: '1.4.21',
-  build: 45,
+  version: '1.4.22',
+  build: 46,
   entries: [
+    {
+      version: '1.4.22',
+      date: '2026-11-25',
+      notes: [
+        'Sincronização: corrigido o fluxo de compactação gzip dos backups para consumir os dados durante a escrita, evitando bloqueio ao enviar ou receber dados.',
+        'Compatibilidade: mantidos os formatos criptografados LGY0 e LGY1 e os parâmetros existentes de derivação de chave e AES-GCM.'
+      ]
+    },
     {
       version: '1.4.21',
       date: '2026-11-25',
