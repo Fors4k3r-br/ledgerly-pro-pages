@@ -22,9 +22,18 @@ export async function gzipBytes(bytes, compress) {
   if (typeof Stream === 'undefined') throw new Error('Compressão de backup indisponível neste navegador.');
   const stream = new Stream('gzip');
   const writer = stream.writable.getWriter();
-  await writer.write(bytes);
-  await writer.close();
-  return new Uint8Array(await new Response(stream.readable).arrayBuffer());
+
+  // Consumir a saída antes de escrever evita backpressure: aguardar close()
+  // antes de iniciar a leitura pode deixar a escrita bloqueada em alguns browsers.
+  const outputPromise = new Response(stream.readable).arrayBuffer();
+  try {
+    await writer.write(bytes);
+    await writer.close();
+    return new Uint8Array(await outputPromise);
+  } catch (error) {
+    try { await writer.abort(error); } catch (_) {}
+    throw error;
+  }
 }
 
 export async function sha256Bytes(bytes) {
