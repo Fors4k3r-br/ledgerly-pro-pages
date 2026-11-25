@@ -1567,13 +1567,23 @@
       loadBrapiSettingsToUI();
       checkLockScreenOnStartup();
       refreshAllViews();
-      await captureDailyPortfolioSnapshot();
-      syncOnStart();
+      // Primeiro reconcilia os bancos locais com o Google Drive. Nenhuma rotina
+      // automática deve alterar o SQLite antes de decidir qual versão prevalece.
+      const startupSyncOk = await syncOnStart();
       maybeShowWhatsNew();
 
-      // Se a atualização automática da Brapi estiver ativa e houver token salvo, sincroniza em background
-      if (getSetting('brapi_auto_sync') === '1' && getSetting('brapi_token')) {
-        syncAllQuotesFromBrapi(true);
+      // Se a sincronização estiver conectada mas não puder ser concluída (offline,
+      // login expirado ou conflito pendente), não modifica o banco antes do próximo
+      // ciclo. Isso impede que uma captura/cotação transforme dados antigos em upload.
+      if (startupSyncOk) {
+        await captureDailyPortfolioSnapshot();
+
+        // Só atualiza cotações depois da sincronização inicial.
+        if (getSetting('brapi_auto_sync') === '1' && getSetting('brapi_token')) {
+          await syncAllQuotesFromBrapi(true);
+        }
+      } else {
+        console.warn('Inicialização: captura diária e atualização automática de cotações adiadas porque a sincronização inicial não foi concluída.');
       }
 	  
     // Intercepta o botão "Voltar" do celular para alternar as abas ou exigir duplo clique para fechar
@@ -1940,6 +1950,20 @@
       const totalInvestido = active.reduce((sum,p) => sum + (Number(p.valorInvestido)||0),0);
       const valorMercado = active.reduce((sum,p) => sum + (Number(p.patrimonioAtual)||0),0);
       const proventos = Number(queryAll('SELECT COALESCE(SUM(valor_liquido),0) AS total FROM proventos WHERE data_pagamento <= ?', [today])[0]?.total)||0;
+
+      // A fotografia diária é idempotente: se os totais do dia continuam iguais,
+      // não regrava CURRENT_TIMESTAMP, não altera os ativos do snapshot e não
+      // provoca persistência/sincronização desnecessária.
+      const snapshotAtual = rowsFromDatabase(dailyDb,
+        'SELECT total_investido, valor_mercado, proventos_recebidos FROM snapshots_patrimonio WHERE data_referencia = ?',
+        [today])[0];
+      if (snapshotAtual &&
+          Math.abs(Number(snapshotAtual.total_investido || 0) - totalInvestido) < 0.005 &&
+          Math.abs(Number(snapshotAtual.valor_mercado || 0) - valorMercado) < 0.005 &&
+          Math.abs(Number(snapshotAtual.proventos_recebidos || 0) - proventos) < 0.005) {
+        return;
+      }
+
       dailyDb.run('BEGIN TRANSACTION;');
       try {
         dailyDb.run(`INSERT INTO snapshots_patrimonio (data_referencia,total_investido,valor_mercado,resultado,proventos_recebidos) VALUES (?,?,?,?,?) ON CONFLICT(data_referencia) DO UPDATE SET total_investido=excluded.total_investido,valor_mercado=excluded.valor_mercado,resultado=excluded.resultado,proventos_recebidos=excluded.proventos_recebidos,registrado_em=CURRENT_TIMESTAMP`, [today,totalInvestido,valorMercado,valorMercado-totalInvestido,proventos]);
@@ -5152,9 +5176,9 @@
       document.addEventListener('click', () => { tapArmed = false; if (syncState().connected && !syncBusy && !hasValidToken()) syncNow('tap'); }, { once: true, capture: true });
     }
     async function syncOnStart() {
-      if (!syncState().connected) return;
+      if (!syncState().connected) return true;
       syncPending = true; updateConnectionBadge();
-      await syncNow('start');
+      return await syncNow('start');
     }
     async function saveConflictBackup(bytes, side) {
       const rec = { bytes: new Uint8Array(bytes), side, at: new Date().toISOString() };

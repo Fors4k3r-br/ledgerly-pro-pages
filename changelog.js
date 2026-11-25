@@ -3,9 +3,17 @@
 //   - suba "version" e "build" (o build define o nome do cache do service worker);
 //   - acrescente uma entrada nova no INÍCIO de "entries" com as mudanças, em linguagem simples.
 globalThis.LEDGERLY_CHANGELOG = {
-  version: '1.4.16',
-  build: 40,
+  version: '1.4.17',
+  build: 41,
   entries: [
+    {
+      version: '1.4.17',
+      date: '2026-11-25',
+      notes: [
+        'Sincronização: ao abrir o aplicativo, a reconciliação com o Google Drive agora termina antes da captura patrimonial diária e da atualização automática das cotações, evitando que alterações locais de inicialização prevaleçam sobre a versão mais recente da nuvem.',
+        'Histórico patrimonial: a fotografia diária não é regravada quando investimento, valor de mercado e proventos recebidos permanecem iguais, evitando alterações e uploads desnecessários.'
+      ]
+    },
     {
       version: '1.4.16',
       date: '2026-11-24',
