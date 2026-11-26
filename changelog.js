@@ -3,9 +3,26 @@
 //   - suba "version" e "build" (o build define o nome do cache do service worker);
 //   - acrescente uma entrada nova no INÍCIO de "entries" com as mudanças, em linguagem simples.
 globalThis.LEDGERLY_CHANGELOG = {
-  version: '1.4.23',
-  build: 47,
+  version: '1.4.25',
+  build: 49,
   entries: [
+    {
+      version: '1.4.25',
+      date: '2026-11-26',
+      notes: [
+        'Sincronização: corrigido o fechamento prematuro do banco em applyRemoteDb e adicionada proteção para preservar a conexão do Drive e impedir upload vazio caso o navegador limpe o IndexedDB.',
+        'Conflitos: snapshots diários e atualizações automáticas de cotações não sobrescrevem mais edições feitas em outro aparelho; backups de conflito agora mantêm até 5 versões.',
+        'Armazenamento e PWA: adicionado tratamento de abort/cota no IndexedDB, alinhamento atômico entre HTML e scripts no Service Worker e inclusão das classes Tailwind faltantes.'
+      ]
+    },
+    {
+      version: '1.4.24',
+      date: '2026-11-26',
+      notes: [
+        'Estrutura: todos os scripts restantes do index.html foram separados em módulos por responsabilidade em src/js/ (core, ui, portfolio, notes, reports, dividends, security, sync e pwa), mantendo inline no HTML apenas o script de tema.',
+        'PWA: todos os novos módulos foram incluídos no precache offline do service-worker.js com atualização do cache para o build 48.'
+      ]
+    },
     {
       version: '1.4.23',
       date: '2026-11-26',
