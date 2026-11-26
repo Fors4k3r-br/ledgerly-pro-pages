@@ -3,9 +3,16 @@
 //   - suba "version" e "build" (o build define o nome do cache do service worker);
 //   - acrescente uma entrada nova no INÍCIO de "entries" com as mudanças, em linguagem simples.
 globalThis.LEDGERLY_CHANGELOG = {
-  version: '1.4.22',
-  build: 46,
+  version: '1.4.23',
+  build: 47,
   entries: [
+    {
+      version: '1.4.23',
+      date: '2026-11-26',
+      notes: [
+        'Relatórios: utilitários de geração de planilhas Excel foram extraídos para src/js/reports/excel-export.js. A montagem dos dados financeiros e o download permanecem no index.html.'
+      ]
+    },
     {
       version: '1.4.22',
       date: '2026-11-25',

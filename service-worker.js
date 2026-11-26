@@ -13,6 +13,7 @@ const APP_SHELL = [
   "./src/js/notes/pdf-reader.js",
   "./src/js/notes/note-parser.js",
   "./src/js/security/encryption.js",
+  "./src/js/reports/excel-export.js",
   "./assets/tailwind.css",
   "./assets/fonts.css",
   "./assets/fonts/inter-latin-400-normal.woff2",
