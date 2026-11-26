@@ -85,3 +85,10 @@ export function zipStore(files) {
 
 // Compatibilidade com exportReportsExcel(), que continua no script clássico.
 Object.assign(globalThis, { xmlEscape, excelCol, makeSheetXml, crc32, zipStore });
+
+// Ponte de compatibilidade: mantém os nomes públicos acessíveis ao HTML e aos demais módulos.
+Object.defineProperty(globalThis, "xmlEscape", { configurable: true, enumerable: true, get: () => xmlEscape, set: value => { xmlEscape = value; } });
+Object.defineProperty(globalThis, "excelCol", { configurable: true, enumerable: true, get: () => excelCol, set: value => { excelCol = value; } });
+Object.defineProperty(globalThis, "makeSheetXml", { configurable: true, enumerable: true, get: () => makeSheetXml, set: value => { makeSheetXml = value; } });
+Object.defineProperty(globalThis, "crc32", { configurable: true, enumerable: true, get: () => crc32, set: value => { crc32 = value; } });
+Object.defineProperty(globalThis, "zipStore", { configurable: true, enumerable: true, get: () => zipStore, set: value => { zipStore = value; } });
