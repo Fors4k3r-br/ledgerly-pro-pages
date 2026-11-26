@@ -219,3 +219,25 @@ function showToast(message, type = 'info') {
     setTimeout(() => toast.remove(), 300);
   }, 3400);
 }
+
+// Ponte de compatibilidade: mantém os nomes públicos acessíveis ao HTML e aos demais módulos.
+Object.defineProperty(globalThis, "THEMES", { configurable: true, enumerable: true, get: () => THEMES });
+Object.defineProperty(globalThis, "currentTheme", { configurable: true, enumerable: true, get: () => currentTheme, set: value => { currentTheme = value; } });
+Object.defineProperty(globalThis, "applyTheme", { configurable: true, enumerable: true, get: () => applyTheme, set: value => { applyTheme = value; } });
+Object.defineProperty(globalThis, "setTheme", { configurable: true, enumerable: true, get: () => setTheme, set: value => { setTheme = value; } });
+Object.defineProperty(globalThis, "themeRgb", { configurable: true, enumerable: true, get: () => themeRgb, set: value => { themeRgb = value; } });
+Object.defineProperty(globalThis, "renderThemeCard", { configurable: true, enumerable: true, get: () => renderThemeCard, set: value => { renderThemeCard = value; } });
+Object.defineProperty(globalThis, "toggleSideMenu", { configurable: true, enumerable: true, get: () => toggleSideMenu, set: value => { toggleSideMenu = value; } });
+Object.defineProperty(globalThis, "navigateFromMenu", { configurable: true, enumerable: true, get: () => navigateFromMenu, set: value => { navigateFromMenu = value; } });
+Object.defineProperty(globalThis, "navigateFromBottom", { configurable: true, enumerable: true, get: () => navigateFromBottom, set: value => { navigateFromBottom = value; } });
+Object.defineProperty(globalThis, "switchTab", { configurable: true, enumerable: true, get: () => switchTab, set: value => { switchTab = value; } });
+Object.defineProperty(globalThis, "switchAddSubTab", { configurable: true, enumerable: true, get: () => switchAddSubTab, set: value => { switchAddSubTab = value; } });
+Object.defineProperty(globalThis, "openAddAssetsSubTab", { configurable: true, enumerable: true, get: () => openAddAssetsSubTab, set: value => { openAddAssetsSubTab = value; } });
+Object.defineProperty(globalThis, "togglePrivacyMode", { configurable: true, enumerable: true, get: () => togglePrivacyMode, set: value => { togglePrivacyMode = value; } });
+Object.defineProperty(globalThis, "formatMoney", { configurable: true, enumerable: true, get: () => formatMoney, set: value => { formatMoney = value; } });
+Object.defineProperty(globalThis, "formatPercent", { configurable: true, enumerable: true, get: () => formatPercent, set: value => { formatPercent = value; } });
+Object.defineProperty(globalThis, "formatNumber", { configurable: true, enumerable: true, get: () => formatNumber, set: value => { formatNumber = value; } });
+Object.defineProperty(globalThis, "arrayBufferToBase64", { configurable: true, enumerable: true, get: () => arrayBufferToBase64, set: value => { arrayBufferToBase64 = value; } });
+Object.defineProperty(globalThis, "openConfirmDialog", { configurable: true, enumerable: true, get: () => openConfirmDialog, set: value => { openConfirmDialog = value; } });
+Object.defineProperty(globalThis, "ledgerlyModal", { configurable: true, enumerable: true, get: () => ledgerlyModal, set: value => { ledgerlyModal = value; } });
+Object.defineProperty(globalThis, "showToast", { configurable: true, enumerable: true, get: () => showToast, set: value => { showToast = value; } });
