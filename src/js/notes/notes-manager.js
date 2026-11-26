@@ -664,3 +664,27 @@ async function saveManualOperation(event) {
   showToast(`Lançamento manual de ${ticker} salvo no banco de dados!`, 'success');
   switchTab('carteira');
 }
+
+// Ponte de compatibilidade: mantém os nomes públicos acessíveis ao HTML e aos demais módulos.
+Object.defineProperty(globalThis, "setTodayDateOnManualForm", { configurable: true, enumerable: true, get: () => setTodayDateOnManualForm, set: value => { setTodayDateOnManualForm = value; } });
+Object.defineProperty(globalThis, "handlePdfSelection", { configurable: true, enumerable: true, get: () => handlePdfSelection, set: value => { handlePdfSelection = value; } });
+Object.defineProperty(globalThis, "isNoteAlreadyInSQLite", { configurable: true, enumerable: true, get: () => isNoteAlreadyInSQLite, set: value => { isNoteAlreadyInSQLite = value; } });
+Object.defineProperty(globalThis, "renderStagingScreen", { configurable: true, enumerable: true, get: () => renderStagingScreen, set: value => { renderStagingScreen = value; } });
+Object.defineProperty(globalThis, "updateStagedOpField", { configurable: true, enumerable: true, get: () => updateStagedOpField, set: value => { updateStagedOpField = value; } });
+Object.defineProperty(globalThis, "removeStagedNote", { configurable: true, enumerable: true, get: () => removeStagedNote, set: value => { removeStagedNote = value; } });
+Object.defineProperty(globalThis, "cancelStaging", { configurable: true, enumerable: true, get: () => cancelStaging, set: value => { cancelStaging = value; } });
+Object.defineProperty(globalThis, "commitStagedNotesToSQLite", { configurable: true, enumerable: true, get: () => commitStagedNotesToSQLite, set: value => { commitStagedNotesToSQLite = value; } });
+Object.defineProperty(globalThis, "SAVED_NOTES_PAGE_SIZE", { configurable: true, enumerable: true, get: () => SAVED_NOTES_PAGE_SIZE });
+Object.defineProperty(globalThis, "savedNotesCurrentPage", { configurable: true, enumerable: true, get: () => savedNotesCurrentPage, set: value => { savedNotesCurrentPage = value; } });
+Object.defineProperty(globalThis, "escapeSavedNoteText", { configurable: true, enumerable: true, get: () => escapeSavedNoteText, set: value => { escapeSavedNoteText = value; } });
+Object.defineProperty(globalThis, "getSavedNotesFilters", { configurable: true, enumerable: true, get: () => getSavedNotesFilters, set: value => { getSavedNotesFilters = value; } });
+Object.defineProperty(globalThis, "populateSavedNotesYears", { configurable: true, enumerable: true, get: () => populateSavedNotesYears, set: value => { populateSavedNotesYears = value; } });
+Object.defineProperty(globalThis, "filterSavedNotes", { configurable: true, enumerable: true, get: () => filterSavedNotes, set: value => { filterSavedNotes = value; } });
+Object.defineProperty(globalThis, "changeSavedNotesPage", { configurable: true, enumerable: true, get: () => changeSavedNotesPage, set: value => { changeSavedNotesPage = value; } });
+Object.defineProperty(globalThis, "base64ToBytes", { configurable: true, enumerable: true, get: () => base64ToBytes, set: value => { base64ToBytes = value; } });
+Object.defineProperty(globalThis, "downloadPdfBytes", { configurable: true, enumerable: true, get: () => downloadPdfBytes, set: value => { downloadPdfBytes = value; } });
+Object.defineProperty(globalThis, "viewSavedNote", { configurable: true, enumerable: true, get: () => viewSavedNote, set: value => { viewSavedNote = value; } });
+Object.defineProperty(globalThis, "renderSavedNotesHistory", { configurable: true, enumerable: true, get: () => renderSavedNotesHistory, set: value => { renderSavedNotesHistory = value; } });
+Object.defineProperty(globalThis, "deleteSavedNote", { configurable: true, enumerable: true, get: () => deleteSavedNote, set: value => { deleteSavedNote = value; } });
+Object.defineProperty(globalThis, "autoCalcManualTotal", { configurable: true, enumerable: true, get: () => autoCalcManualTotal, set: value => { autoCalcManualTotal = value; } });
+Object.defineProperty(globalThis, "saveManualOperation", { configurable: true, enumerable: true, get: () => saveManualOperation, set: value => { saveManualOperation = value; } });
