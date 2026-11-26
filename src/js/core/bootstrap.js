@@ -55,3 +55,5 @@ window.addEventListener('popstate', (event) => {
   });
 
 });
+
+// Ponte de compatibilidade: mantém os nomes públicos acessíveis ao HTML e aos demais módulos.

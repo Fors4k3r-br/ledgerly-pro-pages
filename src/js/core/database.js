@@ -409,3 +409,33 @@ async function requestWipeDatabase() {
     }
   });
 }
+
+// Ponte de compatibilidade: mantém os nomes públicos acessíveis ao HTML e aos demais módulos.
+Object.defineProperty(globalThis, "initSQLiteDatabase", { configurable: true, enumerable: true, get: () => initSQLiteDatabase, set: value => { initSQLiteDatabase = value; } });
+Object.defineProperty(globalThis, "LEDGERLY_SCHEMA_VERSION", { configurable: true, enumerable: true, get: () => LEDGERLY_SCHEMA_VERSION });
+Object.defineProperty(globalThis, "rowsFromDatabase", { configurable: true, enumerable: true, get: () => rowsFromDatabase, set: value => { rowsFromDatabase = value; } });
+Object.defineProperty(globalThis, "createCentralSchema", { configurable: true, enumerable: true, get: () => createCentralSchema, set: value => { createCentralSchema = value; } });
+Object.defineProperty(globalThis, "createDailySchema", { configurable: true, enumerable: true, get: () => createDailySchema, set: value => { createDailySchema = value; } });
+Object.defineProperty(globalThis, "createSchemaIfNotExists", { configurable: true, enumerable: true, get: () => createSchemaIfNotExists, set: value => { createSchemaIfNotExists = value; } });
+Object.defineProperty(globalThis, "ensureColumn", { configurable: true, enumerable: true, get: () => ensureColumn, set: value => { ensureColumn = value; } });
+Object.defineProperty(globalThis, "ensureCorretora", { configurable: true, enumerable: true, get: () => ensureCorretora, set: value => { ensureCorretora = value; } });
+Object.defineProperty(globalThis, "ensureCorretoraColumns", { configurable: true, enumerable: true, get: () => ensureCorretoraColumns, set: value => { ensureCorretoraColumns = value; } });
+Object.defineProperty(globalThis, "fillCorretoraSelects", { configurable: true, enumerable: true, get: () => fillCorretoraSelects, set: value => { fillCorretoraSelects = value; } });
+Object.defineProperty(globalThis, "onManCorretoraChange", { configurable: true, enumerable: true, get: () => onManCorretoraChange, set: value => { onManCorretoraChange = value; } });
+Object.defineProperty(globalThis, "setPositionsCorretora", { configurable: true, enumerable: true, get: () => setPositionsCorretora, set: value => { setPositionsCorretora = value; } });
+Object.defineProperty(globalThis, "openIndexedDB", { configurable: true, enumerable: true, get: () => openIndexedDB, set: value => { openIndexedDB = value; } });
+Object.defineProperty(globalThis, "persistSQLiteToIndexedDB", { configurable: true, enumerable: true, get: () => persistSQLiteToIndexedDB, set: value => { persistSQLiteToIndexedDB = value; } });
+Object.defineProperty(globalThis, "loadBinaryFromIndexedDB", { configurable: true, enumerable: true, get: () => loadBinaryFromIndexedDB, set: value => { loadBinaryFromIndexedDB = value; } });
+Object.defineProperty(globalThis, "deleteIndexedDBKey", { configurable: true, enumerable: true, get: () => deleteIndexedDBKey, set: value => { deleteIndexedDBKey = value; } });
+Object.defineProperty(globalThis, "queryAll", { configurable: true, enumerable: true, get: () => queryAll, set: value => { queryAll = value; } });
+Object.defineProperty(globalThis, "getSetting", { configurable: true, enumerable: true, get: () => getSetting, set: value => { getSetting = value; } });
+Object.defineProperty(globalThis, "setSetting", { configurable: true, enumerable: true, get: () => setSetting, set: value => { setSetting = value; } });
+Object.defineProperty(globalThis, "updateDatabaseStats", { configurable: true, enumerable: true, get: () => updateDatabaseStats, set: value => { updateDatabaseStats = value; } });
+Object.defineProperty(globalThis, "generateSQLiteBackupFileObject", { configurable: true, enumerable: true, get: () => generateSQLiteBackupFileObject, set: value => { generateSQLiteBackupFileObject = value; } });
+Object.defineProperty(globalThis, "downloadLocalSQLiteBackup", { configurable: true, enumerable: true, get: () => downloadLocalSQLiteBackup, set: value => { downloadLocalSQLiteBackup = value; } });
+Object.defineProperty(globalThis, "downloadIndividualSQLiteDatabase", { configurable: true, enumerable: true, get: () => downloadIndividualSQLiteDatabase, set: value => { downloadIndividualSQLiteDatabase = value; } });
+Object.defineProperty(globalThis, "triggerBlobDownload", { configurable: true, enumerable: true, get: () => triggerBlobDownload, set: value => { triggerBlobDownload = value; } });
+Object.defineProperty(globalThis, "requestRestoreDatabase", { configurable: true, enumerable: true, get: () => requestRestoreDatabase, set: value => { requestRestoreDatabase = value; } });
+Object.defineProperty(globalThis, "restoreDatabaseFromDrive", { configurable: true, enumerable: true, get: () => restoreDatabaseFromDrive, set: value => { restoreDatabaseFromDrive = value; } });
+Object.defineProperty(globalThis, "handleRestoreSQLiteFile", { configurable: true, enumerable: true, get: () => handleRestoreSQLiteFile, set: value => { handleRestoreSQLiteFile = value; } });
+Object.defineProperty(globalThis, "requestWipeDatabase", { configurable: true, enumerable: true, get: () => requestWipeDatabase, set: value => { requestWipeDatabase = value; } });
