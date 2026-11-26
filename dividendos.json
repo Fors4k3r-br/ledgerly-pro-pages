@@ -1,10 +1,10 @@
 {
   "status": "ok",
-  "ultima_execucao": "2026-11-26T20:22:38.937596170Z",
-  "atualizado_em": "2026-11-26T20:22:38.937596170Z",
-  "total_ativos": 87,
-  "total_proventos": 93,
-  "novos_registros": 93,
+  "ultima_execucao": "2026-11-26T23:42:15.976407664Z",
+  "atualizado_em": "2026-11-26T23:42:15.976407664Z",
+  "total_ativos": 88,
+  "total_proventos": 94,
+  "novos_registros": 1,
   "registros_atualizados": 0,
   "erro": null,
   "acoes": {
@@ -380,6 +380,15 @@
         "data_com": "08/10/2026",
         "data_ex": "09/10/2026",
         "pagamento": "23/11/2026"
+      }
+    ],
+    "INHF11": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,200000",
+        "data_com": "30/10/2026",
+        "data_ex": "03/11/2026",
+        "pagamento": "16/11/2026"
       }
     ],
     "ITUB3": [
