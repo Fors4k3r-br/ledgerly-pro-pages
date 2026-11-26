@@ -166,3 +166,19 @@ function renderProventos() {
   renderProvMonthlyChart(rows);
   if (window.lucide) lucide.createIcons();
 }
+
+// Ponte de compatibilidade: mantém os nomes públicos acessíveis ao HTML e aos demais módulos.
+Object.defineProperty(globalThis, "PROV_TIPOS", { configurable: true, enumerable: true, get: () => PROV_TIPOS });
+Object.defineProperty(globalThis, "parseMoneyField", { configurable: true, enumerable: true, get: () => parseMoneyField, set: value => { parseMoneyField = value; } });
+Object.defineProperty(globalThis, "isoToBR", { configurable: true, enumerable: true, get: () => isoToBR });
+Object.defineProperty(globalThis, "todayISO", { configurable: true, enumerable: true, get: () => todayISO, set: value => { todayISO = value; } });
+Object.defineProperty(globalThis, "provAutoTax", { configurable: true, enumerable: true, get: () => provAutoTax, set: value => { provAutoTax = value; } });
+Object.defineProperty(globalThis, "onProvTickerChange", { configurable: true, enumerable: true, get: () => onProvTickerChange, set: value => { onProvTickerChange = value; } });
+Object.defineProperty(globalThis, "onProvCorretoraChange", { configurable: true, enumerable: true, get: () => onProvCorretoraChange, set: value => { onProvCorretoraChange = value; } });
+Object.defineProperty(globalThis, "saveProvento", { configurable: true, enumerable: true, get: () => saveProvento, set: value => { saveProvento = value; } });
+Object.defineProperty(globalThis, "openProvSheet", { configurable: true, enumerable: true, get: () => openProvSheet, set: value => { openProvSheet = value; } });
+Object.defineProperty(globalThis, "closeProvSheet", { configurable: true, enumerable: true, get: () => closeProvSheet, set: value => { closeProvSheet = value; } });
+Object.defineProperty(globalThis, "provChart", { configurable: true, enumerable: true, get: () => provChart, set: value => { provChart = value; } });
+Object.defineProperty(globalThis, "renderProvMonthlyChart", { configurable: true, enumerable: true, get: () => renderProvMonthlyChart, set: value => { renderProvMonthlyChart = value; } });
+Object.defineProperty(globalThis, "deleteProvento", { configurable: true, enumerable: true, get: () => deleteProvento, set: value => { deleteProvento = value; } });
+Object.defineProperty(globalThis, "renderProventos", { configurable: true, enumerable: true, get: () => renderProventos, set: value => { renderProventos = value; } });
