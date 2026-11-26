@@ -1,0 +1,837 @@
+{
+  "status": "ok",
+  "ultima_execucao": "2026-11-26T20:22:38.937596170Z",
+  "atualizado_em": "2026-11-26T20:22:38.937596170Z",
+  "total_ativos": 87,
+  "total_proventos": 93,
+  "novos_registros": 93,
+  "registros_atualizados": 0,
+  "erro": null,
+  "acoes": {
+    "A1GI34": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,088878",
+        "data_com": "02/10/2026",
+        "data_ex": "05/10/2026",
+        "pagamento": "04/11/2026"
+      }
+    ],
+    "A1PD34": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,258317",
+        "data_com": "29/09/2026",
+        "data_ex": "30/09/2026",
+        "pagamento": "13/11/2026"
+      }
+    ],
+    "ACNB34": [
+      {
+        "tipo": "Dividendo",
+        "valor": "6,320335",
+        "data_com": "09/10/2026",
+        "data_ex": "13/10/2026",
+        "pagamento": "25/11/2026"
+      }
+    ],
+    "AGRO3": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,301158",
+        "data_com": "21/10/2026",
+        "data_ex": "22/10/2026",
+        "pagamento": "16/11/2026"
+      }
+    ],
+    "ALLD3": [
+      {
+        "tipo": "JCP",
+        "valor": "0,625251",
+        "data_com": "05/10/2026",
+        "data_ex": "06/10/2026",
+        "pagamento": "12/11/2026"
+      }
+    ],
+    "ALOS3": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,291919",
+        "data_com": "22/10/2026",
+        "data_ex": "23/10/2026",
+        "pagamento": "04/11/2026"
+      }
+    ],
+    "ATTB34": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,317357",
+        "data_com": "08/10/2026",
+        "data_ex": "09/10/2026",
+        "pagamento": "11/11/2026"
+      }
+    ],
+    "AXPB34": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,328055",
+        "data_com": "08/10/2026",
+        "data_ex": "09/10/2026",
+        "pagamento": "19/11/2026"
+      }
+    ],
+    "B1TI34": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,823751",
+        "data_com": "30/09/2026",
+        "data_ex": "01/10/2026",
+        "pagamento": "18/11/2026"
+      }
+    ],
+    "BBDC3": [
+      {
+        "tipo": "JCP",
+        "valor": "0,017250",
+        "data_com": "01/10/2026",
+        "data_ex": "02/10/2026",
+        "pagamento": "03/11/2026"
+      }
+    ],
+    "BBDC4": [
+      {
+        "tipo": "JCP",
+        "valor": "0,018975",
+        "data_com": "01/10/2026",
+        "data_ex": "02/10/2026",
+        "pagamento": "03/11/2026"
+      }
+    ],
+    "BEES3": [
+      {
+        "tipo": "JCP",
+        "valor": "0,028777",
+        "data_com": "01/10/2026",
+        "data_ex": "02/10/2026",
+        "pagamento": "03/11/2026"
+      }
+    ],
+    "BEES4": [
+      {
+        "tipo": "JCP",
+        "valor": "0,028777",
+        "data_com": "01/10/2026",
+        "data_ex": "02/10/2026",
+        "pagamento": "03/11/2026"
+      }
+    ],
+    "BILB34": [
+      {
+        "tipo": "Dividendo",
+        "valor": "1,704055",
+        "data_com": "09/10/2026",
+        "data_ex": "13/10/2026",
+        "pagamento": "05/11/2026"
+      }
+    ],
+    "BMOB3": [
+      {
+        "tipo": "JCP",
+        "valor": "0,191782",
+        "data_com": "17/11/2026",
+        "data_ex": "18/11/2026",
+        "pagamento": "30/11/2026"
+      }
+    ],
+    "BMYB34": [
+      {
+        "tipo": "Dividendo",
+        "valor": "2,150228",
+        "data_com": "01/10/2026",
+        "data_ex": "02/10/2026",
+        "pagamento": "11/11/2026"
+      }
+    ],
+    "BOXP34": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,243977",
+        "data_com": "28/09/2026",
+        "data_ex": "29/09/2026",
+        "pagamento": "06/11/2026"
+      }
+    ],
+    "BRAP3": [
+      {
+        "tipo": "JCP",
+        "valor": "0,585274",
+        "data_com": "11/11/2026",
+        "data_ex": "12/11/2026",
+        "pagamento": "23/11/2026"
+      },
+      {
+        "tipo": "Dividendo",
+        "valor": "0,181554",
+        "data_com": "11/11/2026",
+        "data_ex": "12/11/2026",
+        "pagamento": "23/11/2026"
+      }
+    ],
+    "BRAP4": [
+      {
+        "tipo": "JCP",
+        "valor": "0,643802",
+        "data_com": "11/11/2026",
+        "data_ex": "12/11/2026",
+        "pagamento": "23/11/2026"
+      },
+      {
+        "tipo": "Dividendo",
+        "valor": "0,199710",
+        "data_com": "11/11/2026",
+        "data_ex": "12/11/2026",
+        "pagamento": "23/11/2026"
+      }
+    ],
+    "BRBI11": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,120000",
+        "data_com": "12/11/2026",
+        "data_ex": "13/11/2026",
+        "pagamento": "26/11/2026"
+      }
+    ],
+    "C1PB34": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,861794",
+        "data_com": "29/09/2026",
+        "data_ex": "30/09/2026",
+        "pagamento": "06/11/2026"
+      }
+    ],
+    "CMCS34": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,226821",
+        "data_com": "05/10/2026",
+        "data_ex": "06/10/2026",
+        "pagamento": "04/11/2026"
+      }
+    ],
+    "CPFE3": [
+      {
+        "tipo": "Dividendo",
+        "valor": "1,128223",
+        "data_com": "29/04/2026",
+        "data_ex": "30/04/2026",
+        "pagamento": "23/11/2026"
+      }
+    ],
+    "CSMG3": [
+      {
+        "tipo": "JCP",
+        "valor": "0,255646",
+        "data_com": "21/09/2026",
+        "data_ex": "22/09/2026",
+        "pagamento": "09/11/2026"
+      }
+    ],
+    "CURY3": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,649250",
+        "data_com": "13/11/2026",
+        "data_ex": "16/11/2026",
+        "pagamento": "30/11/2026"
+      }
+    ],
+    "CXSE3": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,350000",
+        "data_com": "03/11/2026",
+        "data_ex": "04/11/2026",
+        "pagamento": "17/11/2026"
+      }
+    ],
+    "D1RI34": [
+      {
+        "tipo": "Dividendo",
+        "valor": "1,418899",
+        "data_com": "07/10/2026",
+        "data_ex": "08/10/2026",
+        "pagamento": "06/11/2026"
+      }
+    ],
+    "D2OX34": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,354960",
+        "data_com": "28/09/2026",
+        "data_ex": "29/09/2026",
+        "pagamento": "06/11/2026"
+      }
+    ],
+    "DEEC34": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,188492",
+        "data_com": "28/09/2026",
+        "data_ex": "29/09/2026",
+        "pagamento": "13/11/2026"
+      }
+    ],
+    "DEXP3": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,167077",
+        "data_com": "13/11/2026",
+        "data_ex": "16/11/2026",
+        "pagamento": "26/11/2026"
+      }
+    ],
+    "DEXP4": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,167811",
+        "data_com": "13/11/2026",
+        "data_ex": "16/11/2026",
+        "pagamento": "26/11/2026"
+      }
+    ],
+    "DGCO34": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,088878",
+        "data_com": "02/10/2026",
+        "data_ex": "05/10/2026",
+        "pagamento": "04/11/2026"
+      }
+    ],
+    "DHER34": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,049755",
+        "data_com": "28/09/2026",
+        "data_ex": "29/09/2026",
+        "pagamento": "06/11/2026"
+      }
+    ],
+    "E1IX34": [
+      {
+        "tipo": "Dividendo",
+        "valor": "1,542985",
+        "data_com": "05/10/2026",
+        "data_ex": "06/10/2026",
+        "pagamento": "06/11/2026"
+      }
+    ],
+    "EZTC3": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,073145",
+        "data_com": "12/11/2026",
+        "data_ex": "13/11/2026",
+        "pagamento": "30/11/2026"
+      }
+    ],
+    "G1LL34": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,056500",
+        "data_com": "01/10/2026",
+        "data_ex": "02/10/2026",
+        "pagamento": "06/11/2026"
+      }
+    ],
+    "G1MI34": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,718007",
+        "data_com": "08/10/2026",
+        "data_ex": "09/10/2026",
+        "pagamento": "06/11/2026"
+      }
+    ],
+    "GDBR34": [
+      {
+        "tipo": "Dividendo",
+        "valor": "5,387583",
+        "data_com": "08/10/2026",
+        "data_ex": "09/10/2026",
+        "pagamento": "25/11/2026"
+      }
+    ],
+    "GPSI34": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,611268",
+        "data_com": "05/10/2026",
+        "data_ex": "06/10/2026",
+        "pagamento": "04/11/2026"
+      }
+    ],
+    "H1RL34": [
+      {
+        "tipo": "Dividendo",
+        "valor": "1,032867",
+        "data_com": "08/10/2026",
+        "data_ex": "09/10/2026",
+        "pagamento": "23/11/2026"
+      }
+    ],
+    "ITUB3": [
+      {
+        "tipo": "JCP",
+        "valor": "0,018182",
+        "data_com": "30/09/2026",
+        "data_ex": "01/10/2026",
+        "pagamento": "03/11/2026"
+      }
+    ],
+    "ITUB4": [
+      {
+        "tipo": "JCP",
+        "valor": "0,018182",
+        "data_com": "30/09/2026",
+        "data_ex": "01/10/2026",
+        "pagamento": "03/11/2026"
+      }
+    ],
+    "JHSF3": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,069156",
+        "data_com": "28/10/2026",
+        "data_ex": "29/10/2026",
+        "pagamento": "09/11/2026"
+      }
+    ],
+    "JPMC34": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,574676",
+        "data_com": "02/10/2026",
+        "data_ex": "05/10/2026",
+        "pagamento": "06/11/2026"
+      }
+    ],
+    "KLBN11": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,227986",
+        "data_com": "15/12/2025",
+        "data_ex": "16/12/2025",
+        "pagamento": "12/11/2026"
+      }
+    ],
+    "KLBN3": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,045597",
+        "data_com": "15/12/2025",
+        "data_ex": "16/12/2025",
+        "pagamento": "12/11/2026"
+      }
+    ],
+    "KLBN4": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,045597",
+        "data_com": "15/12/2025",
+        "data_ex": "16/12/2025",
+        "pagamento": "12/11/2026"
+      }
+    ],
+    "L1NC34": [
+      {
+        "tipo": "Dividendo",
+        "valor": "1,551259",
+        "data_com": "08/10/2026",
+        "data_ex": "09/10/2026",
+        "pagamento": "06/11/2026"
+      }
+    ],
+    "LAVV3": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,358177",
+        "data_com": "02/02/2026",
+        "data_ex": "03/02/2026",
+        "pagamento": "13/11/2026"
+      }
+    ],
+    "LOGG3": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,994671",
+        "data_com": "13/11/2026",
+        "data_ex": "16/11/2026",
+        "pagamento": "30/11/2026"
+      }
+    ],
+    "M1MC34": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,215659",
+        "data_com": "29/09/2026",
+        "data_ex": "30/09/2026",
+        "pagamento": "19/11/2026"
+      }
+    ],
+    "M2RV34": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,021101",
+        "data_com": "07/10/2026",
+        "data_ex": "08/10/2026",
+        "pagamento": "05/11/2026"
+      }
+    ],
+    "MDIA3": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,030000",
+        "data_com": "19/11/2026",
+        "data_ex": "23/11/2026",
+        "pagamento": "30/11/2026"
+      }
+    ],
+    "MSCD34": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,097058",
+        "data_com": "08/10/2026",
+        "data_ex": "09/10/2026",
+        "pagamento": "16/11/2026"
+      }
+    ],
+    "MTRE3": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,037986",
+        "data_com": "13/11/2026",
+        "data_ex": "16/11/2026",
+        "pagamento": "27/11/2026"
+      }
+    ],
+    "MUTC34": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,087612",
+        "data_com": "09/10/2026",
+        "data_ex": "13/10/2026",
+        "pagamento": "05/11/2026"
+      }
+    ],
+    "N1TA34": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,128819",
+        "data_com": "07/10/2026",
+        "data_ex": "08/10/2026",
+        "pagamento": "04/11/2026"
+      }
+    ],
+    "N1UE34": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,162803",
+        "data_com": "28/09/2026",
+        "data_ex": "29/09/2026",
+        "pagamento": "16/11/2026"
+      }
+    ],
+    "N2LY34": [
+      {
+        "tipo": "Dividendo",
+        "valor": "2,586238",
+        "data_com": "28/09/2026",
+        "data_ex": "29/09/2026",
+        "pagamento": "06/11/2026"
+      }
+    ],
+    "PETR3": [
+      {
+        "tipo": "JCP",
+        "valor": "0,674071",
+        "data_com": "21/08/2026",
+        "data_ex": "24/08/2026",
+        "pagamento": "23/11/2026"
+      }
+    ],
+    "PETR4": [
+      {
+        "tipo": "JCP",
+        "valor": "0,674071",
+        "data_com": "21/08/2026",
+        "data_ex": "24/08/2026",
+        "pagamento": "23/11/2026"
+      }
+    ],
+    "PNCS34": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,337256",
+        "data_com": "09/10/2026",
+        "data_ex": "13/10/2026",
+        "pagamento": "11/11/2026"
+      }
+    ],
+    "PSSA3": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,886101",
+        "data_com": "31/03/2026",
+        "data_ex": "01/04/2026",
+        "pagamento": "27/11/2026"
+      }
+    ],
+    "R1IN34": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,162803",
+        "data_com": "28/09/2026",
+        "data_ex": "29/09/2026",
+        "pagamento": "16/11/2026"
+      }
+    ],
+    "RAIL3": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,108402",
+        "data_com": "28/04/2026",
+        "data_ex": "29/04/2026",
+        "pagamento": "30/11/2026"
+      }
+    ],
+    "RANI3": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,061094",
+        "data_com": "09/11/2026",
+        "data_ex": "10/11/2026",
+        "pagamento": "19/11/2026"
+      }
+    ],
+    "RENT3": [
+      {
+        "tipo": "JCP",
+        "valor": "0,556580",
+        "data_com": "25/09/2026",
+        "data_ex": "28/09/2026",
+        "pagamento": "18/11/2026"
+      }
+    ],
+    "RENT4": [
+      {
+        "tipo": "JCP",
+        "valor": "0,556580",
+        "data_com": "25/09/2026",
+        "data_ex": "28/09/2026",
+        "pagamento": "18/11/2026"
+      }
+    ],
+    "S1NN34": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,307844",
+        "data_com": "30/09/2026",
+        "data_ex": "01/10/2026",
+        "pagamento": "12/11/2026"
+      }
+    ],
+    "S1YK34": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,152247",
+        "data_com": "28/09/2026",
+        "data_ex": "29/09/2026",
+        "pagamento": "06/11/2026"
+      }
+    ],
+    "SANB11": [
+      {
+        "tipo": "JCP",
+        "valor": "0,401004",
+        "data_com": "20/10/2026",
+        "data_ex": "21/10/2026",
+        "pagamento": "09/11/2026"
+      }
+    ],
+    "SANB3": [
+      {
+        "tipo": "JCP",
+        "valor": "0,190954",
+        "data_com": "20/10/2026",
+        "data_ex": "21/10/2026",
+        "pagamento": "09/11/2026"
+      }
+    ],
+    "SANB4": [
+      {
+        "tipo": "JCP",
+        "valor": "0,210050",
+        "data_com": "20/10/2026",
+        "data_ex": "21/10/2026",
+        "pagamento": "09/11/2026"
+      }
+    ],
+    "SAUD3": [
+      {
+        "tipo": "JCP",
+        "valor": "0,078674",
+        "data_com": "30/06/2026",
+        "data_ex": "01/07/2026",
+        "pagamento": "30/11/2026"
+      }
+    ],
+    "TAEE11": [
+      {
+        "tipo": "JCP",
+        "valor": "0,359475",
+        "data_com": "14/08/2026",
+        "data_ex": "17/08/2026",
+        "pagamento": "26/11/2026"
+      },
+      {
+        "tipo": "Dividendo",
+        "valor": "0,240764",
+        "data_com": "14/08/2026",
+        "data_ex": "17/08/2026",
+        "pagamento": "26/11/2026"
+      }
+    ],
+    "TAEE3": [
+      {
+        "tipo": "JCP",
+        "valor": "0,119825",
+        "data_com": "14/08/2026",
+        "data_ex": "17/08/2026",
+        "pagamento": "26/11/2026"
+      },
+      {
+        "tipo": "Dividendo",
+        "valor": "0,080255",
+        "data_com": "14/08/2026",
+        "data_ex": "17/08/2026",
+        "pagamento": "26/11/2026"
+      }
+    ],
+    "TAEE4": [
+      {
+        "tipo": "JCP",
+        "valor": "0,119825",
+        "data_com": "14/08/2026",
+        "data_ex": "17/08/2026",
+        "pagamento": "26/11/2026"
+      },
+      {
+        "tipo": "Dividendo",
+        "valor": "0,080255",
+        "data_com": "14/08/2026",
+        "data_ex": "17/08/2026",
+        "pagamento": "26/11/2026"
+      }
+    ],
+    "TGMA3": [
+      {
+        "tipo": "JCP",
+        "valor": "0,270000",
+        "data_com": "09/11/2026",
+        "data_ex": "10/11/2026",
+        "pagamento": "19/11/2026"
+      },
+      {
+        "tipo": "Dividendo",
+        "valor": "0,800000",
+        "data_com": "09/11/2026",
+        "data_ex": "10/11/2026",
+        "pagamento": "19/11/2026"
+      }
+    ],
+    "VERZ34": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,406614",
+        "data_com": "07/10/2026",
+        "data_ex": "08/10/2026",
+        "pagamento": "06/11/2026"
+      }
+    ],
+    "VLID3": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,179557",
+        "data_com": "16/11/2026",
+        "data_ex": "17/11/2026",
+        "pagamento": "30/11/2026"
+      }
+    ],
+    "VTRU3": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,533202",
+        "data_com": "18/11/2026",
+        "data_ex": "19/11/2026",
+        "pagamento": "30/11/2026"
+      }
+    ],
+    "W1PP34": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,478354",
+        "data_com": "07/10/2026",
+        "data_ex": "08/10/2026",
+        "pagamento": "06/11/2026"
+      }
+    ],
+    "WIZC3": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,312637",
+        "data_com": "28/04/2026",
+        "data_ex": "29/04/2026",
+        "pagamento": "23/11/2026"
+      }
+    ],
+    "WLMM3": [
+      {
+        "tipo": "JCP",
+        "valor": "0,260423",
+        "data_com": "09/10/2026",
+        "data_ex": "13/10/2026",
+        "pagamento": "05/11/2026"
+      }
+    ],
+    "WLMM4": [
+      {
+        "tipo": "JCP",
+        "valor": "0,260423",
+        "data_com": "09/10/2026",
+        "data_ex": "13/10/2026",
+        "pagamento": "05/11/2026"
+      }
+    ],
+    "XRXB34": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,084484",
+        "data_com": "29/09/2026",
+        "data_ex": "30/09/2026",
+        "pagamento": "11/11/2026"
+      }
+    ],
+    "Z1BH34": [
+      {
+        "tipo": "Dividendo",
+        "valor": "0,211014",
+        "data_com": "28/09/2026",
+        "data_ex": "29/09/2026",
+        "pagamento": "06/11/2026"
+      }
+    ]
+  }
+}
