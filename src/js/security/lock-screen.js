@@ -321,3 +321,24 @@ async function triggerBiometricUnlock() {
     }
   }
 }
+
+// Ponte de compatibilidade: mantém os nomes públicos acessíveis ao HTML e aos demais módulos.
+Object.defineProperty(globalThis, "sha256Hash", { configurable: true, enumerable: true, get: () => sha256Hash, set: value => { sha256Hash = value; } });
+Object.defineProperty(globalThis, "PIN_ITERATIONS", { configurable: true, enumerable: true, get: () => PIN_ITERATIONS });
+Object.defineProperty(globalThis, "hexOf", { configurable: true, enumerable: true, get: () => hexOf });
+Object.defineProperty(globalThis, "bytesOf", { configurable: true, enumerable: true, get: () => bytesOf });
+Object.defineProperty(globalThis, "pbkdf2Hex", { configurable: true, enumerable: true, get: () => pbkdf2Hex, set: value => { pbkdf2Hex = value; } });
+Object.defineProperty(globalThis, "hashPin", { configurable: true, enumerable: true, get: () => hashPin, set: value => { hashPin = value; } });
+Object.defineProperty(globalThis, "verifyPin", { configurable: true, enumerable: true, get: () => verifyPin, set: value => { verifyPin = value; } });
+Object.defineProperty(globalThis, "pinLockRemaining", { configurable: true, enumerable: true, get: () => pinLockRemaining, set: value => { pinLockRemaining = value; } });
+Object.defineProperty(globalThis, "pinRegisterFail", { configurable: true, enumerable: true, get: () => pinRegisterFail, set: value => { pinRegisterFail = value; } });
+Object.defineProperty(globalThis, "pinResetFails", { configurable: true, enumerable: true, get: () => pinResetFails, set: value => { pinResetFails = value; } });
+Object.defineProperty(globalThis, "handlePinManagementSubmit", { configurable: true, enumerable: true, get: () => handlePinManagementSubmit, set: value => { handlePinManagementSubmit = value; } });
+Object.defineProperty(globalThis, "toggleSmartphoneBiometrics", { configurable: true, enumerable: true, get: () => toggleSmartphoneBiometrics, set: value => { toggleSmartphoneBiometrics = value; } });
+Object.defineProperty(globalThis, "disableAppSecurity", { configurable: true, enumerable: true, get: () => disableAppSecurity, set: value => { disableAppSecurity = value; } });
+Object.defineProperty(globalThis, "updateSecurityUIState", { configurable: true, enumerable: true, get: () => updateSecurityUIState, set: value => { updateSecurityUIState = value; } });
+Object.defineProperty(globalThis, "checkLockScreenOnStartup", { configurable: true, enumerable: true, get: () => checkLockScreenOnStartup, set: value => { checkLockScreenOnStartup = value; } });
+Object.defineProperty(globalThis, "lockAppNow", { configurable: true, enumerable: true, get: () => lockAppNow, set: value => { lockAppNow = value; } });
+Object.defineProperty(globalThis, "showLockScreen", { configurable: true, enumerable: true, get: () => showLockScreen, set: value => { showLockScreen = value; } });
+Object.defineProperty(globalThis, "handleUnlockWithPin", { configurable: true, enumerable: true, get: () => handleUnlockWithPin, set: value => { handleUnlockWithPin = value; } });
+Object.defineProperty(globalThis, "triggerBiometricUnlock", { configurable: true, enumerable: true, get: () => triggerBiometricUnlock, set: value => { triggerBiometricUnlock = value; } });

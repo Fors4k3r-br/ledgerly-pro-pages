@@ -79,3 +79,11 @@ globalThis.gzipBytes = gzipBytes;
 globalThis.sha256Bytes = sha256Bytes;
 globalThis.sealDb = sealDb;
 globalThis.openDb = openDb;
+
+// Ponte de compatibilidade: mantém os nomes públicos acessíveis ao HTML e aos demais módulos.
+Object.defineProperty(globalThis, "toHex", { configurable: true, enumerable: true, get: () => toHex });
+Object.defineProperty(globalThis, "deriveSyncKey", { configurable: true, enumerable: true, get: () => deriveSyncKey, set: value => { deriveSyncKey = value; } });
+Object.defineProperty(globalThis, "gzipBytes", { configurable: true, enumerable: true, get: () => gzipBytes, set: value => { gzipBytes = value; } });
+Object.defineProperty(globalThis, "sha256Bytes", { configurable: true, enumerable: true, get: () => sha256Bytes, set: value => { sha256Bytes = value; } });
+Object.defineProperty(globalThis, "sealDb", { configurable: true, enumerable: true, get: () => sealDb, set: value => { sealDb = value; } });
+Object.defineProperty(globalThis, "openDb", { configurable: true, enumerable: true, get: () => openDb, set: value => { openDb = value; } });
