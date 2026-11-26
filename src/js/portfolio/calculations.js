@@ -91,3 +91,6 @@ export function calculateConsolidatedPositions({ ops = [], quotesRows = [], last
 
 // Disponibiliza a função síncrona para o script principal clássico do aplicativo.
 globalThis.calculateConsolidatedPositions = calculateConsolidatedPositions;
+
+// Ponte de compatibilidade: mantém os nomes públicos acessíveis ao HTML e aos demais módulos.
+Object.defineProperty(globalThis, "calculateConsolidatedPositions", { configurable: true, enumerable: true, get: () => calculateConsolidatedPositions, set: value => { calculateConsolidatedPositions = value; } });

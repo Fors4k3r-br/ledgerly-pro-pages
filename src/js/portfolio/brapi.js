@@ -135,3 +135,12 @@ async function syncAllQuotesFromBrapi(silent = false, isTestFromConfig = false) 
     if (btnEl) btnEl.disabled = false;
   }
 }
+
+// Ponte de compatibilidade: mantém os nomes públicos acessíveis ao HTML e aos demais módulos.
+Object.defineProperty(globalThis, "renderApiStatus", { configurable: true, enumerable: true, get: () => renderApiStatus, set: value => { renderApiStatus = value; } });
+Object.defineProperty(globalThis, "loadBrapiSettingsToUI", { configurable: true, enumerable: true, get: () => loadBrapiSettingsToUI, set: value => { loadBrapiSettingsToUI = value; } });
+Object.defineProperty(globalThis, "toggleBrapiTokenVisibility", { configurable: true, enumerable: true, get: () => toggleBrapiTokenVisibility, set: value => { toggleBrapiTokenVisibility = value; } });
+Object.defineProperty(globalThis, "saveBrapiConfig", { configurable: true, enumerable: true, get: () => saveBrapiConfig, set: value => { saveBrapiConfig = value; } });
+Object.defineProperty(globalThis, "toggleBrapiAutoSync", { configurable: true, enumerable: true, get: () => toggleBrapiAutoSync, set: value => { toggleBrapiAutoSync = value; } });
+Object.defineProperty(globalThis, "testAndSyncBrapiConnection", { configurable: true, enumerable: true, get: () => testAndSyncBrapiConnection, set: value => { testAndSyncBrapiConnection = value; } });
+Object.defineProperty(globalThis, "syncAllQuotesFromBrapi", { configurable: true, enumerable: true, get: () => syncAllQuotesFromBrapi, set: value => { syncAllQuotesFromBrapi = value; } });
