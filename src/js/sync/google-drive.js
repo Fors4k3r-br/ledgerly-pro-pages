@@ -278,7 +278,7 @@ export async function ensureKey(remote, token) {
   return { kd };
 }
 
-async function syncNow(mode = true) {
+export async function syncNow(mode = true) {
   // mode: true = toque do usuário (com avisos) | false = automático (sem login) | 'start' = ao abrir o app | 'tap' = primeiro toque após expirar o login
   const manual = mode === true;
   const st0 = syncState();
@@ -464,7 +464,7 @@ async function refreshConflictInfo() {
   }
   renderSyncCard();
 }
-async function restoreConflictBackup() {
+export async function restoreConflictBackup() {
   const list = await listConflictBackups();
   if (!list.length) return;
   let chosen = list[0];
@@ -502,13 +502,13 @@ async function restoreConflictBackup() {
     if (syncState().connected) await syncNow(true);
   } catch (e) { showToast('Falha ao restaurar: ' + ((e && e.message) || e), 'error'); }
 }
-async function syncConnect() {
+export async function syncConnect() {
   saveSyncState({ connected: true, needsLogin: false }); syncPending = true;
   const ok = await syncNow(true);
   if (!ok) { const kd = await keyGet().catch(() => null); if (!kd) saveSyncState({ connected: false }); }
   updateConnectionBadge(); renderSyncCard();
 }
-async function syncDisconnect() {
+export async function syncDisconnect() {
   const r = await ledgerlyModal({ title: 'Desconectar do Google Drive?', message: 'Os dados continuam neste aparelho e a cópia na nuvem não é apagada. Para reconectar você precisará da senha de sincronização.',
     buttons: [{ label: 'Desconectar', value: 'ok', primary: true }, { label: 'Cancelar', value: 'cancel' }] });
   if (r.value !== 'ok') return;
@@ -516,7 +516,7 @@ async function syncDisconnect() {
   updateConnectionBadge(); renderSyncCard(); showToast('Sincronização desativada neste aparelho.', 'info');
 }
 function sideLabel(side) { return side === 'nuvem' ? 'versão da nuvem' : side === 'limpeza' ? 'cópia de antes de limpar os dados' : 'versão deste aparelho'; }
-function setConflictMode(mode) { saveSyncState({ conflictMode: mode === 'manual' ? 'manual' : 'auto' }); renderSyncCard(); }
+export function setConflictMode(mode) { saveSyncState({ conflictMode: mode === 'manual' ? 'manual' : 'auto' }); renderSyncCard(); }
 export async function disconnectSyncLocal() {
   saveSyncState({ connected: false, baseRev: null, syncedHash: null, fileId: null, needsLogin: false, localChangedAt: null, hasLocalUserChanges: false, recoveredFromEmptyIdb: false });
   syncConflict = false; syncCloudMissing = false; clearTimeout(syncTimer);
@@ -550,7 +550,7 @@ async function performDeleteDatabase(scope) {
   await disconnectSyncLocal();
   if (scope !== 'cloud') await deleteLocalDb();
 }
-async function requestDeleteDatabase() {
+export async function requestDeleteDatabase() {
   const r = await ledgerlyModal({ title: 'Excluir banco de dados', message: 'O que você quer excluir?',
     buttons: [{ label: 'Somente neste aparelho', value: 'local' }, { label: 'Somente a nuvem (Google Drive)', value: 'cloud' }, { label: 'Tudo (aparelho e nuvem)', value: 'all' }, { label: 'Cancelar', value: 'cancel' }] });
   if (r.value === 'cancel') return;
@@ -674,7 +674,7 @@ function renderSyncStatusPopover() {
   if (pop && !pop.classList.contains('hidden')) pop.setAttribute('data-status', visual.key);
 }
 export function updateConnectionBadge() { renderSyncStatusPopover(); }
-function toggleSyncStatusPanel(force) {
+export function toggleSyncStatusPanel(force) {
   const panel = document.getElementById('syncStatusPopover');
   const badge = document.getElementById('dbStatusBadge');
   if (!panel || !badge) return;
@@ -684,7 +684,7 @@ function toggleSyncStatusPanel(force) {
   badge.setAttribute('aria-expanded', String(open));
   if (open) { renderSyncStatusPopover(); if (window.lucide) lucide.createIcons(); }
 }
-function handleSyncStatusAction() {
+export function handleSyncStatusAction() {
   const st = syncState();
   if (!st.connected) { toggleSyncStatusPanel(false); switchTab('sync'); return; }
   if (!navigator.onLine) { showToast('Sem internet. A sincronização será retomada quando a conexão voltar.', 'info'); return; }
@@ -710,16 +710,4 @@ registerFreshInstallResetHandler(async () => {
 });
 registerEmptyIdbRecoveryHandler(() => {
   saveSyncState({ recoveredFromEmptyIdb: true, hasLocalUserChanges: false });
-});
-
-// Compatibilidade apenas para handlers inline no HTML/templates.
-Object.assign(globalThis, {
-  handleSyncStatusAction,
-  requestDeleteDatabase,
-  restoreConflictBackup,
-  setConflictMode,
-  syncConnect,
-  syncDisconnect,
-  syncNow,
-  toggleSyncStatusPanel
 });
