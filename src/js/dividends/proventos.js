@@ -1,25 +1,20 @@
 // Cadastro, listagem, gráfico mensal e totalização de proventos recebidos.
 
-import { db, isPrivacyMode } from '../core/state.js';
+import { db, isPrivacyMode, allPositionsData } from '../core/state.js';
+import { PROV_TIPOS, autoHideTooltipPlugin, escapeSavedNoteText, formatMoney, formatNumber, formatPercent, isoToBR, todayISO } from '../core/utils.js';
+import { refreshAllViews } from '../core/events.js';
 import { getSetting, persistSQLiteToIndexedDB, queryAll } from '../core/database.js';
-import { escapeSavedNoteText } from '../notes/notes-manager.js';
-import { allPositionsData, autoHideTooltipPlugin, getConsolidatedPositions, refreshAllViews } from '../portfolio/positions.js';
-import { formatMoney, formatNumber, formatPercent, openConfirmDialog, showToast, themeRgb } from '../ui/navigation.js';
+import { getConsolidatedPositions } from '../portfolio/positions.js';
+import { openConfirmDialog, showToast, themeRgb } from '../ui/navigation.js';
 
 // =========================================================================
 // PROVENTOS (dividendos, JCP, rendimentos) vinculados ao ticker de cada ativo
 // =========================================================================
-export const PROV_TIPOS = { DIV: 'Dividendos', JCP: 'JCP', REND: 'Rendimentos', AMORT: 'Amortização', OUTRO: 'Outros' };
 function parseMoneyField(v) {
   const s = String(v || '').trim().replace(/\s/g, '');
   if (!s) return 0;
   const n = s.includes(',') ? parseFloat(s.replace(/\./g, '').replace(',', '.')) : parseFloat(s);
   return isFinite(n) ? n : NaN;
-}
-export const isoToBR = s => { const [y, m, d] = String(s).split('-'); return `${d}/${m}/${y}`; };
-export function todayISO(offsetDays = 0) {
-  const d = new Date(); d.setDate(d.getDate() + offsetDays);
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 function provAutoTax() {
   const imp = document.getElementById('provImposto');
