@@ -1,17 +1,23 @@
 // Cadastro, listagem, gráfico mensal e totalização de proventos recebidos.
 
+import { db, isPrivacyMode } from '../core/state.js';
+import { getSetting, persistSQLiteToIndexedDB, queryAll } from '../core/database.js';
+import { escapeSavedNoteText } from '../notes/notes-manager.js';
+import { allPositionsData, autoHideTooltipPlugin, getConsolidatedPositions, refreshAllViews } from '../portfolio/positions.js';
+import { formatMoney, formatNumber, formatPercent, openConfirmDialog, showToast, themeRgb } from '../ui/navigation.js';
+
 // =========================================================================
 // PROVENTOS (dividendos, JCP, rendimentos) vinculados ao ticker de cada ativo
 // =========================================================================
-const PROV_TIPOS = { DIV: 'Dividendos', JCP: 'JCP', REND: 'Rendimentos', AMORT: 'Amortização', OUTRO: 'Outros' };
+export const PROV_TIPOS = { DIV: 'Dividendos', JCP: 'JCP', REND: 'Rendimentos', AMORT: 'Amortização', OUTRO: 'Outros' };
 function parseMoneyField(v) {
   const s = String(v || '').trim().replace(/\s/g, '');
   if (!s) return 0;
   const n = s.includes(',') ? parseFloat(s.replace(/\./g, '').replace(',', '.')) : parseFloat(s);
   return isFinite(n) ? n : NaN;
 }
-const isoToBR = s => { const [y, m, d] = String(s).split('-'); return `${d}/${m}/${y}`; };
-function todayISO(offsetDays = 0) {
+export const isoToBR = s => { const [y, m, d] = String(s).split('-'); return `${d}/${m}/${y}`; };
+export function todayISO(offsetDays = 0) {
   const d = new Date(); d.setDate(d.getDate() + offsetDays);
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
@@ -100,7 +106,7 @@ function deleteProvento(id) {
     }
   });
 }
-function renderProventos() {
+export function renderProventos() {
   const root = document.getElementById('tab-proventos');
   if (!root || !db) return;
   const esc = escapeSavedNoteText;
@@ -167,18 +173,14 @@ function renderProventos() {
   if (window.lucide) lucide.createIcons();
 }
 
-// Ponte de compatibilidade: mantém os nomes públicos acessíveis ao HTML e aos demais módulos.
-Object.defineProperty(globalThis, "PROV_TIPOS", { configurable: true, enumerable: true, get: () => PROV_TIPOS });
-Object.defineProperty(globalThis, "parseMoneyField", { configurable: true, enumerable: true, get: () => parseMoneyField, set: value => { parseMoneyField = value; } });
-Object.defineProperty(globalThis, "isoToBR", { configurable: true, enumerable: true, get: () => isoToBR });
-Object.defineProperty(globalThis, "todayISO", { configurable: true, enumerable: true, get: () => todayISO, set: value => { todayISO = value; } });
-Object.defineProperty(globalThis, "provAutoTax", { configurable: true, enumerable: true, get: () => provAutoTax, set: value => { provAutoTax = value; } });
-Object.defineProperty(globalThis, "onProvTickerChange", { configurable: true, enumerable: true, get: () => onProvTickerChange, set: value => { onProvTickerChange = value; } });
-Object.defineProperty(globalThis, "onProvCorretoraChange", { configurable: true, enumerable: true, get: () => onProvCorretoraChange, set: value => { onProvCorretoraChange = value; } });
-Object.defineProperty(globalThis, "saveProvento", { configurable: true, enumerable: true, get: () => saveProvento, set: value => { saveProvento = value; } });
-Object.defineProperty(globalThis, "openProvSheet", { configurable: true, enumerable: true, get: () => openProvSheet, set: value => { openProvSheet = value; } });
-Object.defineProperty(globalThis, "closeProvSheet", { configurable: true, enumerable: true, get: () => closeProvSheet, set: value => { closeProvSheet = value; } });
-Object.defineProperty(globalThis, "provChart", { configurable: true, enumerable: true, get: () => provChart, set: value => { provChart = value; } });
-Object.defineProperty(globalThis, "renderProvMonthlyChart", { configurable: true, enumerable: true, get: () => renderProvMonthlyChart, set: value => { renderProvMonthlyChart = value; } });
-Object.defineProperty(globalThis, "deleteProvento", { configurable: true, enumerable: true, get: () => deleteProvento, set: value => { deleteProvento = value; } });
-Object.defineProperty(globalThis, "renderProventos", { configurable: true, enumerable: true, get: () => renderProventos, set: value => { renderProventos = value; } });
+// Compatibilidade apenas para handlers inline no HTML/templates.
+Object.assign(globalThis, {
+  closeProvSheet,
+  deleteProvento,
+  onProvCorretoraChange,
+  onProvTickerChange,
+  openProvSheet,
+  provAutoTax,
+  renderProventos,
+  saveProvento
+});
