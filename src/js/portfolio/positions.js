@@ -2,14 +2,12 @@
 
 import { calculateConsolidatedPositions } from './calculations.js';
 import { setManualSectorClass, classifyTicker, subsetoresDe, setorOptions } from './sectors.js';
-import { db, dailyDb, isPrivacyMode } from '../core/state.js';
-import { fillCorretoraSelects, getSetting, persistSQLiteToIndexedDB, queryAll, rowsFromDatabase, updateDatabaseStats } from '../core/database.js';
-import { renderProventos, todayISO } from '../dividends/proventos.js';
-import { escapeSavedNoteText, renderSavedNotesHistory } from '../notes/notes-manager.js';
-import { renderApiStatus, syncAllQuotesFromBrapi } from './brapi.js';
-import { renderReports } from '../reports/reports-view.js';
+import { db, dailyDb, isPrivacyMode, allPositionsData, setAllPositionsData } from '../core/state.js';
+import { autoHideTooltipPlugin, escapeSavedNoteText, formatMoney, formatNumber, formatPercent, toISODate, todayISO } from '../core/utils.js';
+import { refreshAllViews, registerFreshInstallResetHandler, requestQuotesSync } from '../core/events.js';
+import { getSetting, persistSQLiteToIndexedDB, queryAll, rowsFromDatabase } from '../core/database.js';
 import { isLocalEmpty, syncState } from '../sync/google-drive.js';
-import { formatMoney, formatNumber, formatPercent, ledgerlyModal, renderThemeCard, showToast, switchTab, themeRgb } from '../ui/navigation.js';
+import { ledgerlyModal, showToast, switchTab, themeRgb } from '../ui/navigation.js';
 
 let portfolioChart = null;
 
@@ -78,11 +76,8 @@ export async function captureDailyPortfolioSnapshot() {
   } catch(error) { try { dailyDb.run('ROLLBACK;'); } catch(_) {} console.error('Não foi possível registrar o histórico patrimonial diário:',error); }
 }
 
-export function refreshAllViews() {
-  const positions = getConsolidatedPositions();
-  allPositionsData = positions;
-  fillCorretoraSelects();
-  loadManualClass(); fillSetorSelect(); renderSectorPending(); renderApiStatus();
+export function renderPortfolioOverview(positions) {
+  loadManualClass(); fillSetorSelect(); renderSectorPending();
   const activePositions = positions.filter(p => p.qtdAtual > 0);
 
   // Soma dos KPIs da Carteira
@@ -108,38 +103,14 @@ export function refreshAllViews() {
   renderProfitChart();
   renderOnboarding();
   updateQuotesLabel();
-  renderThemeCard();
-
-
   renderPortfolioChart(activePositions, patrimonioAtual);
   renderPositionsExpandableCards(positions);
-  renderSavedNotesHistory();
-  renderProventos();
-  if (document.getElementById('tab-relatorios') && !document.getElementById('tab-relatorios').classList.contains('hidden')) renderReports();
-  updateDatabaseStats();
-  lucide.createIcons();
 }
 
 // ===== Gráfico de evolução: Investido x Patrimônio =====
 let profitChart = null, lastPortfolio = { patrimonio: 0, investido: 0 };
-let chartTooltipHideMs = 4000;   // balões dos gráficos somem sozinhos depois deste tempo
-// No toque, o balão do Chart.js ficaria aberto até tocar em outro lugar: este plugin o esconde depois de alguns segundos
-export function autoHideTooltipPlugin() {
-  return { id: 'autoHideTooltip',
-    afterEvent(chart, args) {
-      const e = args.event; if (!e || e.type === 'mouseout') return;
-      clearTimeout(chart.$hideTimer);
-      chart.$hideTimer = setTimeout(() => { try { chart.tooltip.setActiveElements([], { x: 0, y: 0 }); chart.setActiveElements([]); chart.update('none'); } catch (_) {} }, chartTooltipHideMs);
-    },
-    beforeDestroy(chart) { clearTimeout(chart.$hideTimer); } };
-}
 const PROFIT_RANGES = ['tudo', '1s', '1m', 'mes', '6m', 'sem', '12m', 'ano'];
 let profitRange = (() => { try { const r = localStorage.getItem('ledgerly_profit_range'); return PROFIT_RANGES.includes(r) ? r : 'tudo'; } catch (_) { return 'tudo'; } })();
-export function toISODate(s) {
-  s = String(s || '');
-  let m = s.match(/^(\d{4})-(\d{2})-(\d{2})/); if (m) return `${m[1]}-${m[2]}-${m[3]}`;
-  m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})/); return m ? `${m[3]}-${m[2]}-${m[1]}` : '';
-}
 function isoFromDate(d) { return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }
 function setProfitRange(r) {
   profitRange = PROFIT_RANGES.includes(r) ? r : 'tudo';
@@ -302,7 +273,8 @@ function openSectorEditor(ticker) {
 // ===== FIM DA CLASSIFICAÇÃO SETORIAL =====
 
 let chartMode = (() => { try { const v = localStorage.getItem('ledgerly_chart_mode'); return v === 'corretora' || v === 'setor' ? v : 'ativo'; } catch (_) { return 'ativo'; } })();
-export function resetChartPreferences() { profitRange = 'tudo'; chartMode = 'ativo'; }
+function resetChartPreferences() { profitRange = 'tudo'; chartMode = 'ativo'; }
+registerFreshInstallResetHandler(resetChartPreferences);
 function setChartMode(m) { chartMode = (m === 'corretora' || m === 'setor') ? m : 'ativo'; try { localStorage.setItem('ledgerly_chart_mode', chartMode); } catch (_) {} refreshAllViews(); }
 function focusTicker(t) {
   const s = document.getElementById('positionsSearch'), f = document.getElementById('positionsFilter'), c = document.getElementById('positionsCorretora');
@@ -449,13 +421,12 @@ function onQuotesBlockTap() {
   const wait = 30000 - (Date.now() - lastQuoteTap);
   if (wait > 0) { showToast(`Aguarde ${Math.ceil(wait / 1000)} s para atualizar de novo.`, 'info'); return; }
   lastQuoteTap = Date.now();
-  syncAllQuotesFromBrapi();
+  requestQuotesSync();
 }
 setInterval(() => { try { updateQuotesLabel(); } catch (_) {} }, 60000);
 
 // Renderiza os Retângulos Expansíveis na Aba Oculta "Posições"
 let latestPositionsData = [];
-export let allPositionsData = [];
 
 export function renderPositionsExpandableCards(positions) {
   const corrSel = document.getElementById('positionsCorretora');
@@ -630,8 +601,11 @@ async function deleteSingleOperation(opId) {
   showToast('Operação removida.', 'info');
 }
 
+function setPositionsCorretora() { renderPositionsExpandableCards(); }
+
 // Compatibilidade apenas para handlers inline no HTML/templates.
 Object.assign(globalThis, {
+  setPositionsCorretora,
   applyPositionsView,
   classifyNextPending,
   clearPositionsFilters,

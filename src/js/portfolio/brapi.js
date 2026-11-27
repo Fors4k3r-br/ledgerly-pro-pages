@@ -1,8 +1,9 @@
 // Integração com a API brapi.dev para configuração de token e atualização de cotações online.
 
 import { db } from '../core/state.js';
+import { refreshAllViews, registerQuotesSyncHandler } from '../core/events.js';
 import { getSetting, persistSQLiteToIndexedDB, setSetting } from '../core/database.js';
-import { getConsolidatedPositions, refreshAllViews, updateQuotesLabel } from './positions.js';
+import { getConsolidatedPositions, updateQuotesLabel } from './positions.js';
 import { showToast } from '../ui/navigation.js';
 
 // =========================================================================
@@ -140,6 +141,8 @@ export async function syncAllQuotesFromBrapi(silent = false, isTestFromConfig = 
     if (btnEl) btnEl.disabled = false;
   }
 }
+
+registerQuotesSyncHandler(() => syncAllQuotesFromBrapi());
 
 // Compatibilidade apenas para handlers inline no HTML/templates.
 Object.assign(globalThis, {
