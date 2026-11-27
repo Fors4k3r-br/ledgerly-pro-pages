@@ -1,18 +1,32 @@
 // Sincronização criptografada (LGP3) com Google Drive, OAuth via proxy, resolução de conflitos e indicador de status.
 
+import { deriveSyncKey, sha256Bytes, sealDb, openDb } from '../security/encryption.js';
+import { SQL, db, setDb, dailyDb, setDailyDb } from '../core/state.js';
+import { createCentralSchema, createDailySchema, getSetting, persistSQLiteToIndexedDB, queryAll, rowsFromDatabase } from '../core/database.js';
+import { refreshAllViews } from '../portfolio/positions.js';
+import { bytesOf, hexOf } from '../security/lock-screen.js';
+import { ledgerlyModal, openConfirmDialog, renderThemeCard, showToast, switchTab } from '../ui/navigation.js';
+
 // ===== SINCRONIZAÇÃO COM GOOGLE DRIVE =====
 const GOOGLE_CLIENT_ID = '708031911015-r1ujdi4nug06jsn2fldc26m51fvumamq.apps.googleusercontent.com';
 const DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.appdata';
 const SYNC_FILE = 'ledgerly_pair_v3.db.enc';
 const SYNC_LS = 'ledgerly_sync';
-let gToken = null, gTokenExp = 0, syncBusy = false, syncTimer = null, syncError = '', syncPending = true, prefetched = null, conflictInfo = null, tapArmed = false, syncConflict = false, syncCloudMissing = false;
+let gToken = null, gTokenExp = 0, syncBusy = false, syncTimer = null, syncError = '', syncPending = true, conflictInfo = null, tapArmed = false, syncConflict = false, syncCloudMissing = false;
+export let prefetched = null;
+export function setPrefetched(value) { prefetched = value; }
+export function setSyncStatusFlags({ syncPending: p, syncCloudMissing: m, syncConflict: c } = {}) {
+  if (typeof p === 'boolean') syncPending = p;
+  if (typeof m === 'boolean') syncCloudMissing = m;
+  if (typeof c === 'boolean') syncConflict = c;
+}
 
-function syncState() { try { return JSON.parse(localStorage.getItem(SYNC_LS) || '{}'); } catch (_) { return {}; } }
-function saveSyncState(patch) { const s = Object.assign(syncState(), patch); try { localStorage.setItem(SYNC_LS, JSON.stringify(s)); } catch (_) {} return s; }
+export function syncState() { try { return JSON.parse(localStorage.getItem(SYNC_LS) || '{}'); } catch (_) { return {}; } }
+export function saveSyncState(patch) { const s = Object.assign(syncState(), patch); try { localStorage.setItem(SYNC_LS, JSON.stringify(s)); } catch (_) {} return s; }
 
 // Chave de criptografia derivada da senha: guardada neste aparelho como CryptoKey não exportável
 function syncKeyDb() { return new Promise((res, rej) => { const r = indexedDB.open('Ledgerly_Sync', 1); r.onupgradeneeded = () => r.result.createObjectStore('keys'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }); }
-async function idbKv(op, key, val) {
+export async function idbKv(op, key, val) {
   const d = await syncKeyDb();
   return new Promise((res, rej) => {
     const t = d.transaction('keys', op === 'get' ? 'readonly' : 'readwrite');
@@ -29,12 +43,12 @@ async function keyDel() { return idbKv('del', 'main'); }
 
 // As primitivas criptográficas são fornecidas por src/js/security/encryption.js.
 // Não envia a biometria (credencial exclusiva de cada aparelho); o token da brapi vai junto, criptografado
-function sanitizedExport(raw) {
+export function sanitizedExport(raw) {
   const tmp = new SQL.Database(raw);
   tmp.run("DELETE FROM configuracoes_seguranca WHERE chave = 'biometrics_cred_id'");
   const out = tmp.export(); tmp.close(); return out;
 }
-function isLocalEmpty() {
+export function isLocalEmpty() {
   const n = t => Number(queryAll(`SELECT COUNT(*) AS n FROM ${t}`)[0].n);
   return n('operacoes') + n('notas_corretagem') + n('proventos') === 0;
 }
@@ -75,7 +89,7 @@ function requestAuthCode() {
     client.requestCode();
   });
 }
-async function getToken(mode = 'interactive') {
+export async function getToken(mode = 'interactive') {
   if (hasValidToken()) return gToken;
   const saved = await idbKv('get', 'refresh').catch(() => null);
   if (saved) {
@@ -111,12 +125,12 @@ async function driveFindAll(token) {
   } while (pageToken);
   return found;
 }
-async function driveFind(token) { return (await driveFindAll(token))[0] || null; }
-async function driveDeleteExtras(token, keepId) {
+export async function driveFind(token) { return (await driveFindAll(token))[0] || null; }
+export async function driveDeleteExtras(token, keepId) {
   const files = await driveFindAll(token);
   for (const file of files) if (file.id !== keepId) await driveDelete(file.id, token);
 }
-async function driveDownload(id, token) { return (await driveFetch(`https://www.googleapis.com/drive/v3/files/${id}?alt=media`, {}, token)).arrayBuffer(); }
+export async function driveDownload(id, token) { return (await driveFetch(`https://www.googleapis.com/drive/v3/files/${id}?alt=media`, {}, token)).arrayBuffer(); }
 async function driveDelete(id, token) { await driveFetch(`https://www.googleapis.com/drive/v3/files/${id}`, { method: 'DELETE' }, token); }
 async function driveUpload(bytes, props, id, token) {
   const meta = id ? { appProperties: props } : { name: SYNC_FILE, parents: ['appDataFolder'], appProperties: props };
@@ -128,18 +142,18 @@ async function driveUpload(bytes, props, id, token) {
   return r.json();
 }
 
-async function exportSyncPackage() {
+export async function exportSyncPackage() {
   if (!db || !dailyDb) throw new Error('Os dois bancos ainda não estão disponíveis.');
   return packSyncPackage(db.export(), dailyDb.export());
 }
 
-async function hashCurrentPair() {
+export async function hashCurrentPair() {
   const a=db.export(), b=dailyDb.export(), joined=new Uint8Array(8+a.length+b.length);
   const view=new DataView(joined.buffer); view.setUint32(0,a.length,false); view.setUint32(4,b.length,false);
   joined.set(a,8); joined.set(b,8+a.length); return sha256Bytes(joined);
 }
 
-async function packSyncPackage(central,daily) {
+export async function packSyncPackage(central,daily) {
   const a=new Uint8Array(central), b=new Uint8Array(daily);
   const manifest={format:'LedgerlyPair',formatVersion:3,pairId:`${Date.now()}-${hexOf(crypto.getRandomValues(new Uint8Array(6)))}`,createdAt:new Date().toISOString(),central:{file:'central.db',schemaVersion:3,sha256:await sha256Bytes(a)},daily:{file:'daily.db',schemaVersion:1,sha256:await sha256Bytes(b)}};
   const meta=new TextEncoder().encode(JSON.stringify(manifest));
@@ -150,7 +164,7 @@ async function packSyncPackage(central,daily) {
   return out;
 }
 
-async function unpackSyncPackage(bytes) {
+export async function unpackSyncPackage(bytes) {
   const data=new Uint8Array(bytes);
   if (data.length<16 || new TextDecoder().decode(data.slice(0,4))!=='LGP3') throw new Error('A cópia não contém um conjunto Ledgerly central + diário atualizado (formato LGP3). A versão antiga do Drive foi preservada e não será sobrescrita automaticamente.');
   const view=new DataView(data.buffer,data.byteOffset,data.byteLength);
@@ -172,7 +186,7 @@ function validateDatabase(database, requiredTable) {
   if (rowsFromDatabase(database,'PRAGMA foreign_key_check').length) throw new Error('Foram encontrados vínculos inválidos em um dos bancos.');
 }
 
-function validateDatabasePair(central,daily) {
+export function validateDatabasePair(central,daily) {
   validateDatabase(central,'operacoes'); validateDatabase(daily,'snapshots_patrimonio');
   const centralTables=rowsFromDatabase(central,"SELECT name FROM sqlite_master WHERE type='table'").map(x=>x.name);
   const dailyTables=rowsFromDatabase(daily,"SELECT name FROM sqlite_master WHERE type='table'").map(x=>x.name);
@@ -183,7 +197,7 @@ function validateDatabasePair(central,daily) {
   if (cv!==3 || dv!==1) throw new Error('Os bancos possuem versões de schema incompatíveis.');
 }
 
-async function applyRemoteDb(bytes) {
+export async function applyRemoteDb(bytes) {
   const pair = await unpackSyncPackage(bytes);
   const nextCentral = new SQL.Database(pair.central), nextDaily = new SQL.Database(pair.daily);
   try {
@@ -199,7 +213,7 @@ async function applyRemoteDb(bytes) {
   const oldCentral = db, oldDaily = dailyDb;
   let swapped = false;
   try {
-    db = nextCentral; dailyDb = nextDaily;
+    setDb(nextCentral); setDailyDb(nextDaily);
     createCentralSchema(db); createDailySchema(dailyDb);
     if (localBiometricId && !getSetting('biometrics_cred_id')) {
       db.run("INSERT OR REPLACE INTO configuracoes_seguranca(chave,valor) VALUES('biometrics_cred_id',?)", [localBiometricId]);
@@ -211,7 +225,7 @@ async function applyRemoteDb(bytes) {
     swapped = true;
   } catch (error) {
     try { db?.close(); dailyDb?.close(); } catch (_) {}
-    db = oldCentral; dailyDb = oldDaily;
+    setDb(oldCentral); setDailyDb(oldDaily);
     throw error;
   } finally {
     window.__ledgerlyApplying = false;
@@ -227,7 +241,7 @@ async function applyRemoteDb(bytes) {
 }
 
 // Obtém (ou cria) a chave de criptografia deste aparelho
-async function ensureKey(remote, token) {
+export async function ensureKey(remote, token) {
   const remoteSalt = remote && remote.appProperties && remote.appProperties.salt;
   let kd = await keyGet();
   if (kd && (!remoteSalt || hexOf(kd.salt) === remoteSalt)) return { kd };
@@ -374,7 +388,7 @@ async function syncNow(mode = true) {
   } finally { syncBusy = false; updateConnectionBadge(); renderSyncCard(); }
   return ok;
 }
-async function syncAfterPersist(options = {}) {
+export async function syncAfterPersist(options = {}) {
   const st = syncState();
   if (!st.connected || window.__ledgerlyApplying || !db || !dailyDb) return;
   if ((await hashCurrentPair()) === st.syncedHash) return;
@@ -391,7 +405,7 @@ function armTapSync() {
   tapArmed = true;
   document.addEventListener('click', () => { tapArmed = false; if (syncState().connected && !syncBusy && !hasValidToken()) syncNow('tap'); }, { once: true, capture: true });
 }
-async function syncOnStart() {
+export async function syncOnStart() {
   if (!syncState().connected) return true;
   syncPending = true; updateConnectionBadge();
   return await syncNow('start');
@@ -413,7 +427,7 @@ async function listConflictBackups() {
   }
   return list;
 }
-async function clearConflictBackups() {
+export async function clearConflictBackups() {
   try {
     const list = await listConflictBackups();
     for (const item of list) await idbKv('del', 'conflict_' + item.id).catch(() => {});
@@ -503,12 +517,12 @@ async function syncDisconnect() {
 }
 function sideLabel(side) { return side === 'nuvem' ? 'versão da nuvem' : side === 'limpeza' ? 'cópia de antes de limpar os dados' : 'versão deste aparelho'; }
 function setConflictMode(mode) { saveSyncState({ conflictMode: mode === 'manual' ? 'manual' : 'auto' }); renderSyncCard(); }
-async function disconnectSyncLocal() {
+export async function disconnectSyncLocal() {
   saveSyncState({ connected: false, baseRev: null, syncedHash: null, fileId: null, needsLogin: false, localChangedAt: null, hasLocalUserChanges: false, recoveredFromEmptyIdb: false });
   syncConflict = false; syncCloudMissing = false; clearTimeout(syncTimer);
   await keyDel().catch(() => {}); await idbKv('del', 'refresh').catch(() => {}); gToken = null; gTokenExp = 0;
 }
-async function deleteCloudDb() {
+export async function deleteCloudDb() {
   if (!navigator.onLine) throw new Error('Sem internet. Conecte-se para excluir a cópia da nuvem.');
   const token = await getToken('interactive');
   const remotes = await driveFindAll(token);
@@ -519,13 +533,13 @@ async function deleteLocalDb() {
   clearTimeout(syncTimer); window.__ledgerlyApplying=true;
   const oldCentral=db, oldDaily=dailyDb;
   try {
-    db=new SQL.Database(); dailyDb=new SQL.Database();
+    setDb(new SQL.Database()); setDailyDb(new SQL.Database());
     createCentralSchema(db); createDailySchema(dailyDb);
     await persistSQLiteToIndexedDB({suppressSync:true});
     try { oldCentral?.close(); oldDaily?.close(); } catch(_) {}
   } catch(error) {
     try { db?.close(); dailyDb?.close(); } catch(_) {}
-    db=oldCentral; dailyDb=oldDaily; throw error;
+    setDb(oldCentral); setDailyDb(oldDaily); throw error;
   } finally { window.__ledgerlyApplying=false; }
   await clearConflictBackups();
   try { localStorage.removeItem('ledgerly_pin_fails'); localStorage.removeItem('ledgerly_pin_lock'); } catch(_) {}
@@ -557,13 +571,13 @@ async function requestDeleteDatabase() {
     } });
 }
 // Limpa dados de investimentos sem remover PIN, token da brapi ou configurações locais.
-async function wipeAllData(options = {}) {
+export async function wipeAllData(options = {}) {
   if (options.keepLocalRecovery !== false) await saveConflictBackup(await exportSyncPackage(), 'limpeza');
   db.run('DELETE FROM operacoes; DELETE FROM notas_corretagem; DELETE FROM proventos; DELETE FROM cotacoes_atuais; DELETE FROM corretoras; DELETE FROM ativos;');
   dailyDb.run('DELETE FROM snapshot_patrimonio_ativos; DELETE FROM snapshots_patrimonio;');
   await persistSQLiteToIndexedDB({ suppressSync: Boolean(options.suppressSync) });
 }
-function renderSyncCard() {
+export function renderSyncCard() {
   const st = syncState();
   const when = st.lastSync ? new Date(st.lastSync) : null;
   const sum = document.getElementById('syncSummaryText');
@@ -659,7 +673,7 @@ function renderSyncStatusPopover() {
   const pop = document.getElementById('syncStatusPopover');
   if (pop && !pop.classList.contains('hidden')) pop.setAttribute('data-status', visual.key);
 }
-function updateConnectionBadge() { renderSyncStatusPopover(); }
+export function updateConnectionBadge() { renderSyncStatusPopover(); }
 function toggleSyncStatusPanel(force) {
   const panel = document.getElementById('syncStatusPopover');
   const badge = document.getElementById('dbStatusBadge');
@@ -688,77 +702,14 @@ window.addEventListener('offline', updateConnectionBadge);
 document.addEventListener('visibilitychange', () => { if (!document.hidden && syncState().connected && hasValidToken()) syncNow(false); });
 document.addEventListener('DOMContentLoaded', () => { updateConnectionBadge(); renderSyncCard(); refreshConflictInfo(); renderThemeCard(); });
 
-// Ponte de compatibilidade: mantém os nomes públicos acessíveis ao HTML e aos demais módulos.
-Object.defineProperty(globalThis, "GOOGLE_CLIENT_ID", { configurable: true, enumerable: true, get: () => GOOGLE_CLIENT_ID });
-Object.defineProperty(globalThis, "DRIVE_SCOPE", { configurable: true, enumerable: true, get: () => DRIVE_SCOPE });
-Object.defineProperty(globalThis, "SYNC_FILE", { configurable: true, enumerable: true, get: () => SYNC_FILE });
-Object.defineProperty(globalThis, "SYNC_LS", { configurable: true, enumerable: true, get: () => SYNC_LS });
-Object.defineProperty(globalThis, "gToken", { configurable: true, enumerable: true, get: () => gToken, set: value => { gToken = value; } });
-Object.defineProperty(globalThis, "gTokenExp", { configurable: true, enumerable: true, get: () => gTokenExp, set: value => { gTokenExp = value; } });
-Object.defineProperty(globalThis, "syncBusy", { configurable: true, enumerable: true, get: () => syncBusy, set: value => { syncBusy = value; } });
-Object.defineProperty(globalThis, "syncTimer", { configurable: true, enumerable: true, get: () => syncTimer, set: value => { syncTimer = value; } });
-Object.defineProperty(globalThis, "syncError", { configurable: true, enumerable: true, get: () => syncError, set: value => { syncError = value; } });
-Object.defineProperty(globalThis, "syncPending", { configurable: true, enumerable: true, get: () => syncPending, set: value => { syncPending = value; } });
-Object.defineProperty(globalThis, "prefetched", { configurable: true, enumerable: true, get: () => prefetched, set: value => { prefetched = value; } });
-Object.defineProperty(globalThis, "conflictInfo", { configurable: true, enumerable: true, get: () => conflictInfo, set: value => { conflictInfo = value; } });
-Object.defineProperty(globalThis, "tapArmed", { configurable: true, enumerable: true, get: () => tapArmed, set: value => { tapArmed = value; } });
-Object.defineProperty(globalThis, "syncConflict", { configurable: true, enumerable: true, get: () => syncConflict, set: value => { syncConflict = value; } });
-Object.defineProperty(globalThis, "syncCloudMissing", { configurable: true, enumerable: true, get: () => syncCloudMissing, set: value => { syncCloudMissing = value; } });
-Object.defineProperty(globalThis, "syncState", { configurable: true, enumerable: true, get: () => syncState, set: value => { syncState = value; } });
-Object.defineProperty(globalThis, "saveSyncState", { configurable: true, enumerable: true, get: () => saveSyncState, set: value => { saveSyncState = value; } });
-Object.defineProperty(globalThis, "syncKeyDb", { configurable: true, enumerable: true, get: () => syncKeyDb, set: value => { syncKeyDb = value; } });
-Object.defineProperty(globalThis, "idbKv", { configurable: true, enumerable: true, get: () => idbKv, set: value => { idbKv = value; } });
-Object.defineProperty(globalThis, "keyGet", { configurable: true, enumerable: true, get: () => keyGet, set: value => { keyGet = value; } });
-Object.defineProperty(globalThis, "keyPut", { configurable: true, enumerable: true, get: () => keyPut, set: value => { keyPut = value; } });
-Object.defineProperty(globalThis, "keyDel", { configurable: true, enumerable: true, get: () => keyDel, set: value => { keyDel = value; } });
-Object.defineProperty(globalThis, "sanitizedExport", { configurable: true, enumerable: true, get: () => sanitizedExport, set: value => { sanitizedExport = value; } });
-Object.defineProperty(globalThis, "isLocalEmpty", { configurable: true, enumerable: true, get: () => isLocalEmpty, set: value => { isLocalEmpty = value; } });
-Object.defineProperty(globalThis, "loadGIS", { configurable: true, enumerable: true, get: () => loadGIS, set: value => { loadGIS = value; } });
-Object.defineProperty(globalThis, "hasValidToken", { configurable: true, enumerable: true, get: () => hasValidToken, set: value => { hasValidToken = value; } });
-Object.defineProperty(globalThis, "AUTH_PROXY_URL", { configurable: true, enumerable: true, get: () => AUTH_PROXY_URL });
-Object.defineProperty(globalThis, "authProxy", { configurable: true, enumerable: true, get: () => authProxy, set: value => { authProxy = value; } });
-Object.defineProperty(globalThis, "applyTokenResponse", { configurable: true, enumerable: true, get: () => applyTokenResponse, set: value => { applyTokenResponse = value; } });
-Object.defineProperty(globalThis, "requestAuthCode", { configurable: true, enumerable: true, get: () => requestAuthCode, set: value => { requestAuthCode = value; } });
-Object.defineProperty(globalThis, "getToken", { configurable: true, enumerable: true, get: () => getToken, set: value => { getToken = value; } });
-Object.defineProperty(globalThis, "driveFetch", { configurable: true, enumerable: true, get: () => driveFetch, set: value => { driveFetch = value; } });
-Object.defineProperty(globalThis, "driveFindAll", { configurable: true, enumerable: true, get: () => driveFindAll, set: value => { driveFindAll = value; } });
-Object.defineProperty(globalThis, "driveFind", { configurable: true, enumerable: true, get: () => driveFind, set: value => { driveFind = value; } });
-Object.defineProperty(globalThis, "driveDeleteExtras", { configurable: true, enumerable: true, get: () => driveDeleteExtras, set: value => { driveDeleteExtras = value; } });
-Object.defineProperty(globalThis, "driveDownload", { configurable: true, enumerable: true, get: () => driveDownload, set: value => { driveDownload = value; } });
-Object.defineProperty(globalThis, "driveDelete", { configurable: true, enumerable: true, get: () => driveDelete, set: value => { driveDelete = value; } });
-Object.defineProperty(globalThis, "driveUpload", { configurable: true, enumerable: true, get: () => driveUpload, set: value => { driveUpload = value; } });
-Object.defineProperty(globalThis, "exportSyncPackage", { configurable: true, enumerable: true, get: () => exportSyncPackage, set: value => { exportSyncPackage = value; } });
-Object.defineProperty(globalThis, "hashCurrentPair", { configurable: true, enumerable: true, get: () => hashCurrentPair, set: value => { hashCurrentPair = value; } });
-Object.defineProperty(globalThis, "packSyncPackage", { configurable: true, enumerable: true, get: () => packSyncPackage, set: value => { packSyncPackage = value; } });
-Object.defineProperty(globalThis, "unpackSyncPackage", { configurable: true, enumerable: true, get: () => unpackSyncPackage, set: value => { unpackSyncPackage = value; } });
-Object.defineProperty(globalThis, "validateDatabase", { configurable: true, enumerable: true, get: () => validateDatabase, set: value => { validateDatabase = value; } });
-Object.defineProperty(globalThis, "validateDatabasePair", { configurable: true, enumerable: true, get: () => validateDatabasePair, set: value => { validateDatabasePair = value; } });
-Object.defineProperty(globalThis, "applyRemoteDb", { configurable: true, enumerable: true, get: () => applyRemoteDb, set: value => { applyRemoteDb = value; } });
-Object.defineProperty(globalThis, "ensureKey", { configurable: true, enumerable: true, get: () => ensureKey, set: value => { ensureKey = value; } });
-Object.defineProperty(globalThis, "syncNow", { configurable: true, enumerable: true, get: () => syncNow, set: value => { syncNow = value; } });
-Object.defineProperty(globalThis, "syncAfterPersist", { configurable: true, enumerable: true, get: () => syncAfterPersist, set: value => { syncAfterPersist = value; } });
-Object.defineProperty(globalThis, "armTapSync", { configurable: true, enumerable: true, get: () => armTapSync, set: value => { armTapSync = value; } });
-Object.defineProperty(globalThis, "syncOnStart", { configurable: true, enumerable: true, get: () => syncOnStart, set: value => { syncOnStart = value; } });
-Object.defineProperty(globalThis, "MAX_CONFLICT_BACKUPS", { configurable: true, enumerable: true, get: () => MAX_CONFLICT_BACKUPS });
-Object.defineProperty(globalThis, "conflictBackups", { configurable: true, enumerable: true, get: () => conflictBackups, set: value => { conflictBackups = value; } });
-Object.defineProperty(globalThis, "listConflictBackups", { configurable: true, enumerable: true, get: () => listConflictBackups, set: value => { listConflictBackups = value; } });
-Object.defineProperty(globalThis, "clearConflictBackups", { configurable: true, enumerable: true, get: () => clearConflictBackups, set: value => { clearConflictBackups = value; } });
-Object.defineProperty(globalThis, "saveConflictBackup", { configurable: true, enumerable: true, get: () => saveConflictBackup, set: value => { saveConflictBackup = value; } });
-Object.defineProperty(globalThis, "refreshConflictInfo", { configurable: true, enumerable: true, get: () => refreshConflictInfo, set: value => { refreshConflictInfo = value; } });
-Object.defineProperty(globalThis, "restoreConflictBackup", { configurable: true, enumerable: true, get: () => restoreConflictBackup, set: value => { restoreConflictBackup = value; } });
-Object.defineProperty(globalThis, "syncConnect", { configurable: true, enumerable: true, get: () => syncConnect, set: value => { syncConnect = value; } });
-Object.defineProperty(globalThis, "syncDisconnect", { configurable: true, enumerable: true, get: () => syncDisconnect, set: value => { syncDisconnect = value; } });
-Object.defineProperty(globalThis, "sideLabel", { configurable: true, enumerable: true, get: () => sideLabel, set: value => { sideLabel = value; } });
-Object.defineProperty(globalThis, "setConflictMode", { configurable: true, enumerable: true, get: () => setConflictMode, set: value => { setConflictMode = value; } });
-Object.defineProperty(globalThis, "disconnectSyncLocal", { configurable: true, enumerable: true, get: () => disconnectSyncLocal, set: value => { disconnectSyncLocal = value; } });
-Object.defineProperty(globalThis, "deleteCloudDb", { configurable: true, enumerable: true, get: () => deleteCloudDb, set: value => { deleteCloudDb = value; } });
-Object.defineProperty(globalThis, "deleteLocalDb", { configurable: true, enumerable: true, get: () => deleteLocalDb, set: value => { deleteLocalDb = value; } });
-Object.defineProperty(globalThis, "performDeleteDatabase", { configurable: true, enumerable: true, get: () => performDeleteDatabase, set: value => { performDeleteDatabase = value; } });
-Object.defineProperty(globalThis, "requestDeleteDatabase", { configurable: true, enumerable: true, get: () => requestDeleteDatabase, set: value => { requestDeleteDatabase = value; } });
-Object.defineProperty(globalThis, "wipeAllData", { configurable: true, enumerable: true, get: () => wipeAllData, set: value => { wipeAllData = value; } });
-Object.defineProperty(globalThis, "renderSyncCard", { configurable: true, enumerable: true, get: () => renderSyncCard, set: value => { renderSyncCard = value; } });
-Object.defineProperty(globalThis, "syncVisualStatus", { configurable: true, enumerable: true, get: () => syncVisualStatus, set: value => { syncVisualStatus = value; } });
-Object.defineProperty(globalThis, "renderSyncStatusPopover", { configurable: true, enumerable: true, get: () => renderSyncStatusPopover, set: value => { renderSyncStatusPopover = value; } });
-Object.defineProperty(globalThis, "updateConnectionBadge", { configurable: true, enumerable: true, get: () => updateConnectionBadge, set: value => { updateConnectionBadge = value; } });
-Object.defineProperty(globalThis, "toggleSyncStatusPanel", { configurable: true, enumerable: true, get: () => toggleSyncStatusPanel, set: value => { toggleSyncStatusPanel = value; } });
-Object.defineProperty(globalThis, "handleSyncStatusAction", { configurable: true, enumerable: true, get: () => handleSyncStatusAction, set: value => { handleSyncStatusAction = value; } });
+// Compatibilidade apenas para handlers inline no HTML/templates.
+Object.assign(globalThis, {
+  handleSyncStatusAction,
+  requestDeleteDatabase,
+  restoreConflictBackup,
+  setConflictMode,
+  syncConnect,
+  syncDisconnect,
+  syncNow,
+  toggleSyncStatusPanel
+});
