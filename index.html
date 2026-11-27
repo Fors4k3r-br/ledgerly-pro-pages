@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://accounts.google.com/gsi/client; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob:; connect-src 'self' https://ledgerly-auth-proxy.appsbyfors4k3r.workers.dev https://brapi.dev https://www.googleapis.com https://accounts.google.com https://oauth2.googleapis.com; frame-src https://accounts.google.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval' https://accounts.google.com/gsi/client; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob:; connect-src 'self' https://ledgerly-auth-proxy.appsbyfors4k3r.workers.dev https://brapi.dev https://www.googleapis.com https://accounts.google.com https://oauth2.googleapis.com; frame-src https://accounts.google.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'" />
   <meta name="theme-color" content="#090d16" />
-  <script>(function(){try{var t=localStorage.getItem('ledgerly_theme');t=(t==='dark'||t==='light')?t:'default';document.documentElement.setAttribute('data-theme',t);var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',{default:'#090d16',dark:'#050505',light:'#f1f5f9'}[t]);}catch(e){}})();</script>
+  <script src="./src/js/core/theme-init.js"></script>
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="application-name" content="Ledgerly Pro" />
   <link rel="manifest" href="./manifest.json" />
@@ -166,7 +166,7 @@
         <p id="lockScreenSubtitle" class="text-xs text-slate-400 mt-1">Digite seu PIN ou use a biometria do smartphone para acessar sua carteira</p>
       </div>
 
-      <form id="unlockForm" onsubmit="handleUnlockWithPin(event)" class="space-y-4">
+      <form id="unlockForm" data-submit="handleUnlockWithPin" class="space-y-4">
         <div class="relative">
           <input
             type="password"
@@ -191,7 +191,7 @@
       <div id="biometricUnlockContainer" class="pt-2 border-t border-slate-800/80 hidden">
         <button
           type="button"
-          onclick="triggerBiometricUnlock()"
+          data-click="triggerBiometricUnlock"
           class="w-full bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/40 text-indigo-300 font-semibold py-3.5 rounded-xl transition flex items-center justify-center gap-2.5"
         >
           <i data-lucide="fingerprint" class="w-5 h-5 text-indigo-400"></i>
@@ -209,7 +209,7 @@
         <div>
           <div class="flex items-center gap-2">
             <h1 class="text-base font-extrabold tracking-tight text-white">Ledgerly Pro</h1>
-            <button type="button" id="dbStatusBadge" onclick="toggleSyncStatusPanel()" title="Ver status da sincronização" aria-label="Ver status da sincronização" aria-haspopup="dialog" aria-expanded="false" class="shrink-0 inline-flex items-center justify-center p-2 rounded-full hover:bg-slate-800/80 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-emerald-400">
+            <button type="button" id="dbStatusBadge" data-click="toggleSyncStatusPanel" title="Ver status da sincronização" aria-label="Ver status da sincronização" aria-haspopup="dialog" aria-expanded="false" class="shrink-0 inline-flex items-center justify-center p-2 rounded-full hover:bg-slate-800/80 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-emerald-400">
               <span id="syncStatusLed" class="block w-3 h-3 rounded-full bg-slate-400" style="background-color:#94a3b8;box-shadow:0 0 0 3px rgba(148,163,184,.16)"></span>
             </button>
           </div>
@@ -219,7 +219,7 @@
       <div class="flex items-center gap-1.5">
         <!-- Botão Modo Privacidade (Olhinho) -->
         <button
-          onclick="togglePrivacyMode()"
+          data-click="togglePrivacyMode"
           id="privacyBtn"
           title="Ocultar/Mostrar Valores"
           class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 transition"
@@ -229,7 +229,7 @@
 
         <!-- Botão Bloquear App Rápido -->
         <button
-          onclick="lockAppNow()"
+          data-click="lockAppNow"
           title="Bloquear Aplicativo"
           class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 transition"
         >
@@ -240,7 +240,7 @@
     <div id="syncStatusPopover" class="hidden absolute right-3 top-full mt-2 z-[90] glass-card rounded-2xl border border-slate-700 shadow-2xl p-4 space-y-3" style="width:min(92vw,340px)" role="dialog" aria-label="Detalhes da sincronização" aria-hidden="true">
       <div class="flex items-center justify-between gap-3">
         <h2 class="text-sm font-bold text-white">Status da sincronização</h2>
-        <button type="button" onclick="toggleSyncStatusPanel(false)" aria-label="Fechar detalhes" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"><i data-lucide="x" class="w-4 h-4"></i></button>
+        <button type="button" data-click="toggleSyncStatusPanel" data-arg="false" aria-label="Fechar detalhes" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"><i data-lucide="x" class="w-4 h-4"></i></button>
       </div>
       <div class="space-y-2 text-xs">
         <div class="flex items-center justify-between gap-3"><span class="text-slate-400">Conexão com a internet</span><strong id="syncDetailInternet" class="text-slate-200">Verificando…</strong></div>
@@ -252,27 +252,27 @@
         </div>
       </div>
       <div id="syncDetailNotice" class="hidden rounded-xl bg-slate-900/80 border border-slate-700 px-3 py-2 text-[11px] text-slate-300" aria-live="polite"></div>
-      <button type="button" id="syncDetailAction" onclick="handleSyncStatusAction()" class="w-full px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs disabled:opacity-50 disabled:cursor-not-allowed">Sincronizar agora</button>
+      <button type="button" id="syncDetailAction" data-click="handleSyncStatusAction" class="w-full px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs disabled:opacity-50 disabled:cursor-not-allowed">Sincronizar agora</button>
       <p class="text-[10px] text-slate-500">O indicador considera a sincronização conjunta dos bancos central.db e daily.db com o Google Drive.</p>
     </div>
   </header>
 
   <!-- ================= MENU COMPLETO: BOTTOM SHEET ================= -->
-  <div id="sideMenuBackdrop" class="fixed inset-0 z-[90] bg-slate-950/65 opacity-0 pointer-events-none transition-opacity duration-300" onclick="toggleSideMenu(false)" aria-hidden="true"></div>
+  <div id="sideMenuBackdrop" class="fixed inset-0 z-[90] bg-slate-950/65 opacity-0 pointer-events-none transition-opacity duration-300" data-click="toggleSideMenu" data-arg="false" aria-hidden="true"></div>
   <aside id="sideMenu" class="bg-slate-950 border-t border-slate-800 shadow-2xl rounded-t-[2rem]" role="dialog" aria-modal="true" aria-label="Navegação" aria-hidden="true">
     <div class="sheet-handle-wrap" aria-hidden="true"><div class="sheet-handle"></div></div>
     <div class="flex items-center justify-between gap-3 px-5 pb-4 pt-1 border-b border-slate-800/80">
       <h2 class="text-xl font-semibold text-white">Navegação</h2>
-      <button type="button" onclick="toggleSideMenu(false)" aria-label="Fechar menu" class="p-3 rounded-2xl bg-slate-900 text-slate-300 border border-slate-800"><i data-lucide="x" class="w-6 h-6"></i></button>
+      <button type="button" data-click="toggleSideMenu" data-arg="false" aria-label="Fechar menu" class="p-3 rounded-2xl bg-slate-900 text-slate-300 border border-slate-800"><i data-lucide="x" class="w-6 h-6"></i></button>
     </div>
     <nav class="flex-1 overflow-y-auto p-4 space-y-1" aria-label="Seções do aplicativo">
-      <button type="button" data-menu-tab="carteira" onclick="navigateFromMenu('carteira')" class="side-menu-item active"><i data-lucide="pie-chart"></i><span>Carteira</span></button>
-      <button type="button" data-menu-tab="posicoes" onclick="navigateFromMenu('posicoes')" class="side-menu-item"><i data-lucide="layers"></i><span>Ativos</span></button>
-      <button type="button" data-menu-tab="adicionar" onclick="navigateFromMenu('adicionar')" class="side-menu-item"><i data-lucide="plus-circle"></i><span>Adicionar ativos</span></button>
-      <button type="button" data-menu-tab="relatorios" onclick="navigateFromMenu('relatorios')" class="side-menu-item"><i data-lucide="file-bar-chart"></i><span>Relatórios</span></button>
-      <button type="button" data-menu-tab="proventos" onclick="navigateFromMenu('proventos')" class="side-menu-item"><i data-lucide="coins"></i><span>Proventos</span></button>
+      <button type="button" data-menu-tab="carteira" data-click="navigateFromMenu" data-arg="carteira" class="side-menu-item active"><i data-lucide="pie-chart"></i><span>Carteira</span></button>
+      <button type="button" data-menu-tab="posicoes" data-click="navigateFromMenu" data-arg="posicoes" class="side-menu-item"><i data-lucide="layers"></i><span>Ativos</span></button>
+      <button type="button" data-menu-tab="adicionar" data-click="navigateFromMenu" data-arg="adicionar" class="side-menu-item"><i data-lucide="plus-circle"></i><span>Adicionar ativos</span></button>
+      <button type="button" data-menu-tab="relatorios" data-click="navigateFromMenu" data-arg="relatorios" class="side-menu-item"><i data-lucide="file-bar-chart"></i><span>Relatórios</span></button>
+      <button type="button" data-menu-tab="proventos" data-click="navigateFromMenu" data-arg="proventos" class="side-menu-item"><i data-lucide="coins"></i><span>Proventos</span></button>
       <div class="my-3 border-t border-slate-800"></div>
-      <button type="button" data-menu-tab="config" onclick="navigateFromMenu('config')" class="side-menu-item"><i data-lucide="settings"></i><span>Configurações</span></button>
+      <button type="button" data-menu-tab="config" data-click="navigateFromMenu" data-arg="config" class="side-menu-item"><i data-lucide="settings"></i><span>Configurações</span></button>
     </nav>
   </aside>
 
@@ -314,19 +314,19 @@
         </div>
         <div id="profitChartWrap" class="relative h-52 w-full"><canvas id="profitChart" aria-label="Gráfico de evolução do investido e do patrimônio"></canvas></div>
         <div id="rangeChips" class="flex gap-1.5 overflow-x-auto -mx-1 px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" role="group" aria-label="Período do gráfico">
-          <button type="button" data-r="tudo" onclick="setProfitRange('tudo')" class="shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-700 text-slate-300">Desde o início</button>
-          <button type="button" data-r="1s" onclick="setProfitRange('1s')" class="shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-700 text-slate-300">1 semana</button>
-          <button type="button" data-r="1m" onclick="setProfitRange('1m')" class="shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-700 text-slate-300">1 mês</button>
-          <button type="button" data-r="mes" onclick="setProfitRange('mes')" class="shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-700 text-slate-300">No mês</button>
-          <button type="button" data-r="6m" onclick="setProfitRange('6m')" class="shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-700 text-slate-300">6 meses</button>
-          <button type="button" data-r="sem" onclick="setProfitRange('sem')" class="shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-700 text-slate-300">No semestre</button>
-          <button type="button" data-r="12m" onclick="setProfitRange('12m')" class="shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-700 text-slate-300">12 meses</button>
-          <button type="button" data-r="ano" onclick="setProfitRange('ano')" class="shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-700 text-slate-300">No ano</button>
+          <button type="button" data-r="tudo" data-click="setProfitRange" data-arg="tudo" class="shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-700 text-slate-300">Desde o início</button>
+          <button type="button" data-r="1s" data-click="setProfitRange" data-arg="1s" class="shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-700 text-slate-300">1 semana</button>
+          <button type="button" data-r="1m" data-click="setProfitRange" data-arg="1m" class="shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-700 text-slate-300">1 mês</button>
+          <button type="button" data-r="mes" data-click="setProfitRange" data-arg="mes" class="shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-700 text-slate-300">No mês</button>
+          <button type="button" data-r="6m" data-click="setProfitRange" data-arg="6m" class="shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-700 text-slate-300">6 meses</button>
+          <button type="button" data-r="sem" data-click="setProfitRange" data-arg="sem" class="shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-700 text-slate-300">No semestre</button>
+          <button type="button" data-r="12m" data-click="setProfitRange" data-arg="12m" class="shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-700 text-slate-300">12 meses</button>
+          <button type="button" data-r="ano" data-click="setProfitRange" data-arg="ano" class="shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-700 text-slate-300">No ano</button>
         </div>
       </div>
 
       <!-- Cotações: bloco clicável para atualizar -->
-      <button type="button" id="btnSyncBrapiCarteira" onclick="onQuotesBlockTap()" aria-label="Atualizar cotações" class="w-full text-left flex items-center justify-between gap-3 glass-card rounded-2xl px-4 py-3 transition hover:border-indigo-500/40 disabled:opacity-60">
+      <button type="button" id="btnSyncBrapiCarteira" data-click="onQuotesBlockTap" aria-label="Atualizar cotações" class="w-full text-left flex items-center justify-between gap-3 glass-card rounded-2xl px-4 py-3 transition hover:border-indigo-500/40 disabled:opacity-60">
         <span class="flex items-center gap-2.5 min-w-0">
           <span class="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
           <span class="min-w-0">
@@ -338,7 +338,7 @@
       </button>
 
       <div class="flex justify-end">
-        <button type="button" onclick="switchTab('posicoes')" class="flex items-center gap-1 text-sm font-semibold text-emerald-400 hover:text-emerald-300 transition">Ver mais<i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+        <button type="button" data-click="switchTab" data-arg="posicoes" class="flex items-center gap-1 text-sm font-semibold text-emerald-400 hover:text-emerald-300 transition">Ver mais<i data-lucide="chevron-right" class="w-4 h-4"></i></button>
       </div>
       </div>
     </section>
@@ -354,17 +354,17 @@
       <div class="glass-card rounded-2xl p-3 space-y-3">
         <label for="reportCalendarYear" class="block text-xs font-semibold text-slate-300">Ano-calendário</label>
         <p class="text-[11px] text-slate-500">A prévia do ano atual fica no topo; os anos anteriores começam na sua primeira compra registrada.</p>
-        <select id="reportCalendarYear" onchange="renderReports()" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-3 text-sm text-white">
+        <select id="reportCalendarYear" data-change="renderReports" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-3 text-sm text-white">
         </select>
         <div class="grid grid-cols-2 gap-2">
-          <button type="button" onclick="exportReportsPDF()" class="flex items-center justify-center gap-2 rounded-xl bg-indigo-500/15 border border-indigo-500/30 text-indigo-200 py-3 px-2 text-xs font-bold"><i data-lucide="file-text" class="w-4 h-4"></i>Exportar PDF</button>
-          <button type="button" onclick="exportReportsExcel()" class="flex items-center justify-center gap-2 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-200 py-3 px-2 text-xs font-bold"><i data-lucide="sheet" class="w-4 h-4"></i>Exportar Excel</button>
+          <button type="button" data-click="exportReportsPDF" class="flex items-center justify-center gap-2 rounded-xl bg-indigo-500/15 border border-indigo-500/30 text-indigo-200 py-3 px-2 text-xs font-bold"><i data-lucide="file-text" class="w-4 h-4"></i>Exportar PDF</button>
+          <button type="button" data-click="exportReportsExcel" class="flex items-center justify-center gap-2 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-200 py-3 px-2 text-xs font-bold"><i data-lucide="sheet" class="w-4 h-4"></i>Exportar Excel</button>
         </div>
       </div>
       <div class="grid grid-cols-3 gap-1.5" role="group" aria-label="Tipo de relatório">
-        <button id="reportTab-irpf" type="button" onclick="setReportView('irpf')" class="rounded-xl py-2.5 px-1 text-[11px] font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">IRPF</button>
-        <button id="reportTab-rendimentos" type="button" onclick="setReportView('rendimentos')" class="rounded-xl py-2.5 px-1 text-[11px] font-semibold bg-slate-900 text-slate-400 border border-slate-800">Rendimentos</button>
-        <button id="reportTab-operacoes" type="button" onclick="setReportView('operacoes')" class="rounded-xl py-2.5 px-1 text-[11px] font-semibold bg-slate-900 text-slate-400 border border-slate-800">Operações</button>
+        <button id="reportTab-irpf" type="button" data-click="setReportView" data-arg="irpf" class="rounded-xl py-2.5 px-1 text-[11px] font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">IRPF</button>
+        <button id="reportTab-rendimentos" type="button" data-click="setReportView" data-arg="rendimentos" class="rounded-xl py-2.5 px-1 text-[11px] font-semibold bg-slate-900 text-slate-400 border border-slate-800">Rendimentos</button>
+        <button id="reportTab-operacoes" type="button" data-click="setReportView" data-arg="operacoes" class="rounded-xl py-2.5 px-1 text-[11px] font-semibold bg-slate-900 text-slate-400 border border-slate-800">Operações</button>
       </div>
       <div id="reportsContent" class="space-y-3" aria-live="polite"></div>
       <div class="rounded-2xl border border-amber-500/25 bg-amber-500/5 p-3 space-y-1">
@@ -380,7 +380,7 @@
       <div class="flex flex-wrap items-center justify-between gap-2 glass-card rounded-2xl p-3.5">
         <div class="flex items-center gap-3">
           <button
-            onclick="switchTab('carteira')"
+            data-click="switchTab" data-arg="carteira"
             class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 transition flex items-center gap-1 text-xs font-semibold"
           >
             <i data-lucide="arrow-left" class="w-4 h-4"></i>
@@ -390,7 +390,7 @@
         </div>
         <button
           type="button"
-          onclick="syncAllQuotesFromBrapi()"
+          data-click="syncAllQuotesFromBrapi"
           class="px-3 py-1.5 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-500/30 text-indigo-300 text-xs font-semibold transition flex items-center gap-1.5"
         >
           <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
@@ -411,9 +411,9 @@
         </div>
 
         <div id="chartModeChips" class="flex gap-1.5" role="group" aria-label="Agrupar gráfico">
-          <button type="button" data-m="ativo" onclick="setChartMode('ativo')" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-300">Por ativo</button>
-          <button type="button" data-m="corretora" onclick="setChartMode('corretora')" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-300">Por corretora</button>
-          <button type="button" data-m="setor" onclick="setChartMode('setor')" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-300">Por setor</button>
+          <button type="button" data-m="ativo" data-click="setChartMode" data-arg="ativo" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-300">Por ativo</button>
+          <button type="button" data-m="corretora" data-click="setChartMode" data-arg="corretora" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-300">Por corretora</button>
+          <button type="button" data-m="setor" data-click="setChartMode" data-arg="setor" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-300">Por setor</button>
         </div>
 
         <!-- Estado Vazio do Gráfico -->
@@ -427,7 +427,7 @@
           </div>
           <div class="flex flex-wrap justify-center gap-2 pt-2">
             <button
-              onclick="openAddAssetsSubTab('importar')"
+              data-click="openAddAssetsSubTab" data-arg="importar"
               class="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition flex items-center gap-1.5"
             >
               <i data-lucide="file-up" class="w-4 h-4"></i>
@@ -450,8 +450,8 @@
       <div id="positionsAllocation" class="hidden"></div>
       <div class="space-y-2.5">
         <div class="flex gap-2">
-          <input id="positionsSearch" type="search" placeholder="Buscar ativo..." aria-label="Buscar ativo" oninput="applyPositionsView()" class="flex-1 min-w-0 bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-3 py-2.5 text-sm text-white outline-none" />
-          <select id="positionsSort" aria-label="Ordenar posições" onchange="applyPositionsView()" class="w-36 text-xs bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-3 py-2.5 text-sm text-white outline-none">
+          <input id="positionsSearch" type="search" placeholder="Buscar ativo..." aria-label="Buscar ativo" data-input="applyPositionsView" class="flex-1 min-w-0 bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-3 py-2.5 text-sm text-white outline-none" />
+          <select id="positionsSort" aria-label="Ordenar posições" data-change="applyPositionsView" class="w-36 text-xs bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-3 py-2.5 text-sm text-white outline-none">
             <option value="ticker">Ticker (A–Z)</option>
             <option value="value">Maior posição</option>
             <option value="profit">Maior resultado</option>
@@ -459,19 +459,19 @@
             <option value="weight">Maior participação</option>
           </select>
         </div>
-        <select id="positionsCorretora" aria-label="Filtrar por corretora" onchange="setPositionsCorretora()" class="w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-3 py-2.5 text-xs text-white outline-none"><option value="">Todas as corretoras</option></select>
-        <select id="positionsSetor" aria-label="Filtrar por setor" onchange="applyPositionsView()" class="w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-3 py-2.5 text-xs text-white outline-none"><option value="">Todos os setores</option></select>
-        <button type="button" id="sectorPendingBox" onclick="classifyNextPending()" class="hidden w-full text-left px-3 py-2.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-200 text-xs font-semibold"></button>
+        <select id="positionsCorretora" aria-label="Filtrar por corretora" data-change="setPositionsCorretora" class="w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-3 py-2.5 text-xs text-white outline-none"><option value="">Todas as corretoras</option></select>
+        <select id="positionsSetor" aria-label="Filtrar por setor" data-change="applyPositionsView" class="w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-3 py-2.5 text-xs text-white outline-none"><option value="">Todos os setores</option></select>
+        <button type="button" id="sectorPendingBox" data-click="classifyNextPending" class="hidden w-full text-left px-3 py-2.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-200 text-xs font-semibold"></button>
         <p id="positionsCorretoraNote" class="hidden text-[11px] text-slate-500">Há proventos sem corretora informada; eles só aparecem em “Todas as corretoras”.</p>
         <div class="space-y-2">
           <div id="positionsChips" class="flex gap-1.5" role="group" aria-label="Filtrar posições">
-            <button type="button" data-f="active" onclick="setPositionsFilter('active')" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-300">Abertas</button>
-            <button type="button" data-f="all" onclick="setPositionsFilter('all')" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-300">Todas</button>
-            <button type="button" data-f="closed" onclick="setPositionsFilter('closed')" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-300">Encerradas</button>
+            <button type="button" data-f="active" data-click="setPositionsFilter" data-arg="active" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-300">Abertas</button>
+            <button type="button" data-f="all" data-click="setPositionsFilter" data-arg="all" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-300">Todas</button>
+            <button type="button" data-f="closed" data-click="setPositionsFilter" data-arg="closed" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-300">Encerradas</button>
           </div>
           <div id="positionsFilterInfo" class="hidden flex items-center justify-between gap-3 px-1">
             <span id="positionsResultCount" class="text-xs text-slate-400"></span>
-            <button type="button" onclick="clearPositionsFilters()" class="text-xs text-indigo-300 hover:text-indigo-200">Limpar</button>
+            <button type="button" data-click="clearPositionsFilters" class="text-xs text-indigo-300 hover:text-indigo-200">Limpar</button>
           </div>
         </div>
         <input type="hidden" id="positionsFilter" value="active" />
@@ -489,7 +489,7 @@
         <button
           type="button"
           id="subtab-btn-importar"
-          onclick="switchAddSubTab('importar')"
+          data-click="switchAddSubTab" data-arg="importar"
           class="py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 bg-emerald-500 text-slate-950 shadow-md"
         >
           <i data-lucide="file-up" class="w-4 h-4"></i>
@@ -498,7 +498,7 @@
         <button
           type="button"
           id="subtab-btn-manual"
-          onclick="switchAddSubTab('manual')"
+          data-click="switchAddSubTab" data-arg="manual"
           class="py-2.5 px-3 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-2 text-slate-300 hover:bg-slate-800/70"
         >
           <i data-lucide="plus-circle" class="w-4 h-4"></i>
@@ -529,9 +529,9 @@
               accept=".pdf,application/pdf"
               multiple
               class="hidden"
-              onchange="handlePdfSelection(event, 'arquivo')"
+              data-change="handlePdfSelection" data-arg="arquivo"
             />
-            <button type="button" onclick="document.getElementById('pdfFileInput').click()" class="w-full py-4 px-4 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-sm shadow-lg shadow-emerald-500/20 transition flex items-center justify-center gap-2.5">
+            <button type="button" data-click="triggerClick" data-target="pdfFileInput" class="w-full py-4 px-4 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-sm shadow-lg shadow-emerald-500/20 transition flex items-center justify-center gap-2.5">
               <i data-lucide="file-up" class="w-5 h-5"></i><span>Importar notas (PDF)</span>
             </button>
 
@@ -542,9 +542,9 @@
               directory
               multiple
               class="hidden"
-              onchange="handlePdfSelection(event, 'diretorio')"
+              data-change="handlePdfSelection" data-arg="diretorio"
             />
-            <button type="button" onclick="document.getElementById('pdfDirInput').click()" class="w-full py-2.5 px-3 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700 text-slate-300 text-xs font-semibold transition flex items-center justify-center gap-2">
+            <button type="button" data-click="triggerClick" data-target="pdfDirInput" class="w-full py-2.5 px-3 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700 text-slate-300 text-xs font-semibold transition flex items-center justify-center gap-2">
               <i data-lucide="folder-search" class="w-4 h-4"></i><span>Importar uma pasta inteira (ignora notas já salvas)</span>
             </button>
           </div>
@@ -558,7 +558,7 @@
               <p class="font-bold text-amber-300">Controle de Duplicidade Atuado:</p>
               <ul id="duplicateNotesList" class="list-disc list-inside text-slate-300 space-y-0.5 font-mono"></ul>
             </div>
-            <button onclick="document.getElementById('duplicateNotesAlert').classList.add('hidden')" class="text-slate-400 hover:text-white">
+            <button data-click="hideElement" data-target="duplicateNotesAlert" class="text-slate-400 hover:text-white">
               <i data-lucide="x" class="w-4 h-4"></i>
             </button>
           </div>
@@ -583,7 +583,7 @@
           <div class="flex flex-col sm:flex-row gap-3 pt-3 border-t border-slate-800">
             <button
               type="button"
-              onclick="commitStagedNotesToSQLite()"
+              data-click="commitStagedNotesToSQLite"
               class="flex-1 py-3.5 px-5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-sm shadow-lg shadow-emerald-500/20 transition flex items-center justify-center gap-2"
             >
               <i data-lucide="check-circle-2" class="w-5 h-5"></i>
@@ -591,7 +591,7 @@
             </button>
             <button
               type="button"
-              onclick="cancelStaging()"
+              data-click="cancelStaging"
               class="py-3.5 px-5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-sm transition flex items-center justify-center gap-2"
             >
               <i data-lucide="x-circle" class="w-4 h-4"></i>
@@ -610,25 +610,25 @@
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
             <div class="sm:col-span-3">
               <label for="savedNotesCorretora" class="block text-[11px] uppercase tracking-wider text-slate-400 mb-1">Corretora</label>
-              <select id="savedNotesCorretora" onchange="filterSavedNotes(true)" class="w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-3 py-2.5 text-xs text-white outline-none"><option value="">Todas as corretoras</option></select>
+              <select id="savedNotesCorretora" data-change="filterSavedNotes" data-arg="true" class="w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-3 py-2.5 text-xs text-white outline-none"><option value="">Todas as corretoras</option></select>
             </div>
             <div class="sm:col-span-1">
               <label for="savedNotesSearch" class="block text-[11px] uppercase tracking-wider text-slate-400 mb-1">Pesquisar nota</label>
               <div class="relative">
                 <i data-lucide="search" class="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2"></i>
-                <input id="savedNotesSearch" type="search" placeholder="Número, data ou arquivo..." oninput="filterSavedNotes(true)"
+                <input id="savedNotesSearch" type="search" placeholder="Número, data ou arquivo..." data-input="filterSavedNotes" data-arg="true"
                   class="w-full pl-9 pr-3 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-indigo-500" />
               </div>
             </div>
             <div>
               <label for="savedNotesYear" class="block text-[11px] uppercase tracking-wider text-slate-400 mb-1">Ano</label>
-              <select id="savedNotesYear" onchange="filterSavedNotes(true)" class="w-full px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-xs text-white focus:outline-none focus:border-indigo-500">
+              <select id="savedNotesYear" data-change="filterSavedNotes" data-arg="true" class="w-full px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-xs text-white focus:outline-none focus:border-indigo-500">
                 <option value="">Todos os anos</option>
               </select>
             </div>
             <div>
               <label for="savedNotesMonth" class="block text-[11px] uppercase tracking-wider text-slate-400 mb-1">Mês</label>
-              <select id="savedNotesMonth" onchange="filterSavedNotes(true)" class="w-full px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-xs text-white focus:outline-none focus:border-indigo-500">
+              <select id="savedNotesMonth" data-change="filterSavedNotes" data-arg="true" class="w-full px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-xs text-white focus:outline-none focus:border-indigo-500">
                 <option value="">Todos os meses</option>
                 <option value="01">Janeiro</option><option value="02">Fevereiro</option>
                 <option value="03">Março</option><option value="04">Abril</option>
@@ -644,9 +644,9 @@
           <div id="savedNotesPagination" class="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-slate-800 pt-3">
             <span id="savedNotesPageInfo" class="text-[11px] text-slate-500">Nenhuma nota</span>
             <div class="flex items-center gap-2">
-              <button type="button" onclick="changeSavedNotesPage(-1)" id="savedNotesPrev" class="px-3 py-2 rounded-lg bg-slate-800 text-slate-300 text-xs disabled:opacity-30 disabled:cursor-not-allowed">Anterior</button>
+              <button type="button" data-click="changeSavedNotesPage" data-arg="-1" id="savedNotesPrev" class="px-3 py-2 rounded-lg bg-slate-800 text-slate-300 text-xs disabled:opacity-30 disabled:cursor-not-allowed">Anterior</button>
               <span id="savedNotesPageNumber" class="text-xs font-mono text-slate-400 min-w-16 text-center">0 / 0</span>
-              <button type="button" onclick="changeSavedNotesPage(1)" id="savedNotesNext" class="px-3 py-2 rounded-lg bg-slate-800 text-slate-300 text-xs disabled:opacity-30 disabled:cursor-not-allowed">Próxima</button>
+              <button type="button" data-click="changeSavedNotesPage" data-arg="1" id="savedNotesNext" class="px-3 py-2 rounded-lg bg-slate-800 text-slate-300 text-xs disabled:opacity-30 disabled:cursor-not-allowed">Próxima</button>
             </div>
           </div>
           <p class="text-[11px] text-slate-500">Exibindo até 20 notas por página. Os PDFs armazenados não são carregados nesta listagem.</p>
@@ -667,7 +667,7 @@
             </p>
           </div>
 
-          <form id="manualForm" onsubmit="saveManualOperation(event)" class="space-y-4">
+          <form id="manualForm" data-submit="saveManualOperation" class="space-y-4">
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
                 <label class="block text-xs font-medium text-slate-300 mb-1">Ticker do Ativo *</label>
@@ -715,7 +715,7 @@
               </div>
               <div>
                 <label for="manCorretora" class="block text-xs font-medium text-slate-300 mb-1">Corretora</label>
-                <select id="manCorretora" onchange="onManCorretoraChange()" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none"><option value="">Não informada</option></select>
+                <select id="manCorretora" data-change="onManCorretoraChange" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none"><option value="">Não informada</option></select>
                 <input type="text" id="manCorretoraNova" maxlength="80" placeholder="Nome da nova corretora" class="hidden mt-2 w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none" />
               </div>
               <div>
@@ -740,12 +740,12 @@
                     id="manQuantidade"
                     placeholder="100"
                     required
-                    oninput="autoCalcManualTotal()"
+                    data-input="autoCalcManualTotal"
                     class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3 py-2.5 text-sm font-mono text-white outline-none"
                   />
                   <button
                     type="button"
-                    onclick="openCalculator('manQuantidade', 'Quantidade')"
+                    data-click="openCalculator" data-target="manQuantidade" data-label="Quantidade"
                     class="px-3 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-500/40 text-indigo-300 transition flex items-center justify-center"
                     title="Abrir Calculadora"
                   >
@@ -763,12 +763,12 @@
                     id="manPrecoUnitario"
                     placeholder="10.03"
                     required
-                    oninput="autoCalcManualTotal()"
+                    data-input="autoCalcManualTotal"
                     class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3 py-2.5 text-sm font-mono text-white outline-none"
                   />
                   <button
                     type="button"
-                    onclick="openCalculator('manPrecoUnitario', 'Valor Unitário (R$)')"
+                    data-click="openCalculator" data-target="manPrecoUnitario" data-label="Valor Unitário (R$)"
                     class="px-3 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-500/40 text-indigo-300 transition flex items-center justify-center"
                     title="Abrir Calculadora"
                   >
@@ -790,7 +790,7 @@
                   />
                   <button
                     type="button"
-                    onclick="openCalculator('manValorOperacao', 'Valor da Operação (R$)')"
+                    data-click="openCalculator" data-target="manValorOperacao" data-label="Valor da Operação (R$)"
                     class="px-3 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-500/40 text-indigo-300 transition flex items-center justify-center"
                     title="Abrir Calculadora"
                   >
@@ -814,7 +814,7 @@
                   />
                   <button
                     type="button"
-                    onclick="openCalculator('manTaxaCblc', 'Taxa CBLC (R$)')"
+                    data-click="openCalculator" data-target="manTaxaCblc" data-label="Taxa CBLC (R$)"
                     class="px-3 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-500/40 text-indigo-300 transition flex items-center justify-center"
                   >
                     <i data-lucide="calculator" class="w-4 h-4"></i>
@@ -834,7 +834,7 @@
                   />
                   <button
                     type="button"
-                    onclick="openCalculator('manTaxaBovespa', 'Total Bovespa / Soma (R$)')"
+                    data-click="openCalculator" data-target="manTaxaBovespa" data-label="Total Bovespa / Soma (R$)"
                     class="px-3 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-500/40 text-indigo-300 transition flex items-center justify-center"
                   >
                     <i data-lucide="calculator" class="w-4 h-4"></i>
@@ -854,7 +854,7 @@
                   />
                   <button
                     type="button"
-                    onclick="openCalculator('manTaxaCorretagem', 'Corretagem / Despesas (R$)')"
+                    data-click="openCalculator" data-target="manTaxaCorretagem" data-label="Corretagem / Despesas (R$)"
                     class="px-3 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-500/40 text-indigo-300 transition flex items-center justify-center"
                   >
                     <i data-lucide="calculator" class="w-4 h-4"></i>
@@ -885,7 +885,7 @@
         <h2 class="text-base font-bold text-white flex items-center gap-2"><i data-lucide="coins" class="w-5 h-5 text-emerald-400"></i>Proventos recebidos</h2>
         <p class="text-[11px] text-slate-400 mt-1">Dividendos, JCP e rendimentos vinculados a cada ativo da carteira.</p>
       </div>
-      <button type="button" onclick="openProvSheet()" class="w-full py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-sm shadow-lg shadow-emerald-500/20 transition flex items-center justify-center gap-2"><i data-lucide="plus" class="w-5 h-5"></i><span>Novo provento</span></button>
+      <button type="button" data-click="openProvSheet" class="w-full py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-sm shadow-lg shadow-emerald-500/20 transition flex items-center justify-center gap-2"><i data-lucide="plus" class="w-5 h-5"></i><span>Novo provento</span></button>
       <div id="provKpis" class="grid grid-cols-2 gap-2"></div>
       <div class="glass-card rounded-2xl p-4 space-y-2">
         <h3 class="text-sm font-bold text-white">Proventos por mês</h3>
@@ -902,24 +902,24 @@
       <div class="space-y-3">
         <div class="flex items-center justify-between gap-3">
           <h3 class="text-sm font-bold text-white">Histórico</h3>
-          <div class="flex gap-2 min-w-0"><select id="provFilterCorretora" onchange="renderProventos()" aria-label="Filtrar por corretora" class="min-w-0 max-w-[9.5rem] bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none"><option value="">Todas as corretoras</option></select><select id="provFilter" onchange="renderProventos()" aria-label="Filtrar por ativo" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-white outline-none"></select></div>
+          <div class="flex gap-2 min-w-0"><select id="provFilterCorretora" data-change="renderProventos" aria-label="Filtrar por corretora" class="min-w-0 max-w-[9.5rem] bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none"><option value="">Todas as corretoras</option></select><select id="provFilter" data-change="renderProventos" aria-label="Filtrar por ativo" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-white outline-none"></select></div>
         </div>
         <div id="provList" class="space-y-2"></div>
       </div>
-      <div id="provSheet" class="hidden fixed inset-0 z-[150] bg-black/60 flex items-end sm:items-center justify-center sm:p-4" onclick="if (event.target === this) closeProvSheet()" role="dialog" aria-modal="true" aria-label="Novo provento">
-      <form onsubmit="saveProvento(event)" class="glass-card w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 space-y-3 max-h-[92vh] overflow-y-auto border border-slate-700">
-        <div class="flex items-center justify-between"><h3 class="text-base font-bold text-white">Novo provento</h3><button type="button" onclick="closeProvSheet()" aria-label="Fechar" class="p-1.5 rounded-lg text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button></div>
+      <div id="provSheet" class="hidden fixed inset-0 z-[150] bg-black/60 flex items-end sm:items-center justify-center sm:p-4" data-click-self="closeProvSheet" role="dialog" aria-modal="true" aria-label="Novo provento">
+      <form data-submit="saveProvento" class="glass-card w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 space-y-3 max-h-[92vh] overflow-y-auto border border-slate-700">
+        <div class="flex items-center justify-between"><h3 class="text-base font-bold text-white">Novo provento</h3><button type="button" data-click="closeProvSheet" aria-label="Fechar" class="p-1.5 rounded-lg text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button></div>
         <div class="grid grid-cols-2 gap-3">
-          <div><label for="provTicker" class="block text-[11px] font-semibold text-slate-300 mb-1">Ativo *</label><select id="provTicker" onchange="onProvTickerChange()" required class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none font-mono"></select></div>
+          <div><label for="provTicker" class="block text-[11px] font-semibold text-slate-300 mb-1">Ativo *</label><select id="provTicker" data-change="onProvTickerChange" required class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none font-mono"></select></div>
           <div><label for="provTipo" class="block text-[11px] font-semibold text-slate-300 mb-1">Tipo *</label>
-            <select id="provTipo" onchange="provAutoTax()" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none">
+            <select id="provTipo" data-change="provAutoTax" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none">
               <option value="DIV">Dividendos</option><option value="JCP">JCP</option><option value="REND">Rendimentos (FII/ETF)</option><option value="AMORT">Amortização</option><option value="OUTRO">Outros</option>
             </select></div>
-          <div class="col-span-2"><label for="provCorretora" class="block text-[11px] font-semibold text-slate-300 mb-1">Corretora</label><select id="provCorretora" onchange="onProvCorretoraChange()" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none"><option value="">Não informada</option></select></div>
+          <div class="col-span-2"><label for="provCorretora" class="block text-[11px] font-semibold text-slate-300 mb-1">Corretora</label><select id="provCorretora" data-change="onProvCorretoraChange" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none"><option value="">Não informada</option></select></div>
           <div><label for="provData" class="block text-[11px] font-semibold text-slate-300 mb-1">Data do pagamento *</label><input id="provData" type="date" required class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none" /></div>
           <div><label for="provQtd" class="block text-[11px] font-semibold text-slate-300 mb-1">Quantidade (opcional)</label><input id="provQtd" type="text" inputmode="decimal" placeholder="Cotas na data" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none font-mono" /></div>
-          <div><label for="provBruto" class="block text-[11px] font-semibold text-slate-300 mb-1">Valor bruto (R$) *</label><input id="provBruto" type="text" inputmode="decimal" required oninput="provAutoTax()" placeholder="0,00" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none font-mono" /></div>
-          <div><label for="provImposto" class="block text-[11px] font-semibold text-slate-300 mb-1">IR retido (R$)</label><input id="provImposto" type="text" inputmode="decimal" oninput="this.dataset.manual='1'" placeholder="0,00" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none font-mono" /></div>
+          <div><label for="provBruto" class="block text-[11px] font-semibold text-slate-300 mb-1">Valor bruto (R$) *</label><input id="provBruto" type="text" inputmode="decimal" required data-input="provAutoTax" placeholder="0,00" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none font-mono" /></div>
+          <div><label for="provImposto" class="block text-[11px] font-semibold text-slate-300 mb-1">IR retido (R$)</label><input id="provImposto" type="text" inputmode="decimal" data-input="markManual" placeholder="0,00" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none font-mono" /></div>
         </div>
         <div><label for="provObs" class="block text-[11px] font-semibold text-slate-300 mb-1">Observação</label><input id="provObs" type="text" maxlength="120" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none" /></div>
         <p class="text-[11px] text-slate-500">JCP: o IR de 15% é sugerido automaticamente; você pode ajustar.</p>
@@ -933,7 +933,7 @@
         <h2 class="text-base font-bold text-white flex items-center gap-2"><i data-lucide="settings" class="w-5 h-5 text-emerald-400"></i>Configurações</h2>
       </div>
       <div class="glass-card rounded-3xl p-5">
-        <button type="button" onclick="switchTab('banco')" aria-label="Abrir Banco de dados" class="w-full flex items-center justify-between gap-3 text-left">
+        <button type="button" data-click="switchTab" data-arg="banco" aria-label="Abrir Banco de dados" class="w-full flex items-center justify-between gap-3 text-left">
           <div class="flex items-center gap-3 min-w-0">
             <i data-lucide="database" class="w-5 h-5 text-emerald-400 shrink-0"></i>
             <div class="min-w-0">
@@ -945,7 +945,7 @@
         </button>
       </div>
       <div class="glass-card rounded-3xl p-5">
-        <button type="button" onclick="switchTab('seguranca')" aria-label="Abrir Segurança" class="w-full flex items-center justify-between gap-3 text-left">
+        <button type="button" data-click="switchTab" data-arg="seguranca" aria-label="Abrir Segurança" class="w-full flex items-center justify-between gap-3 text-left">
           <div class="flex items-center gap-3 min-w-0">
             <i data-lucide="shield-check" class="w-5 h-5 text-indigo-400 shrink-0"></i>
             <div class="min-w-0">
@@ -957,7 +957,7 @@
         </button>
       </div>
       <div class="glass-card rounded-3xl p-5">
-        <button type="button" onclick="switchTab('apis')" aria-label="Abrir APIs" class="w-full flex items-center justify-between gap-3 text-left">
+        <button type="button" data-click="switchTab" data-arg="apis" aria-label="Abrir APIs" class="w-full flex items-center justify-between gap-3 text-left">
           <div class="flex items-center gap-3 min-w-0">
             <i data-lucide="plug" class="w-5 h-5 text-emerald-400 shrink-0"></i>
             <div class="min-w-0">
@@ -969,7 +969,7 @@
         </button>
       </div>
       <div class="glass-card rounded-3xl p-5">
-        <button type="button" onclick="switchTab('temas')" aria-label="Abrir Temas" class="w-full flex items-center justify-between gap-3 text-left">
+        <button type="button" data-click="switchTab" data-arg="temas" aria-label="Abrir Temas" class="w-full flex items-center justify-between gap-3 text-left">
           <div class="flex items-center gap-3 min-w-0">
             <i data-lucide="palette" class="w-5 h-5 text-indigo-300 shrink-0"></i>
             <div class="min-w-0">
@@ -981,7 +981,7 @@
         </button>
       </div>
       <div class="glass-card rounded-3xl p-5">
-        <button type="button" onclick="switchTab('sobre')" aria-label="Versão do app e novidades" class="w-full flex items-center justify-between gap-3 text-left">
+        <button type="button" data-click="switchTab" data-arg="sobre" aria-label="Versão do app e novidades" class="w-full flex items-center justify-between gap-3 text-left">
           <div class="flex items-center gap-3 min-w-0">
             <i data-lucide="info" class="w-5 h-5 text-slate-400 shrink-0"></i>
             <div class="min-w-0">
@@ -995,7 +995,7 @@
     </section>
 
     <section id="tab-seguranca" class="space-y-5 hidden">
-      <button type="button" onclick="switchTab('config')" class="flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white">
+      <button type="button" data-click="switchTab" data-arg="config" class="flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white">
         <i data-lucide="arrow-left" class="w-4 h-4"></i>Configurações
       </button>
       <!-- Card 2: Segurança para Abrir o App (PIN com Confirmação do PIN Atual + Biometria) -->
@@ -1016,7 +1016,7 @@
         </div>
 
         <!-- Formulário Dinâmico: Criar PIN (se não existir) ou Alterar PIN (exigindo o PIN Atual) -->
-        <form onsubmit="handlePinManagementSubmit(event)" class="space-y-3 bg-slate-900/70 p-4 rounded-2xl border border-slate-800">
+        <form data-submit="handlePinManagementSubmit" class="space-y-3 bg-slate-900/70 p-4 rounded-2xl border border-slate-800">
           <h3 id="pinFormTitle" class="text-xs font-bold text-emerald-400 uppercase tracking-wider">
             Criar PIN de Segurança
           </h3>
@@ -1091,7 +1091,7 @@
           <button
             type="button"
             id="biometricToggleBtn"
-            onclick="toggleSmartphoneBiometrics()"
+            data-click="toggleSmartphoneBiometrics"
             class="self-start sm:self-center px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 transition shrink-0"
           >
             Configurar Biometria
@@ -1101,7 +1101,7 @@
         <div class="flex flex-wrap gap-2 justify-between pt-1">
           <button
             type="button"
-            onclick="lockAppNow()"
+            data-click="lockAppNow"
             class="px-4 py-2.5 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-500/30 text-indigo-300 text-xs font-semibold transition flex items-center gap-1.5"
           >
             <i data-lucide="lock" class="w-4 h-4"></i>
@@ -1111,7 +1111,7 @@
           <button
             type="button"
             id="disableSecurityBtn"
-            onclick="disableAppSecurity()"
+            data-click="disableAppSecurity"
             class="px-4 py-2.5 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 text-xs font-semibold transition hidden"
           >
             Desativar Bloqueio por PIN
@@ -1123,7 +1123,7 @@
 
     <section id="tab-apis" class="space-y-5 hidden">
       <div class="flex items-center gap-3">
-        <button type="button" onclick="switchTab('config')" aria-label="Voltar para Configurações" class="p-2 -ml-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/60 transition">
+        <button type="button" data-click="switchTab" data-arg="config" aria-label="Voltar para Configurações" class="p-2 -ml-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/60 transition">
           <i data-lucide="arrow-left" class="w-5 h-5"></i>
         </button>
         <h2 class="text-lg font-bold text-white">APIs &amp; Integrações</h2>
@@ -1131,7 +1131,7 @@
       <h3 class="text-sm font-semibold text-slate-300">Integrações Disponíveis</h3>
 
       <div class="glass-card rounded-3xl p-5">
-        <button type="button" id="apiBrapiCard" onclick="switchTab('api-brapi')" aria-label="Abrir a configuração da API de Cotações Online (brapi.dev)" class="w-full flex items-center gap-4 text-left">
+        <button type="button" id="apiBrapiCard" data-click="switchTab" data-arg="api-brapi" aria-label="Abrir a configuração da API de Cotações Online (brapi.dev)" class="w-full flex items-center gap-4 text-left">
           <i data-lucide="globe" class="w-6 h-6 text-emerald-400 shrink-0"></i>
           <div class="min-w-0 flex-1">
             <h4 class="text-base font-bold text-white">API de Cotações Online (brapi.dev)</h4>
@@ -1152,7 +1152,7 @@
     </section>
 
     <section id="tab-api-brapi" class="space-y-5 hidden">
-      <button type="button" onclick="switchTab('apis')" class="flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white">
+      <button type="button" data-click="switchTab" data-arg="apis" class="flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white">
         <i data-lucide="arrow-left" class="w-4 h-4"></i>APIs &amp; Integrações
       </button>
       <!-- Card 1: Cotação Online via API brapi.dev -->
@@ -1172,7 +1172,7 @@
           </span>
         </div>
 
-        <form onsubmit="saveBrapiConfig(event)" class="space-y-3 bg-slate-900/70 p-4 rounded-2xl border border-slate-800">
+        <form data-submit="saveBrapiConfig" class="space-y-3 bg-slate-900/70 p-4 rounded-2xl border border-slate-800">
           <div>
             <label class="block text-xs font-semibold text-slate-300 mb-1">
               Token / Chave da API (brapi.dev)
@@ -1186,7 +1186,7 @@
               />
               <button
                 type="button"
-                onclick="toggleBrapiTokenVisibility()"
+                data-click="toggleBrapiTokenVisibility"
                 class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold shrink-0"
                 title="Mostrar/Ocultar Token"
                 aria-label="Mostrar ou ocultar o token"
@@ -1219,7 +1219,7 @@
             <input
               type="checkbox"
               id="brapiAutoSyncToggle"
-              onchange="toggleBrapiAutoSync(this.checked)"
+              data-change="toggleBrapiAutoSync"
               class="w-4 h-4 accent-emerald-500 rounded cursor-pointer"
             />
           </div>
@@ -1228,7 +1228,7 @@
         <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
           <button
             type="button"
-            onclick="testAndSyncBrapiConnection()"
+            data-click="testAndSyncBrapiConnection"
             class="px-4 py-2.5 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-500/30 text-indigo-300 text-xs font-semibold transition flex items-center gap-1.5"
           >
             <i data-lucide="refresh-cw" class="w-4 h-4"></i>
@@ -1241,24 +1241,24 @@
     </section>
 
     <section id="tab-temas" class="space-y-5 hidden">
-      <button type="button" onclick="switchTab('config')" class="flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white">
+      <button type="button" data-click="switchTab" data-arg="config" class="flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white">
         <i data-lucide="arrow-left" class="w-4 h-4"></i>Configurações
       </button>
       <div class="glass-card rounded-2xl p-4 space-y-3" role="radiogroup" aria-label="Tema do aplicativo">
         <h2 class="text-base font-bold text-white flex items-center gap-2"><i data-lucide="palette" class="w-5 h-5 text-indigo-300"></i>Temas</h2>
         <p class="text-[11px] text-slate-400">A escolha vale para este aparelho e é aplicada na hora.</p>
         <label id="themeOpt-default" class="flex items-center gap-3 p-3.5 rounded-2xl bg-slate-900 border border-slate-800 cursor-pointer transition">
-          <input type="radio" name="theme" value="default" onchange="setTheme('default')" class="accent-emerald-500" />
+          <input type="radio" name="theme" value="default" data-change="setTheme" data-arg="default" class="accent-emerald-500" />
           <span class="flex gap-1" aria-hidden="true"><span class="w-5 h-5 rounded-md border border-slate-600" style="background:#070b14"></span><span class="w-5 h-5 rounded-md border border-slate-600" style="background:#131c2e"></span><span class="w-5 h-5 rounded-md" style="background:#10b981"></span></span>
           <span class="min-w-0"><strong class="block text-sm text-white">Padrão (atual)</strong><span class="block text-[11px] text-slate-400">Azul-marinho escuro com destaques em verde.</span></span>
         </label>
         <label id="themeOpt-dark" class="flex items-center gap-3 p-3.5 rounded-2xl bg-slate-900 border border-slate-800 cursor-pointer transition">
-          <input type="radio" name="theme" value="dark" onchange="setTheme('dark')" class="accent-emerald-500" />
+          <input type="radio" name="theme" value="dark" data-change="setTheme" data-arg="dark" class="accent-emerald-500" />
           <span class="flex gap-1" aria-hidden="true"><span class="w-5 h-5 rounded-md border border-slate-600" style="background:#050505"></span><span class="w-5 h-5 rounded-md border border-slate-600" style="background:#141414"></span><span class="w-5 h-5 rounded-md" style="background:#10b981"></span></span>
           <span class="min-w-0"><strong class="block text-sm text-white">Escuro</strong><span class="block text-[11px] text-slate-400">Preto neutro, bom para telas AMOLED.</span></span>
         </label>
         <label id="themeOpt-light" class="flex items-center gap-3 p-3.5 rounded-2xl bg-slate-900 border border-slate-800 cursor-pointer transition">
-          <input type="radio" name="theme" value="light" onchange="setTheme('light')" class="accent-emerald-500" />
+          <input type="radio" name="theme" value="light" data-change="setTheme" data-arg="light" class="accent-emerald-500" />
           <span class="flex gap-1" aria-hidden="true"><span class="w-5 h-5 rounded-md border border-slate-600" style="background:#f1f5f9"></span><span class="w-5 h-5 rounded-md border border-slate-600" style="background:#ffffff"></span><span class="w-5 h-5 rounded-md" style="background:#059669"></span></span>
           <span class="min-w-0"><strong class="block text-sm text-white">Claro</strong><span class="block text-[11px] text-slate-400">Fundo claro, ideal para uso à luz do dia.</span></span>
         </label>
@@ -1266,7 +1266,7 @@
     </section>
 
     <section id="tab-sync" class="space-y-5 hidden">
-      <button type="button" onclick="switchTab('banco')" class="flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white">
+      <button type="button" data-click="switchTab" data-arg="banco" class="flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white">
         <i data-lucide="arrow-left" class="w-4 h-4"></i>Banco de dados
       </button>
       <div class="glass-card rounded-2xl p-3.5">
@@ -1279,9 +1279,9 @@
         <p class="text-[11px] text-slate-400">O banco é criptografado com a sua senha antes de ir para a pasta oculta do app no seu Drive. A sincronização acontece ao abrir o app e a cada alteração.</p>
         <p id="syncStatusText" class="text-xs text-slate-300"></p>
         <div class="flex flex-wrap gap-2">
-          <button type="button" id="syncConnectBtn" onclick="syncConnect()" class="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-slate-950 font-bold text-xs">Conectar ao Google Drive</button>
-          <button type="button" id="syncNowBtn" onclick="syncNow(true)" class="hidden px-4 py-2.5 rounded-xl bg-indigo-500 hover:bg-indigo-400 disabled:opacity-50 text-white font-bold text-xs">Sincronizar agora</button>
-          <button type="button" id="syncDisconnectBtn" onclick="syncDisconnect()" class="hidden px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs">Desconectar</button>
+          <button type="button" id="syncConnectBtn" data-click="syncConnect" class="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-slate-950 font-bold text-xs">Conectar ao Google Drive</button>
+          <button type="button" id="syncNowBtn" data-click="syncNow" data-arg="true" class="hidden px-4 py-2.5 rounded-xl bg-indigo-500 hover:bg-indigo-400 disabled:opacity-50 text-white font-bold text-xs">Sincronizar agora</button>
+          <button type="button" id="syncDisconnectBtn" data-click="syncDisconnect" class="hidden px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs">Desconectar</button>
         </div>
       </div>
 
@@ -1289,18 +1289,18 @@
         <h3 class="text-sm font-bold text-white">Quando os dados mudam em dois lugares</h3>
         <p class="text-[11px] text-slate-400">Vale para este aparelho. A versão que não for mantida fica guardada em Banco de dados → Backup e restauração.</p>
         <label class="flex items-start gap-3 p-3 rounded-xl bg-slate-900 border border-slate-800 cursor-pointer">
-          <input type="radio" name="conflictMode" id="conflictModeAuto" value="auto" onchange="setConflictMode('auto')" class="mt-0.5 accent-emerald-500" />
+          <input type="radio" name="conflictMode" id="conflictModeAuto" value="auto" data-change="setConflictMode" data-arg="auto" class="mt-0.5 accent-emerald-500" />
           <span><strong class="block text-xs text-white">Usar o mais recente (automático)</strong><span class="block text-[11px] text-slate-400">Compara o horário da última alteração e mantém a versão mais nova.</span></span>
         </label>
         <label class="flex items-start gap-3 p-3 rounded-xl bg-slate-900 border border-slate-800 cursor-pointer">
-          <input type="radio" name="conflictMode" id="conflictModeManual" value="manual" onchange="setConflictMode('manual')" class="mt-0.5 accent-emerald-500" />
+          <input type="radio" name="conflictMode" id="conflictModeManual" value="manual" data-change="setConflictMode" data-arg="manual" class="mt-0.5 accent-emerald-500" />
           <span><strong class="block text-xs text-white">Deixar eu decidir</strong><span class="block text-[11px] text-slate-400">No conflito, o selo mostra “Conflito” e o app pergunta qual versão manter quando você tocar nele ou em Sincronizar agora.</span></span>
         </label>
       </div>
     </section>
 
     <section id="tab-banco" class="space-y-5 hidden">
-      <button type="button" onclick="switchTab('config')" class="flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white">
+      <button type="button" data-click="switchTab" data-arg="config" class="flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white">
         <i data-lucide="arrow-left" class="w-4 h-4"></i>Configurações
       </button>
       <div class="glass-card rounded-2xl p-3.5">
@@ -1310,7 +1310,7 @@
 
       <!-- Sincronização (abre uma tela própria) -->
       <div class="glass-card rounded-2xl p-4">
-        <button type="button" onclick="switchTab('sync')" aria-label="Abrir sincronização" class="w-full flex items-center justify-between gap-3 text-left">
+        <button type="button" data-click="switchTab" data-arg="sync" aria-label="Abrir sincronização" class="w-full flex items-center justify-between gap-3 text-left">
           <div class="flex items-center gap-3 min-w-0">
             <i data-lucide="cloud" class="w-5 h-5 text-indigo-300 shrink-0"></i>
             <div class="min-w-0">
@@ -1348,17 +1348,17 @@
         <div class="grid grid-cols-1 gap-3">
           <button
             type="button"
-            onclick="downloadLocalSQLiteBackup()"
+            data-click="downloadLocalSQLiteBackup"
             class="p-3.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-xs transition flex items-center justify-center gap-2"
           >
             <i data-lucide="download" class="w-4 h-4 text-indigo-400"></i>
             <span>Baixar backup completo (.lgp)</span>
           </button>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <button type="button" onclick="downloadIndividualSQLiteDatabase('central')" class="p-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 font-semibold text-xs transition flex items-center justify-center gap-2">
+            <button type="button" data-click="downloadIndividualSQLiteDatabase" data-arg="central" class="p-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 font-semibold text-xs transition flex items-center justify-center gap-2">
               <i data-lucide="database" class="w-4 h-4 text-emerald-400"></i><span>Baixar central.db</span>
             </button>
-            <button type="button" onclick="downloadIndividualSQLiteDatabase('daily')" class="p-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 font-semibold text-xs transition flex items-center justify-center gap-2">
+            <button type="button" data-click="downloadIndividualSQLiteDatabase" data-arg="daily" class="p-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 font-semibold text-xs transition flex items-center justify-center gap-2">
               <i data-lucide="database" class="w-4 h-4 text-sky-400"></i><span>Baixar daily.db</span>
             </button>
           </div>
@@ -1367,7 +1367,7 @@
         <!-- Versão guardada (conflito ou limpeza) -->
         <div class="space-y-2">
           <p id="syncConflictInfo" class="hidden text-[11px] text-amber-300"></p>
-          <button type="button" id="syncRestoreConflictBtn" onclick="restoreConflictBackup()" class="hidden w-full px-4 py-2.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-200 font-semibold text-xs">Restaurar cópia guardada</button>
+          <button type="button" id="syncRestoreConflictBtn" data-click="restoreConflictBackup" class="hidden w-full px-4 py-2.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-200 font-semibold text-xs">Restaurar cópia guardada</button>
         </div>
 
         <!-- Restaurar Backup e Limpar todos os dados -->
@@ -1377,11 +1377,11 @@
             id="restoreDbInput"
             accept=".lgp,.db,.sqlite,.sqlite3,application/octet-stream"
             class="hidden"
-            onchange="handleRestoreSQLiteFile(event)"
+            data-change="handleRestoreSQLiteFile"
           />
           <button
             type="button"
-            onclick="requestRestoreDatabase()"
+            data-click="requestRestoreDatabase"
             class="p-3 rounded-xl bg-indigo-500/15 hover:bg-indigo-500/25 border border-indigo-500/30 text-indigo-300 font-semibold text-xs transition flex items-center justify-center gap-2"
           >
             <i data-lucide="upload-cloud" class="w-4 h-4"></i>
@@ -1390,7 +1390,7 @@
 
           <button
             type="button"
-            onclick="requestWipeDatabase()"
+            data-click="requestWipeDatabase"
             class="p-3 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-300 font-semibold text-xs transition flex items-center justify-center gap-2"
           >
             <i data-lucide="trash-2" class="w-4 h-4"></i>
@@ -1398,14 +1398,14 @@
           </button>
         </div>
         <p class="text-[11px] text-slate-500">“Limpar” remove os dados de investimentos e mantém PIN e configurações. Você pode preservar o backup do Drive ou apagar também a cópia criptografada da nuvem. “Excluir” remove ainda as configurações locais.</p>
-        <button type="button" onclick="requestDeleteDatabase()" class="w-full p-3 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-300 font-semibold text-xs transition flex items-center justify-center gap-2">
+        <button type="button" data-click="requestDeleteDatabase" class="w-full p-3 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-300 font-semibold text-xs transition flex items-center justify-center gap-2">
           <i data-lucide="trash" class="w-4 h-4"></i><span>Excluir banco de dados…</span>
         </button>
       </div>
     </section>
 
     <section id="tab-sobre" class="space-y-5 hidden">
-      <button type="button" onclick="switchTab('config')" class="flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white">
+      <button type="button" data-click="switchTab" data-arg="config" class="flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white">
         <i data-lucide="arrow-left" class="w-4 h-4"></i>Configurações
       </button>
       <div class="glass-card rounded-2xl p-4 space-y-3">
@@ -1413,8 +1413,8 @@
         <p id="aboutVersion" class="text-xs font-mono text-slate-300"></p>
         <p id="aboutUpdateStatus" class="text-xs text-slate-400"></p>
         <div class="flex flex-wrap gap-2">
-          <button type="button" id="aboutCheckBtn" onclick="checkForUpdate()" class="px-4 py-2.5 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-white font-bold text-xs">Verificar atualização</button>
-          <button type="button" id="aboutApplyBtn" onclick="showUpdateDialog()" class="hidden px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs">Ver novidades e atualizar</button>
+          <button type="button" id="aboutCheckBtn" data-click="checkForUpdate" class="px-4 py-2.5 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-white font-bold text-xs">Verificar atualização</button>
+          <button type="button" id="aboutApplyBtn" data-click="showUpdateDialog" class="hidden px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs">Ver novidades e atualizar</button>
         </div>
       </div>
       <div class="glass-card rounded-2xl p-4 space-y-4">
@@ -1428,11 +1428,11 @@
 
   <!-- ================= BARRA INFERIOR DE NAVEGAÇÃO ================= -->
   <nav id="bottomNavigation" class="bottom-navigation" aria-label="Navegação principal">
-    <button type="button" data-bottom-tab="carteira" onclick="navigateFromBottom('carteira')" aria-label="Carteira" title="Carteira" class="bottom-nav-item active"><i data-lucide="pie-chart"></i></button>
-    <button type="button" data-bottom-tab="posicoes" onclick="navigateFromBottom('posicoes')" aria-label="Ativos" title="Ativos" class="bottom-nav-item"><i data-lucide="layers"></i></button>
-    <button type="button" data-bottom-tab="adicionar" onclick="navigateFromBottom('adicionar')" aria-label="Adicionar ativos" title="Adicionar ativos" class="bottom-nav-item"><i data-lucide="plus"></i></button>
-    <button type="button" data-bottom-tab="relatorios" onclick="navigateFromBottom('relatorios')" aria-label="Relatórios" title="Relatórios" class="bottom-nav-item"><i data-lucide="file-bar-chart"></i></button>
-    <button type="button" data-bottom-tab="menu" onclick="toggleSideMenu(true)" aria-label="Abrir menu" title="Menu" aria-controls="sideMenu" aria-expanded="false" class="bottom-nav-item"><i data-lucide="menu"></i></button>
+    <button type="button" data-bottom-tab="carteira" data-click="navigateFromBottom" data-arg="carteira" aria-label="Carteira" title="Carteira" class="bottom-nav-item active"><i data-lucide="pie-chart"></i></button>
+    <button type="button" data-bottom-tab="posicoes" data-click="navigateFromBottom" data-arg="posicoes" aria-label="Ativos" title="Ativos" class="bottom-nav-item"><i data-lucide="layers"></i></button>
+    <button type="button" data-bottom-tab="adicionar" data-click="navigateFromBottom" data-arg="adicionar" aria-label="Adicionar ativos" title="Adicionar ativos" class="bottom-nav-item"><i data-lucide="plus"></i></button>
+    <button type="button" data-bottom-tab="relatorios" data-click="navigateFromBottom" data-arg="relatorios" aria-label="Relatórios" title="Relatórios" class="bottom-nav-item"><i data-lucide="file-bar-chart"></i></button>
+    <button type="button" data-bottom-tab="menu" data-click="toggleSideMenu" data-arg="true" aria-label="Abrir menu" title="Menu" aria-controls="sideMenu" aria-expanded="false" class="bottom-nav-item"><i data-lucide="menu"></i></button>
   </nav>
 
   <!-- ================= MODAL: CALCULADORA INTEGRADA ================= -->
@@ -1443,7 +1443,7 @@
           <span class="text-[11px] font-mono uppercase text-indigo-400 font-semibold">Calculadora Integrada</span>
           <h4 id="calcTargetLabel" class="text-sm font-bold text-white">Campo Selecionado</h4>
         </div>
-        <button onclick="closeCalculator()" class="p-1.5 rounded-lg text-slate-400 hover:text-white bg-slate-800">
+        <button data-click="closeCalculator" class="p-1.5 rounded-lg text-slate-400 hover:text-white bg-slate-800">
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
@@ -1456,46 +1456,46 @@
 
       <!-- Teclado da Calculadora -->
       <div class="grid grid-cols-4 gap-2 text-sm font-mono font-bold">
-        <button type="button" onclick="calcInput('C')" class="calc-btn py-3 rounded-xl bg-rose-500/20 text-rose-300 border border-rose-500/30">C</button>
-        <button type="button" onclick="calcInput('(')" class="calc-btn py-3 rounded-xl bg-slate-800 text-slate-300">(</button>
-        <button type="button" onclick="calcInput(')')" class="calc-btn py-3 rounded-xl bg-slate-800 text-slate-300">)</button>
-        <button type="button" onclick="calcInput('BACK')" class="calc-btn py-3 rounded-xl bg-slate-800 text-amber-300 flex items-center justify-center">
+        <button type="button" data-click="calcInput" data-arg="C" class="calc-btn py-3 rounded-xl bg-rose-500/20 text-rose-300 border border-rose-500/30">C</button>
+        <button type="button" data-click="calcInput" data-arg="(" class="calc-btn py-3 rounded-xl bg-slate-800 text-slate-300">(</button>
+        <button type="button" data-click="calcInput" data-arg=")" class="calc-btn py-3 rounded-xl bg-slate-800 text-slate-300">)</button>
+        <button type="button" data-click="calcInput" data-arg="BACK" class="calc-btn py-3 rounded-xl bg-slate-800 text-amber-300 flex items-center justify-center">
           <i data-lucide="delete" class="w-4 h-4"></i>
         </button>
 
-        <button type="button" onclick="calcInput('7')" class="calc-btn py-3.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-white">7</button>
-        <button type="button" onclick="calcInput('8')" class="calc-btn py-3.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-white">8</button>
-        <button type="button" onclick="calcInput('9')" class="calc-btn py-3.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-white">9</button>
-        <button type="button" onclick="calcInput('/')" class="calc-btn py-3.5 rounded-xl bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">÷</button>
+        <button type="button" data-click="calcInput" data-arg="7" class="calc-btn py-3.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-white">7</button>
+        <button type="button" data-click="calcInput" data-arg="8" class="calc-btn py-3.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-white">8</button>
+        <button type="button" data-click="calcInput" data-arg="9" class="calc-btn py-3.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-white">9</button>
+        <button type="button" data-click="calcInput" data-arg="/" class="calc-btn py-3.5 rounded-xl bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">÷</button>
 
-        <button type="button" onclick="calcInput('4')" class="calc-btn py-3.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-white">4</button>
-        <button type="button" onclick="calcInput('5')" class="calc-btn py-3.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-white">5</button>
-        <button type="button" onclick="calcInput('6')" class="calc-btn py-3.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-white">6</button>
-        <button type="button" onclick="calcInput('*')" class="calc-btn py-3.5 rounded-xl bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">×</button>
+        <button type="button" data-click="calcInput" data-arg="4" class="calc-btn py-3.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-white">4</button>
+        <button type="button" data-click="calcInput" data-arg="5" class="calc-btn py-3.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-white">5</button>
+        <button type="button" data-click="calcInput" data-arg="6" class="calc-btn py-3.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-white">6</button>
+        <button type="button" data-click="calcInput" data-arg="*" class="calc-btn py-3.5 rounded-xl bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">×</button>
 
-        <button type="button" onclick="calcInput('1')" class="calc-btn py-3.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-white">1</button>
-        <button type="button" onclick="calcInput('2')" class="calc-btn py-3.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-white">2</button>
-        <button type="button" onclick="calcInput('3')" class="calc-btn py-3.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-white">3</button>
-        <button type="button" onclick="calcInput('-')" class="calc-btn py-3.5 rounded-xl bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">−</button>
+        <button type="button" data-click="calcInput" data-arg="1" class="calc-btn py-3.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-white">1</button>
+        <button type="button" data-click="calcInput" data-arg="2" class="calc-btn py-3.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-white">2</button>
+        <button type="button" data-click="calcInput" data-arg="3" class="calc-btn py-3.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-white">3</button>
+        <button type="button" data-click="calcInput" data-arg="-" class="calc-btn py-3.5 rounded-xl bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">−</button>
 
-        <button type="button" onclick="calcInput('0')" class="calc-btn py-3.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-white">0</button>
-        <button type="button" onclick="calcInput('.')" class="calc-btn py-3.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-white">,</button>
-        <button type="button" onclick="calcEvaluate()" class="calc-btn py-3.5 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">=</button>
-        <button type="button" onclick="calcInput('+')" class="calc-btn py-3.5 rounded-xl bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">+</button>
+        <button type="button" data-click="calcInput" data-arg="0" class="calc-btn py-3.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-white">0</button>
+        <button type="button" data-click="calcInput" data-arg="." class="calc-btn py-3.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-white">,</button>
+        <button type="button" data-click="calcEvaluate" class="calc-btn py-3.5 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">=</button>
+        <button type="button" data-click="calcInput" data-arg="+" class="calc-btn py-3.5 rounded-xl bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">+</button>
       </div>
 
       <!-- Parte Inferior: Salvar ou Cancelar -->
       <div class="grid grid-cols-2 gap-3 pt-2 border-t border-slate-800">
         <button
           type="button"
-          onclick="closeCalculator()"
+          data-click="closeCalculator"
           class="py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs transition"
         >
           Cancelar
         </button>
         <button
           type="button"
-          onclick="applyCalculatorValue()"
+          data-click="applyCalculatorValue"
           class="py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs shadow-lg shadow-emerald-500/20 transition flex items-center justify-center gap-1.5"
         >
           <i data-lucide="check" class="w-4 h-4"></i>

@@ -3,9 +3,17 @@
 //   - suba "version" e "build" (o build define o nome do cache do service worker);
 //   - acrescente uma entrada nova no INÍCIO de "entries" com as mudanças, em linguagem simples.
 globalThis.LEDGERLY_CHANGELOG = {
-  version: '1.4.32',
-  build: 56,
+  version: '1.4.33',
+  build: 57,
   entries: [
+    {
+      version: '1.4.33',
+      date: '2026-11-27',
+      notes: [
+        'Segurança (CSP): removido unsafe-inline da diretiva script-src; o inicializador síncrono de tema foi extraído para src/js/core/theme-init.js sem causar flash visual.',
+        'Modularização pura: todos os 178 handlers inline do HTML e dos templates JS foram migrados para delegação de eventos em src/js/ui/actions.js, zerando as 75 funções restantes em globalThis e corrigindo o clique na legenda do gráfico da carteira.'
+      ]
+    },
     {
       version: '1.4.32',
       date: '2026-11-27',
