@@ -29,6 +29,22 @@ export function renderThemeCard() {
 // =========================================================================
 // 10. NAVEGAÇÃO ENTRE ABAS, SUB-ABAS E UTILITÁRIOS VISUAIS
 // =========================================================================
+let lastInputWasKeyboard = false;
+document.addEventListener('keydown', event => {
+  if (event.key === 'Tab' || event.key === 'Enter' || event.key === ' ' || event.key.startsWith('Arrow')) {
+    lastInputWasKeyboard = true;
+  }
+}, true);
+document.addEventListener('pointerdown', () => { lastInputWasKeyboard = false; }, true);
+
+function clearToolbarFocus() {
+  if (lastInputWasKeyboard) return;
+  const active = document.activeElement;
+  if (active instanceof HTMLElement && active.closest('#bottomNavigation, #sideMenu, header')) {
+    active.blur();
+  }
+}
+
 export function toggleSideMenu(open) {
   const panel = document.getElementById('sideMenu');
   const backdrop = document.getElementById('sideMenuBackdrop');
@@ -42,8 +58,17 @@ export function toggleSideMenu(open) {
   backdrop.setAttribute('aria-hidden', String(!shouldOpen));
   if (trigger) trigger.setAttribute('aria-expanded', String(shouldOpen));
   document.body.classList.toggle('bottom-sheet-open', shouldOpen);
-  if (shouldOpen) { const closeBtn = panel.querySelector('button[aria-label="Fechar menu"]'); if (closeBtn) closeBtn.focus(); }
-  else if (trigger && wasOpen) trigger.focus({preventScroll:true});
+  if (shouldOpen) {
+    if (lastInputWasKeyboard) {
+      const closeBtn = panel.querySelector('button[aria-label="Fechar menu"]');
+      if (closeBtn) closeBtn.focus();
+    } else {
+      clearToolbarFocus();
+    }
+  } else if (wasOpen) {
+    if (lastInputWasKeyboard && trigger) trigger.focus({ preventScroll: true });
+    else clearToolbarFocus();
+  }
 }
 export function navigateFromMenu(tabId) { toggleSideMenu(false); switchTab(tabId); }
 export function navigateFromBottom(tabId) { toggleSideMenu(false); switchTab(tabId); }
@@ -51,6 +76,7 @@ document.addEventListener('keydown', event => { if (event.key === 'Escape') togg
 
 export function switchTab(tabId, pushHistory = true) {
   toggleSideMenu(false);
+  clearToolbarFocus();
   const tabs = ['carteira', 'posicoes', 'adicionar', 'relatorios', 'proventos', 'config', 'banco', 'seguranca', 'apis', 'api-brapi', 'temas', 'sync', 'sobre'];
   tabs.forEach(t => {
     const section = document.getElementById(`tab-${t}`);
@@ -99,6 +125,7 @@ export function openAddAssetsSubTab(subTab) {
 }
 
 export function togglePrivacyMode() {
+  clearToolbarFocus();
   setIsPrivacyMode(!isPrivacyMode);
   const icon = document.getElementById('privacyIcon');
   icon.setAttribute('data-lucide', isPrivacyMode ? 'eye-off' : 'eye');

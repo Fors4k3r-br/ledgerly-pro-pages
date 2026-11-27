@@ -249,6 +249,9 @@ document.addEventListener('click', event => {
   }
   const el = event.target instanceof Element ? event.target.closest('[data-click]') : null;
   if (!el || el.disabled) return;
+  if (event.detail > 0 && el instanceof HTMLElement && el.closest('#bottomNavigation, #sideMenu, header')) {
+    el.blur();
+  }
   const fn = CLICK_ACTIONS[el.dataset.click];
   if (fn) fn(el, event);
 });
