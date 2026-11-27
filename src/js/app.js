@@ -1,19 +1,22 @@
 // Ponto único de entrada do Ledgerly Pro.
-// Todos os módulos se comunicam via ES Modules (import/export explícitos);
-// apenas as 75 funções chamadas por handlers inline permanecem em globalThis.
+// Arquitetura em camadas sem ciclos de import (DAG acíclico).
 import '../../changelog.js';
 import './portfolio/sectors-data.js';
 
 import './core/state.js';
+import './core/events.js';
+import './core/utils.js';
 import './ui/navigation.js';
 import './ui/calculator.js';
 import './core/database.js';
 import './security/lock-screen.js';
-import './portfolio/positions.js';
-import './portfolio/brapi.js';
+import './sync/google-drive.js';
 import './notes/notes-manager.js';
 import './reports/reports-view.js';
-import './dividends/proventos.js';
-import './sync/google-drive.js';
 import './pwa/updates-and-sw.js';
+import './portfolio/positions.js';
+import './portfolio/brapi.js';
+import './dividends/proventos.js';
+import './core/backup-restore.js';
+import './core/refresh.js';
 import './core/bootstrap.js';
