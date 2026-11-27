@@ -2,9 +2,9 @@
 
 import { deriveSyncKey, sha256Bytes, sealDb, openDb } from '../security/encryption.js';
 import { SQL, db, setDb, dailyDb, setDailyDb } from '../core/state.js';
+import { bytesOf, hexOf } from '../core/utils.js';
+import { refreshAllViews, registerAfterPersistHandler, registerEmptyIdbRecoveryHandler, registerFreshInstallResetHandler } from '../core/events.js';
 import { createCentralSchema, createDailySchema, getSetting, persistSQLiteToIndexedDB, queryAll, rowsFromDatabase } from '../core/database.js';
-import { refreshAllViews } from '../portfolio/positions.js';
-import { bytesOf, hexOf } from '../security/lock-screen.js';
 import { ledgerlyModal, openConfirmDialog, renderThemeCard, showToast, switchTab } from '../ui/navigation.js';
 
 // ===== SINCRONIZAÇÃO COM GOOGLE DRIVE =====
@@ -701,6 +701,16 @@ window.addEventListener('online', () => { updateConnectionBadge(); if (syncState
 window.addEventListener('offline', updateConnectionBadge);
 document.addEventListener('visibilitychange', () => { if (!document.hidden && syncState().connected && hasValidToken()) syncNow(false); });
 document.addEventListener('DOMContentLoaded', () => { updateConnectionBadge(); renderSyncCard(); refreshConflictInfo(); renderThemeCard(); });
+
+registerAfterPersistHandler(syncAfterPersist);
+registerFreshInstallResetHandler(async () => {
+  await idbKv('del', 'main');
+  await idbKv('del', 'refresh');
+  await clearConflictBackups();
+});
+registerEmptyIdbRecoveryHandler(() => {
+  saveSyncState({ recoveredFromEmptyIdb: true, hasLocalUserChanges: false });
+});
 
 // Compatibilidade apenas para handlers inline no HTML/templates.
 Object.assign(globalThis, {
