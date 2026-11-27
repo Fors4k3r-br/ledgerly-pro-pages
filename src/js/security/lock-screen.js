@@ -1,5 +1,8 @@
 // Proteção de acesso do aplicativo: PIN com PBKDF2, bloqueio de tentativas e biometria WebAuthn.
 
+import { getSetting, setSetting } from '../core/database.js';
+import { arrayBufferToBase64, openConfirmDialog, showToast, switchTab } from '../ui/navigation.js';
+
 // =========================================================================
 // 9. SEGURANÇA DO APP (VALIDAÇÃO DE PIN, ALTERAR PIN COM PIN ATUAL + WEBAUTHN)
 // =========================================================================
@@ -11,8 +14,8 @@ async function sha256Hash(text) {
 }
 
 const PIN_ITERATIONS = 210000;
-const hexOf = buf => Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
-const bytesOf = hex => new Uint8Array(hex.match(/.{2}/g).map(b => parseInt(b, 16)));
+export const hexOf = buf => Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+export const bytesOf = hex => new Uint8Array(hex.match(/.{2}/g).map(b => parseInt(b, 16)));
 async function pbkdf2Hex(pin, salt, iterations) {
   const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(pin), 'PBKDF2', false, ['deriveBits']);
   return hexOf(await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt, iterations }, key, 256));
@@ -21,7 +24,7 @@ async function hashPin(pin) {
   const salt = crypto.getRandomValues(new Uint8Array(16));
   return `pbkdf2$${PIN_ITERATIONS}$${hexOf(salt)}$${await pbkdf2Hex(pin, salt, PIN_ITERATIONS)}`;
 }
-async function verifyPin(pin, stored) {
+export async function verifyPin(pin, stored) {
   if (!stored) return false;
   if (stored.startsWith('pbkdf2$')) {
     const [, it, saltHex, hashHex] = stored.split('$');
@@ -165,7 +168,7 @@ async function disableAppSecurity() {
   });
 }
 
-function updateSecurityUIState() {
+export function updateSecurityUIState() {
   const hasPin = Boolean(getSetting('security_pin_hash'));
   const enabled = getSetting('security_enabled') === '1' && hasPin;
   const bioEnabled = getSetting('biometrics_enabled') === '1';
@@ -202,7 +205,7 @@ function updateSecurityUIState() {
   }
 }
 
-function checkLockScreenOnStartup() {
+export function checkLockScreenOnStartup() {
   const enabled = getSetting('security_enabled') === '1' && Boolean(getSetting('security_pin_hash'));
   if (enabled) {
     showLockScreen();
@@ -322,23 +325,12 @@ async function triggerBiometricUnlock() {
   }
 }
 
-// Ponte de compatibilidade: mantém os nomes públicos acessíveis ao HTML e aos demais módulos.
-Object.defineProperty(globalThis, "sha256Hash", { configurable: true, enumerable: true, get: () => sha256Hash, set: value => { sha256Hash = value; } });
-Object.defineProperty(globalThis, "PIN_ITERATIONS", { configurable: true, enumerable: true, get: () => PIN_ITERATIONS });
-Object.defineProperty(globalThis, "hexOf", { configurable: true, enumerable: true, get: () => hexOf });
-Object.defineProperty(globalThis, "bytesOf", { configurable: true, enumerable: true, get: () => bytesOf });
-Object.defineProperty(globalThis, "pbkdf2Hex", { configurable: true, enumerable: true, get: () => pbkdf2Hex, set: value => { pbkdf2Hex = value; } });
-Object.defineProperty(globalThis, "hashPin", { configurable: true, enumerable: true, get: () => hashPin, set: value => { hashPin = value; } });
-Object.defineProperty(globalThis, "verifyPin", { configurable: true, enumerable: true, get: () => verifyPin, set: value => { verifyPin = value; } });
-Object.defineProperty(globalThis, "pinLockRemaining", { configurable: true, enumerable: true, get: () => pinLockRemaining, set: value => { pinLockRemaining = value; } });
-Object.defineProperty(globalThis, "pinRegisterFail", { configurable: true, enumerable: true, get: () => pinRegisterFail, set: value => { pinRegisterFail = value; } });
-Object.defineProperty(globalThis, "pinResetFails", { configurable: true, enumerable: true, get: () => pinResetFails, set: value => { pinResetFails = value; } });
-Object.defineProperty(globalThis, "handlePinManagementSubmit", { configurable: true, enumerable: true, get: () => handlePinManagementSubmit, set: value => { handlePinManagementSubmit = value; } });
-Object.defineProperty(globalThis, "toggleSmartphoneBiometrics", { configurable: true, enumerable: true, get: () => toggleSmartphoneBiometrics, set: value => { toggleSmartphoneBiometrics = value; } });
-Object.defineProperty(globalThis, "disableAppSecurity", { configurable: true, enumerable: true, get: () => disableAppSecurity, set: value => { disableAppSecurity = value; } });
-Object.defineProperty(globalThis, "updateSecurityUIState", { configurable: true, enumerable: true, get: () => updateSecurityUIState, set: value => { updateSecurityUIState = value; } });
-Object.defineProperty(globalThis, "checkLockScreenOnStartup", { configurable: true, enumerable: true, get: () => checkLockScreenOnStartup, set: value => { checkLockScreenOnStartup = value; } });
-Object.defineProperty(globalThis, "lockAppNow", { configurable: true, enumerable: true, get: () => lockAppNow, set: value => { lockAppNow = value; } });
-Object.defineProperty(globalThis, "showLockScreen", { configurable: true, enumerable: true, get: () => showLockScreen, set: value => { showLockScreen = value; } });
-Object.defineProperty(globalThis, "handleUnlockWithPin", { configurable: true, enumerable: true, get: () => handleUnlockWithPin, set: value => { handleUnlockWithPin = value; } });
-Object.defineProperty(globalThis, "triggerBiometricUnlock", { configurable: true, enumerable: true, get: () => triggerBiometricUnlock, set: value => { triggerBiometricUnlock = value; } });
+// Compatibilidade apenas para handlers inline no HTML/templates.
+Object.assign(globalThis, {
+  disableAppSecurity,
+  handlePinManagementSubmit,
+  handleUnlockWithPin,
+  lockAppNow,
+  toggleSmartphoneBiometrics,
+  triggerBiometricUnlock
+});
