@@ -8,7 +8,7 @@ let currentCalcExpression = '';
 // =========================================================================
 // 6. CALCULADORA INTEGRADA (MODAL COM SALVAR E CANCELAR)
 // =========================================================================
-function openCalculator(targetInputId, labelText) {
+export function openCalculator(targetInputId, labelText) {
   currentCalcTargetId = targetInputId;
   document.getElementById('calcTargetLabel').textContent = labelText || 'Calculadora';
 
@@ -21,13 +21,13 @@ function openCalculator(targetInputId, labelText) {
   lucide.createIcons();
 }
 
-function closeCalculator() {
+export function closeCalculator() {
   document.getElementById('calculatorModal').classList.add('hidden');
   currentCalcTargetId = null;
   currentCalcExpression = '';
 }
 
-function calcInput(token) {
+export function calcInput(token) {
   if (token === 'C') {
     currentCalcExpression = '';
   } else if (token === 'BACK') {
@@ -112,7 +112,7 @@ function evaluateSafeMathExpression(expr) {
   }
 }
 
-function calcEvaluate() {
+export function calcEvaluate() {
   const val = evaluateSafeMathExpression(currentCalcExpression);
   if (val !== null) {
     currentCalcExpression = String(val);
@@ -131,7 +131,7 @@ function updateCalculatorDisplay() {
   }
 }
 
-function applyCalculatorValue() {
+export function applyCalculatorValue() {
   if (!currentCalcTargetId) {
     closeCalculator();
     return;
@@ -151,12 +151,3 @@ function applyCalculatorValue() {
   closeCalculator();
   showToast('Valor calculado aplicado ao campo!', 'success');
 }
-
-// Compatibilidade apenas para handlers inline no HTML/templates.
-Object.assign(globalThis, {
-  openCalculator,
-  closeCalculator,
-  calcInput,
-  calcEvaluate,
-  applyCalculatorValue
-});

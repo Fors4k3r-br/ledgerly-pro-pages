@@ -11,7 +11,7 @@ export function applyTheme(t) {
   document.documentElement.setAttribute('data-theme', t);
   const m = document.querySelector('meta[name="theme-color"]'); if (m) m.setAttribute('content', THEMES[t].meta);
 }
-function setTheme(t) { try { localStorage.setItem('ledgerly_theme', t); } catch (_) {} applyTheme(t); refreshAllViews(); }
+export function setTheme(t) { try { localStorage.setItem('ledgerly_theme', t); } catch (_) {} applyTheme(t); refreshAllViews(); }
 export function themeRgb(n, a) {
   const v = getComputedStyle(document.documentElement).getPropertyValue('--s-' + n).trim().replace(/\s+/g, ',') || '11,17,30';
   return a == null ? `rgb(${v})` : `rgba(${v},${a})`;
@@ -29,7 +29,7 @@ export function renderThemeCard() {
 // =========================================================================
 // 10. NAVEGAÇÃO ENTRE ABAS, SUB-ABAS E UTILITÁRIOS VISUAIS
 // =========================================================================
-function toggleSideMenu(open) {
+export function toggleSideMenu(open) {
   const panel = document.getElementById('sideMenu');
   const backdrop = document.getElementById('sideMenuBackdrop');
   const trigger = document.querySelector('[data-bottom-tab="menu"]');
@@ -45,8 +45,8 @@ function toggleSideMenu(open) {
   if (shouldOpen) { const closeBtn = panel.querySelector('button[aria-label="Fechar menu"]'); if (closeBtn) closeBtn.focus(); }
   else if (trigger && wasOpen) trigger.focus({preventScroll:true});
 }
-function navigateFromMenu(tabId) { toggleSideMenu(false); switchTab(tabId); }
-function navigateFromBottom(tabId) { toggleSideMenu(false); switchTab(tabId); }
+export function navigateFromMenu(tabId) { toggleSideMenu(false); switchTab(tabId); }
+export function navigateFromBottom(tabId) { toggleSideMenu(false); switchTab(tabId); }
 document.addEventListener('keydown', event => { if (event.key === 'Escape') toggleSideMenu(false); });
 
 export function switchTab(tabId, pushHistory = true) {
@@ -73,7 +73,7 @@ export function switchTab(tabId, pushHistory = true) {
   refreshAllViews();
 }
 
-function switchAddSubTab(subTab) {
+export function switchAddSubTab(subTab) {
   const subImportar = document.getElementById('subtab-importar');
   const subManual = document.getElementById('subtab-manual');
   const btnImportar = document.getElementById('subtab-btn-importar');
@@ -93,12 +93,12 @@ function switchAddSubTab(subTab) {
   lucide.createIcons();
 }
 
-function openAddAssetsSubTab(subTab) {
+export function openAddAssetsSubTab(subTab) {
   switchTab('adicionar');
   switchAddSubTab(subTab);
 }
 
-function togglePrivacyMode() {
+export function togglePrivacyMode() {
   setIsPrivacyMode(!isPrivacyMode);
   const icon = document.getElementById('privacyIcon');
   icon.setAttribute('data-lucide', isPrivacyMode ? 'eye-off' : 'eye');
@@ -196,15 +196,3 @@ export function showToast(message, type = 'info') {
     setTimeout(() => toast.remove(), 300);
   }, 3400);
 }
-
-// Compatibilidade apenas para handlers inline no HTML/templates.
-Object.assign(globalThis, {
-  navigateFromBottom,
-  navigateFromMenu,
-  openAddAssetsSubTab,
-  setTheme,
-  switchAddSubTab,
-  switchTab,
-  togglePrivacyMode,
-  toggleSideMenu
-});
