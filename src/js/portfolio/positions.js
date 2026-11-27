@@ -1,5 +1,7 @@
 // Consolidação de custódia, snapshot diário, gráficos da carteira, setores na UI, onboarding e cards de posições.
 
+import { calculateConsolidatedPositions } from './calculations.js';
+
 // =========================================================================
 // 2. CÁLCULO CONSOLIDADO DE CUSTÓDIA E PREÇO MÉDIO
 // =========================================================================
@@ -25,10 +27,7 @@ function getConsolidatedPositions(corretoraId = null, asOfISO = null) {
       ? queryAll('SELECT ticker, SUM(valor_liquido) AS total FROM proventos WHERE corretora_id = ? GROUP BY ticker', [Number(corretoraId)])
       : queryAll('SELECT ticker, SUM(valor_liquido) AS total FROM proventos GROUP BY ticker');
 
-  if (typeof globalThis.calculateConsolidatedPositions !== 'function') {
-    throw new Error('Módulo de cálculos da carteira não foi carregado.');
-  }
-  return globalThis.calculateConsolidatedPositions({ ops, quotesRows, lastPrice, provRows, corretoraId });
+  return calculateConsolidatedPositions({ ops, quotesRows, lastPrice, provRows, corretoraId });
 }
 
 // =========================================================================
