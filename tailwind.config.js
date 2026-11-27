@@ -1,6 +1,7 @@
 const v = n => `rgb(var(--s-${n}) / <alpha-value>)`;
 module.exports = {
   darkMode: 'class',
+  future: { hoverOnlyWhenSupported: true },
   content: ['./index.html', './src/js/**/*.js'],
   theme: { extend: {
     fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
