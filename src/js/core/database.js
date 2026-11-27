@@ -1,11 +1,19 @@
 // Camada SQLite (central.db e daily.db), persistência no IndexedDB, corretoras, backups e restauração.
 
+import { openDb } from '../security/encryption.js';
+import { SQL, setSQL, db, setDb, dailyDb, setDailyDb, setStagedNotesQueue, IDB_NAME, IDB_STORE, IDB_KEY, DAILY_IDB_KEY, LEGACY_IDB_KEY } from './state.js';
+import { escapeSavedNoteText, renderStagingScreen } from '../notes/notes-manager.js';
+import { refreshAllViews, renderOnboarding, renderPositionsExpandableCards, resetChartPreferences } from '../portfolio/positions.js';
+import { updateSecurityUIState } from '../security/lock-screen.js';
+import { applyRemoteDb, clearConflictBackups, deleteCloudDb, disconnectSyncLocal, driveDeleteExtras, driveDownload, driveFind, ensureKey, exportSyncPackage, getToken, hashCurrentPair, idbKv, packSyncPackage, prefetched, setPrefetched, renderSyncCard, sanitizedExport, saveSyncState, setSyncStatusFlags, syncAfterPersist, syncState, unpackSyncPackage, updateConnectionBadge, validateDatabasePair, wipeAllData } from '../sync/google-drive.js';
+import { applyTheme, ledgerlyModal, openConfirmDialog, showToast, switchTab } from '../ui/navigation.js';
+
 // =========================================================================
 // 1. BANCO DE DADOS SQLITE (sql.js + Persistência Binária no IndexedDB)
 // =========================================================================
-async function initSQLiteDatabase() {
+export async function initSQLiteDatabase() {
   try {
-    SQL = await initSqlJs({ locateFile: file => `./vendor/${file}` });
+    setSQL(await initSqlJs({ locateFile: file => `./vendor/${file}` }));
     // A instalação começa com dois bancos novos. Não importa o banco único legado,
     // nem suas configurações, conforme a validação explícita do usuário.
     const centralBytes = await loadBinaryFromIndexedDB(IDB_KEY);
@@ -20,8 +28,8 @@ async function initSQLiteDatabase() {
     } catch (_) {}
     const hadDriveConnection = Boolean(prevSync && prevSync.connected);
 
-    db = centralBytes ? new SQL.Database(new Uint8Array(centralBytes)) : new SQL.Database();
-    dailyDb = dailyBytes ? new SQL.Database(new Uint8Array(dailyBytes)) : new SQL.Database();
+    setDb(centralBytes ? new SQL.Database(new Uint8Array(centralBytes)) : new SQL.Database());
+    setDailyDb(dailyBytes ? new SQL.Database(new Uint8Array(dailyBytes)) : new SQL.Database());
     createCentralSchema(db);
     createDailySchema(dailyDb);
     await persistSQLiteToIndexedDB({ suppressSync: true });
@@ -30,7 +38,7 @@ async function initSQLiteDatabase() {
     await deleteIndexedDBKey(LEGACY_IDB_KEY);
     if (freshSplitInstall && !hadDriveConnection) {
       try { ['ledgerly_sync','ledgerly_pin_fails','ledgerly_pin_lock','ledgerly_theme','ledgerly_profit_range','ledgerly_chart_mode'].forEach(k => localStorage.removeItem(k)); } catch (_) {}
-      try { if (typeof profitRange !== 'undefined') profitRange='tudo'; if (typeof chartMode !== 'undefined') chartMode='ativo'; applyTheme('default'); } catch (_) {}
+      try { resetChartPreferences(); applyTheme('default'); } catch (_) {}
       try { await idbKv('del', 'main'); await idbKv('del', 'refresh'); await clearConflictBackups(); } catch (_) {}
     } else if (freshSplitInstall && hadDriveConnection) {
       // Preserva a conexão com o Drive, tokens e estado de bloqueio do PIN,
@@ -48,13 +56,13 @@ async function initSQLiteDatabase() {
 
 const LEDGERLY_SCHEMA_VERSION = 3;
 
-function rowsFromDatabase(database, sql, params = []) {
+export function rowsFromDatabase(database, sql, params = []) {
   const stmt = database.prepare(sql); stmt.bind(params); const rows = [];
   while (stmt.step()) rows.push(stmt.getAsObject());
   stmt.free(); return rows;
 }
 
-function createCentralSchema(target) {
+export function createCentralSchema(target) {
   target.run('PRAGMA foreign_keys = ON;');
   const has = rowsFromDatabase(target, "SELECT name FROM sqlite_master WHERE type='table' AND name='schema_migrations'").length > 0;
   if (has && Number(rowsFromDatabase(target, 'SELECT COALESCE(MAX(version),0) AS v FROM schema_migrations')[0]?.v || 0) >= LEDGERLY_SCHEMA_VERSION) { const ok=rowsFromDatabase(target,'PRAGMA integrity_check'); if (!ok.length || ok[0].integrity_check!=='ok' || rowsFromDatabase(target,'PRAGMA foreign_key_check').length) throw new Error('Falha na validação do central.db.'); return; }
@@ -88,7 +96,7 @@ function createCentralSchema(target) {
   if (rowsFromDatabase(target, 'PRAGMA foreign_key_check').length) throw new Error('Há vínculos inválidos no central.db.');
 }
 
-function createDailySchema(target) {
+export function createDailySchema(target) {
   target.run('PRAGMA foreign_keys = ON;');
   target.run(`
     CREATE TABLE IF NOT EXISTS schema_migrations (version INTEGER PRIMARY KEY, aplicado_em TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, descricao TEXT NOT NULL);
@@ -110,7 +118,7 @@ function ensureColumn(table, col, ddl) {
   const cols = queryAll(`PRAGMA table_info(${table})`).map(c => c.name);
   if (!cols.includes(col)) db.run(`ALTER TABLE ${table} ADD COLUMN ${col} ${ddl}`);
 }
-function ensureCorretora(nome, cnpj) {
+export function ensureCorretora(nome, cnpj) {
   nome = String(nome || '').replace(/\s+/g, ' ').trim();
   cnpj = String(cnpj || '').trim() || null;
   let row;
@@ -128,7 +136,7 @@ function ensureCorretoraColumns() {
   db.run('CREATE INDEX IF NOT EXISTS idx_notas_corretora ON notas_corretagem(corretora_id)');
   db.run('CREATE INDEX IF NOT EXISTS idx_proventos_corretora ON proventos(corretora_id)');
 }
-function fillCorretoraSelects() {
+export function fillCorretoraSelects() {
   const corr = queryAll('SELECT id, nome FROM corretoras ORDER BY nome');
   const opts = corr.map(c => `<option value="${c.id}">${escapeSavedNoteText(c.nome)}</option>`).join('');
   const set = (id, html) => {
@@ -144,7 +152,7 @@ function fillCorretoraSelects() {
   set('manCorretora', '<option value="">Não informada</option>' + opts + '<option value="__new__">＋ Nova corretora…</option>');
   onManCorretoraChange();
 }
-function onManCorretoraChange() {
+export function onManCorretoraChange() {
   const sel = document.getElementById('manCorretora'), nova = document.getElementById('manCorretoraNova');
   if (nova && sel) nova.classList.toggle('hidden', sel.value !== '__new__');
 }
@@ -164,7 +172,7 @@ function openIndexedDB() {
   });
 }
 
-async function persistSQLiteToIndexedDB(options = {}) {
+export async function persistSQLiteToIndexedDB(options = {}) {
   if (!db || !dailyDb) return;
   const centralData = db.export(), dailyData = dailyDb.export();
   const idb = await openIndexedDB();
@@ -216,7 +224,7 @@ async function deleteIndexedDBKey(key) {
 }
 
 // Helper para consultas SQL retornando array de objetos
-function queryAll(sql, params = []) {
+export function queryAll(sql, params = []) {
   if (!db) return [];
   const stmt = db.prepare(sql);
   stmt.bind(params);
@@ -228,12 +236,12 @@ function queryAll(sql, params = []) {
   return rows;
 }
 
-function getSetting(key) {
+export function getSetting(key) {
   const rows = queryAll('SELECT valor FROM configuracoes_seguranca WHERE chave = ?', [key]);
   return rows.length > 0 ? rows[0].valor : null;
 }
 
-async function setSetting(key, value, options = {}) {
+export async function setSetting(key, value, options = {}) {
   db.run('INSERT OR REPLACE INTO configuracoes_seguranca (chave, valor) VALUES (?, ?)', [key, String(value)]);
   await persistSQLiteToIndexedDB(options);
 }
@@ -241,7 +249,7 @@ async function setSetting(key, value, options = {}) {
 // =========================================================================
 // 8. BACKUP SQLITE NO GOOGLE DRIVE, BACKUP LOCAL E LIMPAR DADOS
 // =========================================================================
-function updateDatabaseStats() {
+export function updateDatabaseStats() {
   const nCount = queryAll('SELECT COUNT(*) as c FROM notas_corretagem')[0]?.c || 0;
   const oCount = queryAll('SELECT COUNT(*) as c FROM operacoes')[0]?.c || 0;
   const lastBkp = getSetting('ultimo_backup') || 'Nunca';
@@ -315,7 +323,7 @@ async function requestRestoreDatabase() {
 async function restoreDatabaseFromDrive() {
   try {
     if (!navigator.onLine) throw new Error('Conecte-se à internet para restaurar o backup do Google Drive.');
-    prefetched = null;
+    setPrefetched(null);
     const token = await getToken('interactive');
     const remote = await driveFind(token);
     if (!remote) throw new Error('Nenhum backup Ledgerly foi encontrado no Google Drive.');
@@ -334,7 +342,7 @@ async function restoreDatabaseFromDrive() {
           saveSyncState({ connected: true, needsLogin: false, fileId: remote.id, baseRev: rev, syncedHash: localHash,
             localChangedAt: (remote.appProperties || {}).ts || remote.modifiedTime || new Date().toISOString(), lastSync: new Date().toISOString(),
             hasLocalUserChanges: false, recoveredFromEmptyIdb: false });
-          syncPending = false; syncCloudMissing = false; syncConflict = false;
+          setSyncStatusFlags({ syncPending: false, syncCloudMissing: false, syncConflict: false });
           updateConnectionBadge(); renderSyncCard(); refreshAllViews(); renderOnboarding(); switchTab('carteira');
           showToast('Conjunto central.db + daily.db restaurado do Google Drive.', 'success');
           try { await driveDeleteExtras(token, remote.id); } catch (cleanupError) { console.warn('Não foi possível remover backups duplicados do Drive:', cleanupError); showToast('Restauração concluída, mas não foi possível remover todas as cópias duplicadas da nuvem.', 'info'); }
@@ -346,7 +354,7 @@ async function restoreDatabaseFromDrive() {
     });
   } catch (error) {
     if (!(error && error.cancelled)) { console.error('Restauração do Google Drive:', error); showToast('Falha ao restaurar da nuvem: ' + ((error && error.message) || error), 'error'); }
-  } finally { prefetched = null; }
+  } finally { setPrefetched(null); }
 }
 
 async function handleRestoreSQLiteFile(event) {
@@ -363,7 +371,7 @@ async function handleRestoreSQLiteFile(event) {
       nextCentral=new SQL.Database(pair.central); nextDaily=new SQL.Database(pair.daily);
       validateDatabasePair(nextCentral,nextDaily);
       const localBiometricId=getSetting('biometrics_cred_id');
-      window.__ledgerlyApplying=true; db=nextCentral; dailyDb=nextDaily;
+      window.__ledgerlyApplying=true; setDb(nextCentral); setDailyDb(nextDaily);
       createCentralSchema(db); createDailySchema(dailyDb);
       if (localBiometricId && !getSetting('biometrics_cred_id')) db.run("INSERT OR REPLACE INTO configuracoes_seguranca(chave,valor) VALUES('biometrics_cred_id',?)",[localBiometricId]);
       if (!getSetting('biometrics_cred_id')) db.run("INSERT OR REPLACE INTO configuracoes_seguranca(chave,valor) VALUES('biometrics_enabled','0')");
@@ -371,7 +379,7 @@ async function handleRestoreSQLiteFile(event) {
       restored=true;
     } catch(err) {
       console.error('Erro ao restaurar conjunto SQLite:',err);
-      try { if (db===nextCentral) db=previousCentral; if (dailyDb===nextDaily) dailyDb=previousDaily; nextCentral?.close(); nextDaily?.close(); } catch(_) {}
+      try { if (db===nextCentral) setDb(previousCentral); if (dailyDb===nextDaily) setDailyDb(previousDaily); nextCentral?.close(); nextDaily?.close(); } catch(_) {}
       showToast((err && err.message) || 'O arquivo selecionado não é um conjunto Ledgerly válido.', 'error');
     } finally { window.__ledgerlyApplying=false; }
     if (restored) {
@@ -401,7 +409,7 @@ async function requestWipeDatabase() {
         await wipeAllData({ keepLocalRecovery: !cloud, suppressSync: true });
         await disconnectSyncLocal();
         if (cloud) { await clearConflictBackups(); }
-        stagedNotesQueue = []; renderStagingScreen(); refreshAllViews(); updateConnectionBadge(); renderSyncCard();
+        setStagedNotesQueue([]); renderStagingScreen(); refreshAllViews(); updateConnectionBadge(); renderSyncCard();
         showToast(cloud ? 'Dados locais e backup do Google Drive excluídos.' : 'Dados locais limpos. O backup da nuvem foi preservado e a sincronização desconectada.', 'success');
       } catch (error) {
         showToast('Falha ao limpar os dados: ' + ((error && error.message) || error), 'error');
@@ -410,32 +418,13 @@ async function requestWipeDatabase() {
   });
 }
 
-// Ponte de compatibilidade: mantém os nomes públicos acessíveis ao HTML e aos demais módulos.
-Object.defineProperty(globalThis, "initSQLiteDatabase", { configurable: true, enumerable: true, get: () => initSQLiteDatabase, set: value => { initSQLiteDatabase = value; } });
-Object.defineProperty(globalThis, "LEDGERLY_SCHEMA_VERSION", { configurable: true, enumerable: true, get: () => LEDGERLY_SCHEMA_VERSION });
-Object.defineProperty(globalThis, "rowsFromDatabase", { configurable: true, enumerable: true, get: () => rowsFromDatabase, set: value => { rowsFromDatabase = value; } });
-Object.defineProperty(globalThis, "createCentralSchema", { configurable: true, enumerable: true, get: () => createCentralSchema, set: value => { createCentralSchema = value; } });
-Object.defineProperty(globalThis, "createDailySchema", { configurable: true, enumerable: true, get: () => createDailySchema, set: value => { createDailySchema = value; } });
-Object.defineProperty(globalThis, "createSchemaIfNotExists", { configurable: true, enumerable: true, get: () => createSchemaIfNotExists, set: value => { createSchemaIfNotExists = value; } });
-Object.defineProperty(globalThis, "ensureColumn", { configurable: true, enumerable: true, get: () => ensureColumn, set: value => { ensureColumn = value; } });
-Object.defineProperty(globalThis, "ensureCorretora", { configurable: true, enumerable: true, get: () => ensureCorretora, set: value => { ensureCorretora = value; } });
-Object.defineProperty(globalThis, "ensureCorretoraColumns", { configurable: true, enumerable: true, get: () => ensureCorretoraColumns, set: value => { ensureCorretoraColumns = value; } });
-Object.defineProperty(globalThis, "fillCorretoraSelects", { configurable: true, enumerable: true, get: () => fillCorretoraSelects, set: value => { fillCorretoraSelects = value; } });
-Object.defineProperty(globalThis, "onManCorretoraChange", { configurable: true, enumerable: true, get: () => onManCorretoraChange, set: value => { onManCorretoraChange = value; } });
-Object.defineProperty(globalThis, "setPositionsCorretora", { configurable: true, enumerable: true, get: () => setPositionsCorretora, set: value => { setPositionsCorretora = value; } });
-Object.defineProperty(globalThis, "openIndexedDB", { configurable: true, enumerable: true, get: () => openIndexedDB, set: value => { openIndexedDB = value; } });
-Object.defineProperty(globalThis, "persistSQLiteToIndexedDB", { configurable: true, enumerable: true, get: () => persistSQLiteToIndexedDB, set: value => { persistSQLiteToIndexedDB = value; } });
-Object.defineProperty(globalThis, "loadBinaryFromIndexedDB", { configurable: true, enumerable: true, get: () => loadBinaryFromIndexedDB, set: value => { loadBinaryFromIndexedDB = value; } });
-Object.defineProperty(globalThis, "deleteIndexedDBKey", { configurable: true, enumerable: true, get: () => deleteIndexedDBKey, set: value => { deleteIndexedDBKey = value; } });
-Object.defineProperty(globalThis, "queryAll", { configurable: true, enumerable: true, get: () => queryAll, set: value => { queryAll = value; } });
-Object.defineProperty(globalThis, "getSetting", { configurable: true, enumerable: true, get: () => getSetting, set: value => { getSetting = value; } });
-Object.defineProperty(globalThis, "setSetting", { configurable: true, enumerable: true, get: () => setSetting, set: value => { setSetting = value; } });
-Object.defineProperty(globalThis, "updateDatabaseStats", { configurable: true, enumerable: true, get: () => updateDatabaseStats, set: value => { updateDatabaseStats = value; } });
-Object.defineProperty(globalThis, "generateSQLiteBackupFileObject", { configurable: true, enumerable: true, get: () => generateSQLiteBackupFileObject, set: value => { generateSQLiteBackupFileObject = value; } });
-Object.defineProperty(globalThis, "downloadLocalSQLiteBackup", { configurable: true, enumerable: true, get: () => downloadLocalSQLiteBackup, set: value => { downloadLocalSQLiteBackup = value; } });
-Object.defineProperty(globalThis, "downloadIndividualSQLiteDatabase", { configurable: true, enumerable: true, get: () => downloadIndividualSQLiteDatabase, set: value => { downloadIndividualSQLiteDatabase = value; } });
-Object.defineProperty(globalThis, "triggerBlobDownload", { configurable: true, enumerable: true, get: () => triggerBlobDownload, set: value => { triggerBlobDownload = value; } });
-Object.defineProperty(globalThis, "requestRestoreDatabase", { configurable: true, enumerable: true, get: () => requestRestoreDatabase, set: value => { requestRestoreDatabase = value; } });
-Object.defineProperty(globalThis, "restoreDatabaseFromDrive", { configurable: true, enumerable: true, get: () => restoreDatabaseFromDrive, set: value => { restoreDatabaseFromDrive = value; } });
-Object.defineProperty(globalThis, "handleRestoreSQLiteFile", { configurable: true, enumerable: true, get: () => handleRestoreSQLiteFile, set: value => { handleRestoreSQLiteFile = value; } });
-Object.defineProperty(globalThis, "requestWipeDatabase", { configurable: true, enumerable: true, get: () => requestWipeDatabase, set: value => { requestWipeDatabase = value; } });
+// Compatibilidade apenas para handlers inline no HTML/templates.
+Object.assign(globalThis, {
+  downloadIndividualSQLiteDatabase,
+  downloadLocalSQLiteBackup,
+  handleRestoreSQLiteFile,
+  onManCorretoraChange,
+  requestRestoreDatabase,
+  requestWipeDatabase,
+  setPositionsCorretora
+});
