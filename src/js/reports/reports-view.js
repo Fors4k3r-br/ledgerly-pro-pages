@@ -2,10 +2,8 @@
 
 import { makeSheetXml, zipStore } from './excel-export.js';
 import { db } from '../core/state.js';
+import { PROV_TIPOS, escapeSavedNoteText, isoToBR, toISODate } from '../core/utils.js';
 import { queryAll } from '../core/database.js';
-import { PROV_TIPOS, isoToBR } from '../dividends/proventos.js';
-import { escapeSavedNoteText } from '../notes/notes-manager.js';
-import { toISODate } from '../portfolio/positions.js';
 import { showToast } from '../ui/navigation.js';
 
 // =========================================================================
