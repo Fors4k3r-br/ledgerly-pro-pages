@@ -1,5 +1,8 @@
 // Controle de versão, novidades do changelog, registro do Service Worker e tratamento global de erros.
 
+import { isLocalEmpty } from '../sync/google-drive.js';
+import { ledgerlyModal, showToast } from '../ui/navigation.js';
+
 // ===== VERSÃO E NOVIDADES =====
 const APP_INFO = globalThis.LEDGERLY_CHANGELOG || { version: '0.0.0', build: 0, entries: [] };
 const SEEN_VERSION_KEY = 'ledgerly_seen_version';
@@ -48,7 +51,7 @@ async function showUpdateDialog() {
   } else { const b = document.getElementById('updateBanner'); if (b) b.classList.add('hidden'); }
 }
 // Primeira abertura depois de uma atualização: mostra "O que há de novo" uma única vez
-async function maybeShowWhatsNew() {
+export async function maybeShowWhatsNew() {
   let seen = null; try { seen = localStorage.getItem(SEEN_VERSION_KEY); } catch (_) {}
   if (seen === APP_INFO.version) return;
   const mark = () => { try { localStorage.setItem(SEEN_VERSION_KEY, APP_INFO.version); } catch (_) {} };
@@ -121,17 +124,8 @@ if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.
   });
 }
 
-// Ponte de compatibilidade: mantém os nomes públicos acessíveis ao HTML e aos demais módulos.
-Object.defineProperty(globalThis, "APP_INFO", { configurable: true, enumerable: true, get: () => APP_INFO });
-Object.defineProperty(globalThis, "SEEN_VERSION_KEY", { configurable: true, enumerable: true, get: () => SEEN_VERSION_KEY });
-Object.defineProperty(globalThis, "pendingWorker", { configurable: true, enumerable: true, get: () => pendingWorker, set: value => { pendingWorker = value; } });
-Object.defineProperty(globalThis, "cmpVer", { configurable: true, enumerable: true, get: () => cmpVer, set: value => { cmpVer = value; } });
-Object.defineProperty(globalThis, "fmtChangelogDate", { configurable: true, enumerable: true, get: () => fmtChangelogDate, set: value => { fmtChangelogDate = value; } });
-Object.defineProperty(globalThis, "newerEntries", { configurable: true, enumerable: true, get: () => newerEntries, set: value => { newerEntries = value; } });
-Object.defineProperty(globalThis, "changelogText", { configurable: true, enumerable: true, get: () => changelogText, set: value => { changelogText = value; } });
-Object.defineProperty(globalThis, "askWorkerInfo", { configurable: true, enumerable: true, get: () => askWorkerInfo, set: value => { askWorkerInfo = value; } });
-Object.defineProperty(globalThis, "setPendingUpdate", { configurable: true, enumerable: true, get: () => setPendingUpdate, set: value => { setPendingUpdate = value; } });
-Object.defineProperty(globalThis, "showUpdateDialog", { configurable: true, enumerable: true, get: () => showUpdateDialog, set: value => { showUpdateDialog = value; } });
-Object.defineProperty(globalThis, "maybeShowWhatsNew", { configurable: true, enumerable: true, get: () => maybeShowWhatsNew, set: value => { maybeShowWhatsNew = value; } });
-Object.defineProperty(globalThis, "checkForUpdate", { configurable: true, enumerable: true, get: () => checkForUpdate, set: value => { checkForUpdate = value; } });
-Object.defineProperty(globalThis, "renderAbout", { configurable: true, enumerable: true, get: () => renderAbout, set: value => { renderAbout = value; } });
+// Compatibilidade apenas para handlers inline no HTML/templates.
+Object.assign(globalThis, {
+  checkForUpdate,
+  showUpdateDialog
+});
