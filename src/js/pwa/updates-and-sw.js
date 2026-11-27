@@ -37,7 +37,7 @@ function setPendingUpdate(worker) {
   if (btn) btn.onclick = () => showUpdateDialog();
   renderAbout();
 }
-async function showUpdateDialog() {
+export async function showUpdateDialog() {
   if (!pendingWorker) return;
   const info = await askWorkerInfo(pendingWorker);
   const entries = info ? newerEntries(info.entries, APP_INFO.version) : [];
@@ -62,7 +62,7 @@ export async function maybeShowWhatsNew() {
   await ledgerlyModal({ title: `O que há de novo · ${APP_INFO.version}`, message: changelogText(entries), buttons: [{ label: 'Entendi', value: 'ok', primary: true }] });
   mark();
 }
-async function checkForUpdate() {
+export async function checkForUpdate() {
   const reg = window.__swReg;
   if (!reg) { showToast('Atualizações automáticas não estão disponíveis neste navegador.', 'info'); return; }
   if (!navigator.onLine) { showToast('Sem internet para verificar atualizações.', 'info'); return; }
@@ -123,9 +123,3 @@ if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.
     } catch (error) { console.error('Falha ao registrar Service Worker:', error); }
   });
 }
-
-// Compatibilidade apenas para handlers inline no HTML/templates.
-Object.assign(globalThis, {
-  checkForUpdate,
-  showUpdateDialog
-});
