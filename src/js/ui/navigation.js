@@ -1,19 +1,24 @@
 // Navegação entre abas/menu, temas em runtime, formatação, diálogos, modais e notificações toast.
 
+import { isPrivacyMode, setIsPrivacyMode } from '../core/state.js';
+import { getSetting } from '../core/database.js';
+import { refreshAllViews } from '../portfolio/positions.js';
+import { verifyPin } from '../security/lock-screen.js';
+
 // Temas
 const THEMES = { default: { name: 'Padrão (atual)', meta: '#090d16' }, dark: { name: 'Escuro', meta: '#050505' }, light: { name: 'Claro', meta: '#f1f5f9' } };
 function currentTheme() { const t = document.documentElement.getAttribute('data-theme'); return THEMES[t] ? t : 'default'; }
-function applyTheme(t) {
+export function applyTheme(t) {
   t = THEMES[t] ? t : 'default';
   document.documentElement.setAttribute('data-theme', t);
   const m = document.querySelector('meta[name="theme-color"]'); if (m) m.setAttribute('content', THEMES[t].meta);
 }
 function setTheme(t) { try { localStorage.setItem('ledgerly_theme', t); } catch (_) {} applyTheme(t); refreshAllViews(); }
-function themeRgb(n, a) {
+export function themeRgb(n, a) {
   const v = getComputedStyle(document.documentElement).getPropertyValue('--s-' + n).trim().replace(/\s+/g, ',') || '11,17,30';
   return a == null ? `rgb(${v})` : `rgba(${v},${a})`;
 }
-function renderThemeCard() {
+export function renderThemeCard() {
   const cur = currentTheme();
   Object.keys(THEMES).forEach(k => {
     const el = document.getElementById('themeOpt-' + k); if (!el) return;
@@ -46,7 +51,7 @@ function navigateFromMenu(tabId) { toggleSideMenu(false); switchTab(tabId); }
 function navigateFromBottom(tabId) { toggleSideMenu(false); switchTab(tabId); }
 document.addEventListener('keydown', event => { if (event.key === 'Escape') toggleSideMenu(false); });
 
-function switchTab(tabId, pushHistory = true) {
+export function switchTab(tabId, pushHistory = true) {
   toggleSideMenu(false);
   const tabs = ['carteira', 'posicoes', 'adicionar', 'relatorios', 'proventos', 'config', 'banco', 'seguranca', 'apis', 'api-brapi', 'temas', 'sync', 'sobre'];
   tabs.forEach(t => {
@@ -96,30 +101,30 @@ function openAddAssetsSubTab(subTab) {
 }
 
 function togglePrivacyMode() {
-  isPrivacyMode = !isPrivacyMode;
+  setIsPrivacyMode(!isPrivacyMode);
   const icon = document.getElementById('privacyIcon');
   icon.setAttribute('data-lucide', isPrivacyMode ? 'eye-off' : 'eye');
   refreshAllViews();
 }
 
-function formatMoney(value) {
+export function formatMoney(value) {
   if (isPrivacyMode) return 'R$ •••••';
   const num = Number(value) || 0;
   return num.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
-function formatPercent(value) {
+export function formatPercent(value) {
   if (isPrivacyMode) return '•••%';
   const num = Number(value) || 0;
   return `${num.toFixed(2).replace('.', ',')}%`;
 }
 
-function formatNumber(value) {
+export function formatNumber(value) {
   const num = Number(value) || 0;
   return num.toLocaleString('pt-BR', { maximumFractionDigits: 4 });
 }
 
-function arrayBufferToBase64(buffer) {
+export function arrayBufferToBase64(buffer) {
   let binary = '';
   const bytes = new Uint8Array(buffer);
   const len = bytes.byteLength;
@@ -130,7 +135,7 @@ function arrayBufferToBase64(buffer) {
 }
 
 // Modal de Confirmação com suporte a verificação de senha
-function openConfirmDialog({ title, message, requirePin = false, onConfirm }) {
+export function openConfirmDialog({ title, message, requirePin = false, onConfirm }) {
   const modal = document.getElementById('customDialogModal');
   document.getElementById('dialogTitle').textContent = title;
   document.getElementById('dialogMessage').textContent = message;
@@ -163,7 +168,7 @@ function openConfirmDialog({ title, message, requirePin = false, onConfirm }) {
 }
 
 // Janela de diálogo simples (senha, conflito, confirmação)
-function ledgerlyModal({ title, message, password = 0, buttons }) {
+export function ledgerlyModal({ title, message, password = 0, buttons }) {
   return new Promise(resolve => {
     const ov = document.createElement('div');
     ov.className = 'fixed inset-0 z-[200] bg-black/70 flex items-center justify-center p-4';
@@ -201,7 +206,7 @@ function ledgerlyModal({ title, message, password = 0, buttons }) {
   });
 }
 
-function showToast(message, type = 'info') {
+export function showToast(message, type = 'info') {
   const container = document.getElementById('toastContainer');
   const toast = document.createElement('div');
   const colorMap = {
@@ -220,24 +225,14 @@ function showToast(message, type = 'info') {
   }, 3400);
 }
 
-// Ponte de compatibilidade: mantém os nomes públicos acessíveis ao HTML e aos demais módulos.
-Object.defineProperty(globalThis, "THEMES", { configurable: true, enumerable: true, get: () => THEMES });
-Object.defineProperty(globalThis, "currentTheme", { configurable: true, enumerable: true, get: () => currentTheme, set: value => { currentTheme = value; } });
-Object.defineProperty(globalThis, "applyTheme", { configurable: true, enumerable: true, get: () => applyTheme, set: value => { applyTheme = value; } });
-Object.defineProperty(globalThis, "setTheme", { configurable: true, enumerable: true, get: () => setTheme, set: value => { setTheme = value; } });
-Object.defineProperty(globalThis, "themeRgb", { configurable: true, enumerable: true, get: () => themeRgb, set: value => { themeRgb = value; } });
-Object.defineProperty(globalThis, "renderThemeCard", { configurable: true, enumerable: true, get: () => renderThemeCard, set: value => { renderThemeCard = value; } });
-Object.defineProperty(globalThis, "toggleSideMenu", { configurable: true, enumerable: true, get: () => toggleSideMenu, set: value => { toggleSideMenu = value; } });
-Object.defineProperty(globalThis, "navigateFromMenu", { configurable: true, enumerable: true, get: () => navigateFromMenu, set: value => { navigateFromMenu = value; } });
-Object.defineProperty(globalThis, "navigateFromBottom", { configurable: true, enumerable: true, get: () => navigateFromBottom, set: value => { navigateFromBottom = value; } });
-Object.defineProperty(globalThis, "switchTab", { configurable: true, enumerable: true, get: () => switchTab, set: value => { switchTab = value; } });
-Object.defineProperty(globalThis, "switchAddSubTab", { configurable: true, enumerable: true, get: () => switchAddSubTab, set: value => { switchAddSubTab = value; } });
-Object.defineProperty(globalThis, "openAddAssetsSubTab", { configurable: true, enumerable: true, get: () => openAddAssetsSubTab, set: value => { openAddAssetsSubTab = value; } });
-Object.defineProperty(globalThis, "togglePrivacyMode", { configurable: true, enumerable: true, get: () => togglePrivacyMode, set: value => { togglePrivacyMode = value; } });
-Object.defineProperty(globalThis, "formatMoney", { configurable: true, enumerable: true, get: () => formatMoney, set: value => { formatMoney = value; } });
-Object.defineProperty(globalThis, "formatPercent", { configurable: true, enumerable: true, get: () => formatPercent, set: value => { formatPercent = value; } });
-Object.defineProperty(globalThis, "formatNumber", { configurable: true, enumerable: true, get: () => formatNumber, set: value => { formatNumber = value; } });
-Object.defineProperty(globalThis, "arrayBufferToBase64", { configurable: true, enumerable: true, get: () => arrayBufferToBase64, set: value => { arrayBufferToBase64 = value; } });
-Object.defineProperty(globalThis, "openConfirmDialog", { configurable: true, enumerable: true, get: () => openConfirmDialog, set: value => { openConfirmDialog = value; } });
-Object.defineProperty(globalThis, "ledgerlyModal", { configurable: true, enumerable: true, get: () => ledgerlyModal, set: value => { ledgerlyModal = value; } });
-Object.defineProperty(globalThis, "showToast", { configurable: true, enumerable: true, get: () => showToast, set: value => { showToast = value; } });
+// Compatibilidade apenas para handlers inline no HTML/templates.
+Object.assign(globalThis, {
+  navigateFromBottom,
+  navigateFromMenu,
+  openAddAssetsSubTab,
+  setTheme,
+  switchAddSubTab,
+  switchTab,
+  togglePrivacyMode,
+  toggleSideMenu
+});

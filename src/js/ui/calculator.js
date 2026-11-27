@@ -1,5 +1,10 @@
 // Modal de calculadora integrada aos campos numéricos do Ledgerly Pro.
 
+import { showToast } from './navigation.js';
+
+let currentCalcTargetId = null;
+let currentCalcExpression = '';
+
 // =========================================================================
 // 6. CALCULADORA INTEGRADA (MODAL COM SALVAR E CANCELAR)
 // =========================================================================
@@ -147,11 +152,11 @@ function applyCalculatorValue() {
   showToast('Valor calculado aplicado ao campo!', 'success');
 }
 
-// Ponte de compatibilidade: mantém os nomes públicos acessíveis ao HTML e aos demais módulos.
-Object.defineProperty(globalThis, "openCalculator", { configurable: true, enumerable: true, get: () => openCalculator, set: value => { openCalculator = value; } });
-Object.defineProperty(globalThis, "closeCalculator", { configurable: true, enumerable: true, get: () => closeCalculator, set: value => { closeCalculator = value; } });
-Object.defineProperty(globalThis, "calcInput", { configurable: true, enumerable: true, get: () => calcInput, set: value => { calcInput = value; } });
-Object.defineProperty(globalThis, "evaluateSafeMathExpression", { configurable: true, enumerable: true, get: () => evaluateSafeMathExpression, set: value => { evaluateSafeMathExpression = value; } });
-Object.defineProperty(globalThis, "calcEvaluate", { configurable: true, enumerable: true, get: () => calcEvaluate, set: value => { calcEvaluate = value; } });
-Object.defineProperty(globalThis, "updateCalculatorDisplay", { configurable: true, enumerable: true, get: () => updateCalculatorDisplay, set: value => { updateCalculatorDisplay = value; } });
-Object.defineProperty(globalThis, "applyCalculatorValue", { configurable: true, enumerable: true, get: () => applyCalculatorValue, set: value => { applyCalculatorValue = value; } });
+// Compatibilidade apenas para handlers inline no HTML/templates.
+Object.assign(globalThis, {
+  openCalculator,
+  closeCalculator,
+  calcInput,
+  calcEvaluate,
+  applyCalculatorValue
+});
