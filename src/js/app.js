@@ -1,5 +1,5 @@
 // Ponto único de entrada do Ledgerly Pro.
-// Arquitetura em camadas sem ciclos de import (DAG acíclico).
+// Arquitetura 100% em ES Modules (DAG sem ciclos, zero funções em globalThis, CSP sem unsafe-inline em scripts).
 import '../../changelog.js';
 import './portfolio/sectors-data.js';
 
@@ -19,4 +19,5 @@ import './portfolio/brapi.js';
 import './dividends/proventos.js';
 import './core/backup-restore.js';
 import './core/refresh.js';
+import './ui/actions.js';
 import './core/bootstrap.js';
