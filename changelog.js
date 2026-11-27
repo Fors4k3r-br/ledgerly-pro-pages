@@ -3,9 +3,16 @@
 //   - suba "version" e "build" (o build define o nome do cache do service worker);
 //   - acrescente uma entrada nova no INÍCIO de "entries" com as mudanças, em linguagem simples.
 globalThis.LEDGERLY_CHANGELOG = {
-  version: '1.4.27',
-  build: 51,
+  version: '1.4.28',
+  build: 52,
   entries: [
+    {
+      version: '1.4.28',
+      date: '2026-11-27',
+      notes: [
+        'Calculadora: substituído o uso de Function() por um avaliador matemático próprio, compatível com a política de segurança (CSP), corrigindo a execução do botão = sem liberar unsafe-eval.'
+      ]
+    },
     {
       version: '1.4.27',
       date: '2026-11-26',
