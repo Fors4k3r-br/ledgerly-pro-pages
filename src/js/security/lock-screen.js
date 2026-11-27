@@ -1,7 +1,9 @@
 // Proteção de acesso do aplicativo: PIN com PBKDF2, bloqueio de tentativas e biometria WebAuthn.
 
+import { arrayBufferToBase64, bytesOf, hexOf } from '../core/utils.js';
+import { registerPinVerifier } from '../core/events.js';
 import { getSetting, setSetting } from '../core/database.js';
-import { arrayBufferToBase64, openConfirmDialog, showToast, switchTab } from '../ui/navigation.js';
+import { openConfirmDialog, showToast, switchTab } from '../ui/navigation.js';
 
 // =========================================================================
 // 9. SEGURANÇA DO APP (VALIDAÇÃO DE PIN, ALTERAR PIN COM PIN ATUAL + WEBAUTHN)
@@ -14,8 +16,6 @@ async function sha256Hash(text) {
 }
 
 const PIN_ITERATIONS = 210000;
-export const hexOf = buf => Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
-export const bytesOf = hex => new Uint8Array(hex.match(/.{2}/g).map(b => parseInt(b, 16)));
 async function pbkdf2Hex(pin, salt, iterations) {
   const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(pin), 'PBKDF2', false, ['deriveBits']);
   return hexOf(await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt, iterations }, key, 256));
@@ -24,7 +24,7 @@ async function hashPin(pin) {
   const salt = crypto.getRandomValues(new Uint8Array(16));
   return `pbkdf2$${PIN_ITERATIONS}$${hexOf(salt)}$${await pbkdf2Hex(pin, salt, PIN_ITERATIONS)}`;
 }
-export async function verifyPin(pin, stored) {
+async function verifyPin(pin, stored) {
   if (!stored) return false;
   if (stored.startsWith('pbkdf2$')) {
     const [, it, saltHex, hashHex] = stored.split('$');
@@ -324,6 +324,8 @@ async function triggerBiometricUnlock() {
     }
   }
 }
+
+registerPinVerifier(pin => verifyPin(pin, getSetting('security_pin_hash')));
 
 // Compatibilidade apenas para handlers inline no HTML/templates.
 Object.assign(globalThis, {
