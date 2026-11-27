@@ -41,13 +41,13 @@ export function loadBrapiSettingsToUI() {
   updateQuotesLabel();
 }
 
-function toggleBrapiTokenVisibility() {
+export function toggleBrapiTokenVisibility() {
   const input = document.getElementById('brapiTokenInput');
   if (!input) return;
   input.type = input.type === 'password' ? 'text' : 'password';
 }
 
-async function saveBrapiConfig(event) {
+export async function saveBrapiConfig(event) {
   event.preventDefault();
   const token = document.getElementById('brapiTokenInput').value.trim();
   await setSetting('brapi_token', token);
@@ -55,12 +55,12 @@ async function saveBrapiConfig(event) {
   showToast(token ? 'Chave de API brapi.dev salva no banco de dados!' : 'Chave da API removida.', 'success');
 }
 
-async function toggleBrapiAutoSync(checked) {
+export async function toggleBrapiAutoSync(checked) {
   await setSetting('brapi_auto_sync', checked ? '1' : '0');
   showToast(checked ? 'Atualização automática ativada!' : 'Atualização automática desativada.', 'info');
 }
 
-async function testAndSyncBrapiConnection() {
+export async function testAndSyncBrapiConnection() {
   const inputToken = document.getElementById('brapiTokenInput').value.trim();
   if (inputToken) {
     await setSetting('brapi_token', inputToken);
@@ -143,12 +143,3 @@ export async function syncAllQuotesFromBrapi(silent = false, isTestFromConfig = 
 }
 
 registerQuotesSyncHandler(() => syncAllQuotesFromBrapi());
-
-// Compatibilidade apenas para handlers inline no HTML/templates.
-Object.assign(globalThis, {
-  saveBrapiConfig,
-  syncAllQuotesFromBrapi,
-  testAndSyncBrapiConnection,
-  toggleBrapiAutoSync,
-  toggleBrapiTokenVisibility
-});

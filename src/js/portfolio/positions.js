@@ -112,7 +112,7 @@ let profitChart = null, lastPortfolio = { patrimonio: 0, investido: 0 };
 const PROFIT_RANGES = ['tudo', '1s', '1m', 'mes', '6m', 'sem', '12m', 'ano'];
 let profitRange = (() => { try { const r = localStorage.getItem('ledgerly_profit_range'); return PROFIT_RANGES.includes(r) ? r : 'tudo'; } catch (_) { return 'tudo'; } })();
 function isoFromDate(d) { return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }
-function setProfitRange(r) {
+export function setProfitRange(r) {
   profitRange = PROFIT_RANGES.includes(r) ? r : 'tudo';
   try { localStorage.setItem('ledgerly_profit_range', profitRange); } catch (_) {}
   renderProfitChart();
@@ -222,15 +222,15 @@ function renderSectorPending() {
   b.classList.toggle('hidden', !list.length);
   if (list.length) b.textContent = `⚠ ${list.length} ${list.length === 1 ? 'ativo sem classificação' : 'ativos sem classificação'} (${list.slice(0, 4).join(', ')}${list.length > 4 ? '…' : ''}). Toque para classificar.`;
 }
-function classifyNextPending() { const l = pendingSectorTickers(); if (l.length) openSectorEditor(l[0]); }
-function focusSetor(nome) {
+export function classifyNextPending() { const l = pendingSectorTickers(); if (l.length) openSectorEditor(l[0]); }
+export function focusSetor(nome) {
   const s = document.getElementById('positionsSetor'), f = document.getElementById('positionsFilter'), c = document.getElementById('positionsCorretora'), q = document.getElementById('positionsSearch');
   if (q) q.value = ''; if (f) f.value = 'active'; if (c) c.value = '';
   if (s) s.value = nome;
   switchTab('posicoes'); applyPositionsView();
 }
 // Janela para escolher setor e subsetor de um ativo (vale para todas as classes da empresa: PETR3, PETR4…)
-function openSectorEditor(ticker) {
+export function openSectorEditor(ticker) {
   return new Promise(resolve => {
     const c = classifyTicker(ticker), esc = escapeSavedNoteText;
     const ov = document.createElement('div');
@@ -275,20 +275,20 @@ function openSectorEditor(ticker) {
 let chartMode = (() => { try { const v = localStorage.getItem('ledgerly_chart_mode'); return v === 'corretora' || v === 'setor' ? v : 'ativo'; } catch (_) { return 'ativo'; } })();
 function resetChartPreferences() { profitRange = 'tudo'; chartMode = 'ativo'; }
 registerFreshInstallResetHandler(resetChartPreferences);
-function setChartMode(m) { chartMode = (m === 'corretora' || m === 'setor') ? m : 'ativo'; try { localStorage.setItem('ledgerly_chart_mode', chartMode); } catch (_) {} refreshAllViews(); }
-function focusTicker(t) {
+export function setChartMode(m) { chartMode = (m === 'corretora' || m === 'setor') ? m : 'ativo'; try { localStorage.setItem('ledgerly_chart_mode', chartMode); } catch (_) {} refreshAllViews(); }
+export function focusTicker(t) {
   const s = document.getElementById('positionsSearch'), f = document.getElementById('positionsFilter'), c = document.getElementById('positionsCorretora');
   if (s) s.value = t; if (f) f.value = 'active'; if (c) c.value = '';
   switchTab('posicoes');
   setTimeout(() => { const d = document.getElementById('pos-details-0'); if (d && !document.getElementById('pos-details-1') && d.classList.contains('hidden')) togglePositionCard(0); }, 60);
 }
-function focusCorretora(id) {
+export function focusCorretora(id) {
   const s = document.getElementById('positionsSearch'), f = document.getElementById('positionsFilter'), c = document.getElementById('positionsCorretora');
   if (s) s.value = ''; if (f) f.value = 'active'; if (c) c.value = String(id);
   switchTab('posicoes');
 }
 let outrosAtivos = [], outrosTotal = 0;
-function showOutrosAtivos() {
+export function showOutrosAtivos() {
   const lines = outrosAtivos.slice().sort((a, b) => b.value - a.value).map(o => `• ${o.ticker} — ${(outrosTotal > 0 ? (o.value / outrosTotal) * 100 : 0).toFixed(1)}%`);
   ledgerlyModal({ title: `Outros (${outrosAtivos.length} ativos)`, message: 'Ativos menores agrupados na rosca:\n' + lines.join('\n'), buttons: [{ label: 'Fechar', value: 'ok', primary: true }] });
 }
@@ -319,23 +319,23 @@ function renderPortfolioChart(activePositions, totalPatrimonio) {
   if (chartMode === 'setor') {
     const by = {};
     activePositions.forEach(p => { const s = classifyTicker(p.ticker).setor; by[s] = (by[s] || 0) + p.patrimonioAtual; });
-    slices = Object.entries(by).map(([label, value]) => ({ label, value, action: `focusSetor('${label}')` })).sort((a, b) => b.value - a.value);
+    slices = Object.entries(by).map(([label, value]) => ({ label, value, action: 'focusSetor', arg: label })).sort((a, b) => b.value - a.value);
   } else if (chartMode === 'corretora') {
     const shortName = n => n.replace(/\s+(S\.?\/?A\.?|LTDA\.?|CCTVM|DTVM|CTVM)\b.*$/i, '').trim() || n;
     queryAll('SELECT id, nome FROM corretoras ORDER BY nome').forEach(c => {
       const v = getConsolidatedPositions(c.id).filter(p => p.qtdAtual > 0).reduce((a, p) => a + p.patrimonioAtual, 0);
-      if (v > 0) slices.push({ label: shortName(c.nome), value: v, action: `focusCorretora(${Number(c.id)})` });
+      if (v > 0) slices.push({ label: shortName(c.nome), value: v, action: 'focusCorretora', arg: String(Number(c.id)) });
     });
     const semCorr = getConsolidatedPositions('none').filter(p => p.qtdAtual > 0).reduce((a, p) => a + p.patrimonioAtual, 0);
-    if (semCorr > 0.005) slices.push({ label: 'Sem corretora', value: semCorr, action: "focusCorretora('none')" });
+    if (semCorr > 0.005) slices.push({ label: 'Sem corretora', value: semCorr, action: 'focusCorretora', arg: 'none' });
     slices.sort((a, b) => b.value - a.value);
   } else {
     const sorted = activePositions.slice().sort((a, b) => b.patrimonioAtual - a.patrimonioAtual);
     // Até 8 ativos aparecem sozinhos; só acima disso os menores são agrupados em "Outros" (que abre a lista)
     const head = sorted.length > 8 ? sorted.slice(0, 7) : sorted, rest = sorted.length > 8 ? sorted.slice(7) : [];
-    head.forEach(p => slices.push({ label: p.ticker, value: p.patrimonioAtual, action: `focusTicker('${p.ticker}')` }));
+    head.forEach(p => slices.push({ label: p.ticker, value: p.patrimonioAtual, action: 'focusTicker', arg: p.ticker }));
     outrosAtivos = rest.map(p => ({ ticker: p.ticker, value: p.patrimonioAtual }));
-    if (rest.length) slices.push({ label: `Outros (${rest.length})`, value: rest.reduce((a, p) => a + p.patrimonioAtual, 0), action: 'showOutrosAtivos()', grey: true });
+    if (rest.length) slices.push({ label: `Outros (${rest.length})`, value: rest.reduce((a, p) => a + p.patrimonioAtual, 0), action: 'showOutrosAtivos', grey: true });
   }
   const colorOf = (s, idx) => ((s.grey || !s.action) ? '#64748b' : palette[idx % palette.length]);
   const denom = slices.reduce((a, s) => a + s.value, 0) || totalPatrimonio;   // as fatias sempre somam 100%
@@ -359,7 +359,7 @@ function renderPortfolioChart(activePositions, totalPatrimonio) {
   legendList.innerHTML = slices.map((s, idx) => {
     const pct = denom > 0 ? ((s.value / denom) * 100) : 0;
     return `
-      <button type="button" ${s.action ? `onclick="${s.action}"` : 'disabled'} class="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/90 border border-slate-800/90 text-xs text-left transition ${s.action ? 'hover:border-emerald-500/50' : 'cursor-default'}">
+      <button type="button" ${s.action ? `data-click="${s.action}"${s.arg !== undefined ? ` data-arg="${escapeSavedNoteText(s.arg)}"` : ''}` : 'disabled'} class="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/90 border border-slate-800/90 text-xs text-left transition ${s.action ? 'hover:border-emerald-500/50' : 'cursor-default'}">
         <div class="flex items-center gap-2 truncate">
           <span class="w-3 h-3 rounded-full shrink-0" style="background-color: ${colorOf(s, idx)}"></span>
           <strong class="font-mono text-white truncate">${escapeSavedNoteText(s.label)}</strong>
@@ -383,13 +383,13 @@ export function renderOnboarding() {
   ];
   card.innerHTML = `
     <div><h2 class="text-lg font-extrabold text-white">Bem-vindo ao Ledgerly Pro</h2><p class="text-xs text-slate-400 mt-0.5">Você pode restaurar uma carteira existente ou começar uma nova.</p></div>
-    <button type="button" onclick="requestRestoreDatabase()" class="w-full flex items-center gap-3 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/40 hover:border-emerald-400 text-left transition">
+    <button type="button" data-click="requestRestoreDatabase" class="w-full flex items-center gap-3 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/40 hover:border-emerald-400 text-left transition">
       <span class="w-11 h-11 rounded-xl bg-emerald-500/15 flex items-center justify-center text-emerald-400 shrink-0"><i data-lucide="cloud-download" class="w-6 h-6"></i></span>
       <span class="min-w-0 flex-1"><strong class="block text-sm text-white">Restaurar banco de dados</strong><span class="block text-xs text-slate-300">Recupere sua carteira e seu histórico de um arquivo local ou do Google Drive</span></span>
       <i data-lucide="chevron-right" class="w-5 h-5 text-emerald-300 shrink-0"></i>
     </button>
     <div class="pt-1"><p class="text-[11px] text-slate-500 uppercase tracking-wider font-bold mb-2">Ou configure uma nova carteira</p><div class="space-y-2">${steps.map(([icon, title, desc, tab, done]) => `
-      <button type="button" onclick="switchTab('${tab}')" class="w-full flex items-center gap-3 p-3.5 rounded-2xl bg-slate-900 border ${done ? 'border-emerald-500/40' : 'border-slate-800'} hover:border-emerald-500/50 text-left transition">
+      <button type="button" data-click="switchTab" data-arg="${tab}" class="w-full flex items-center gap-3 p-3.5 rounded-2xl bg-slate-900 border ${done ? 'border-emerald-500/40' : 'border-slate-800'} hover:border-emerald-500/50 text-left transition">
         <span class="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-slate-300 shrink-0"><i data-lucide="${icon}" class="w-5 h-5"></i></span>
         <span class="min-w-0 flex-1"><strong class="block text-sm text-white">${title}</strong><span class="block text-xs text-slate-400">${desc}</span></span>
         <i data-lucide="${done ? 'check-circle-2' : 'chevron-right'}" class="w-5 h-5 ${done ? 'text-emerald-400' : 'text-slate-400'} shrink-0"></i>
@@ -417,7 +417,7 @@ export function updateQuotesLabel() {
   } else el.textContent = old ? `Cotações: última atualização ${old}` : 'Cotações ainda não atualizadas';
 }
 let lastQuoteTap = 0;
-function onQuotesBlockTap() {
+export function onQuotesBlockTap() {
   const wait = 30000 - (Date.now() - lastQuoteTap);
   if (wait > 0) { showToast(`Aguarde ${Math.ceil(wait / 1000)} s para atualizar de novo.`, 'info'); return; }
   lastQuoteTap = Date.now();
@@ -464,7 +464,7 @@ export function renderPositionsExpandableCards(positions) {
   applyPositionsView();
 }
 
-function applyPositionsView() {
+export function applyPositionsView() {
   const container = document.getElementById('positionsCardsContainer');
   if (!container) return;
   const search = (document.getElementById('positionsSearch')?.value || '').trim().toUpperCase();
@@ -492,7 +492,7 @@ function applyPositionsView() {
     b.setAttribute('aria-pressed', String(on));
   });
   const closedCount = latestPositionsData.filter(p => p.qtdAtual <= 0).length;
-  const closedLink = (filter === 'active' && closedCount) ? `<button type="button" onclick="setPositionsFilter('closed')" class="w-full text-center text-xs text-slate-400 hover:text-slate-200 py-2">Mostrar ${closedCount} ${closedCount === 1 ? 'posição encerrada' : 'posições encerradas'}</button>` : '';
+  const closedLink = (filter === 'active' && closedCount) ? `<button type="button" data-click="setPositionsFilter" data-arg="closed" class="w-full text-center text-xs text-slate-400 hover:text-slate-200 py-2">Mostrar ${closedCount} ${closedCount === 1 ? 'posição encerrada' : 'posições encerradas'}</button>` : '';
   if (!latestPositionsData.length) {
     container.innerHTML = `<div class="glass-card rounded-2xl p-8 text-center space-y-2"><p class="text-sm font-semibold text-slate-300">Nenhum ativo registrado ainda</p><p class="text-xs text-slate-500">Importe uma nota de corretagem ou adicione uma operação manual.</p></div>`;
     return;
@@ -511,10 +511,10 @@ function applyPositionsView() {
     const badgeText = `${sgn(res)}${formatMoney(res)}${hasPosition ? ` (${sgn(pos.rentabilidade)}${formatPercent(pos.rentabilidade)})` : ' realizado'}`;
     const kv = (l, v, c = 'text-slate-200') => `<div class="flex items-baseline justify-between gap-3 py-1.5"><dt class="text-xs text-slate-400">${l}</dt><dd class="text-xs font-mono text-right ${c}">${v}</dd></div>`;
     const sec = (t, body) => `<section><h5 class="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">${t}</h5><dl class="divide-y divide-slate-800/70">${body}</dl></section>`;
-    const opRow = op => `<div class="flex items-center justify-between gap-2 py-2 text-xs"><div class="flex items-center gap-2 min-w-0"><span class="px-1.5 py-0.5 rounded text-[11px] font-semibold ${op.tipo_ordem === 'C' ? 'bg-slate-800 text-slate-200' : 'bg-amber-500/20 text-amber-300'}">${op.tipo_ordem === 'C' ? 'Compra' : 'Venda'}</span><span class="font-mono text-slate-400" title="Nota: ${esc(op.numero_nota || 'Manual')}">${esc(op.data_operacao)}</span></div><div class="flex items-center gap-1.5"><span class="font-mono text-slate-200">${formatNumber(op.quantidade)} × ${formatMoney(op.preco_unitario)}</span><button type="button" onclick="deleteSingleOperation(${Number(op.id)})" class="text-rose-400 hover:text-rose-300 p-1.5" aria-label="Excluir lançamento de ${esc(op.data_operacao)}" title="Excluir lançamento"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div></div>`;
+    const opRow = op => `<div class="flex items-center justify-between gap-2 py-2 text-xs"><div class="flex items-center gap-2 min-w-0"><span class="px-1.5 py-0.5 rounded text-[11px] font-semibold ${op.tipo_ordem === 'C' ? 'bg-slate-800 text-slate-200' : 'bg-amber-500/20 text-amber-300'}">${op.tipo_ordem === 'C' ? 'Compra' : 'Venda'}</span><span class="font-mono text-slate-400" title="Nota: ${esc(op.numero_nota || 'Manual')}">${esc(op.data_operacao)}</span></div><div class="flex items-center gap-1.5"><span class="font-mono text-slate-200">${formatNumber(op.quantidade)} × ${formatMoney(op.preco_unitario)}</span><button type="button" data-click="deleteSingleOperation" data-arg="${Number(op.id)}" class="text-rose-400 hover:text-rose-300 p-1.5" aria-label="Excluir lançamento de ${esc(op.data_operacao)}" title="Excluir lançamento"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div></div>`;
     const ops = pos.operacoes.slice().reverse();
     const cl = classifyTicker(pos.ticker);
-    const setorBtn = `<button type="button" onclick="openSectorEditor('${esc(pos.ticker)}')" class="text-right underline decoration-dotted underline-offset-2 hover:text-emerald-300" aria-label="Alterar setor de ${esc(pos.ticker)}">${esc(cl.setor)}${cl.subsetor ? ' · ' + esc(cl.subsetor) : ''}${cl.origem === 'manual' ? ' (manual)' : cl.origem === 'pendente' ? ' — classificar' : ''}</button>`;
+    const setorBtn = `<button type="button" data-click="openSectorEditor" data-arg="${esc(pos.ticker)}" class="text-right underline decoration-dotted underline-offset-2 hover:text-emerald-300" aria-label="Alterar setor de ${esc(pos.ticker)}">${esc(cl.setor)}${cl.subsetor ? ' · ' + esc(cl.subsetor) : ''}${cl.origem === 'manual' ? ' (manual)' : cl.origem === 'pendente' ? ' — classificar' : ''}</button>`;
     const posicao = sec('Posição',
       kv('Custo da posição', formatMoney(pos.valorInvestido)) +
       kv('Comprado / vendido', `${formatNumber(pos.qtdComprada)} / ${formatNumber(pos.qtdVendida)}`) +
@@ -526,11 +526,11 @@ function applyPositionsView() {
       kv('Proventos (líquido)', formatMoney(pos.proventosRecebidos || 0)) +
       (pos.valorInvestido > 0 ? kv('Rentabilidade total (c/ proventos)', formatPercent(pos.rentabilidadeTotal || 0), tone(pos.rentabilidadeTotal || 0)) : ''));
     const custos = `<details class="rounded-xl bg-slate-900/60 px-3 py-2"><summary class="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden text-xs"><span class="text-slate-400">Taxas e custos</span><span class="font-mono text-slate-200">${formatMoney(pos.totalTaxas)} ▾</span></summary><dl class="divide-y divide-slate-800/70 mt-1">${kv('CBLC', formatMoney(pos.totalTaxasCblc))}${kv('Bovespa / emolumentos', formatMoney(pos.totalTaxasBovespa))}${kv('Corretagem / despesas', formatMoney(pos.totalTaxasCorretagem))}</dl></details>`;
-    const cotacao = hasPosition ? `<details class="rounded-xl bg-slate-900/60 px-3 py-2"><summary class="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden text-xs"><span class="text-slate-400">Cotação atual</span><span class="font-mono text-slate-200">${formatMoney(pos.cotacaoAtual)} · Ajustar ▾</span></summary><div class="flex items-center gap-1.5 pt-2"><input type="number" step="any" id="quote-input-${pos.ticker}" value="${pos.cotacaoAtual}" aria-label="Cotação de ${esc(pos.ticker)}" class="flex-1 min-w-0 bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-2 text-xs font-mono text-white"/><button type="button" onclick="openCalculator('quote-input-${pos.ticker}', 'Cotação Atual ${pos.ticker}')" class="p-2 rounded-xl bg-indigo-500/20 text-indigo-300 border border-indigo-500/30" aria-label="Calcular cotação" title="Calcular cotação"><i data-lucide="calculator" class="w-4 h-4"></i></button><button type="button" onclick="updateTickerQuote('${pos.ticker}')" class="px-3 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs">Atualizar</button></div></details>` : '';
+    const cotacao = hasPosition ? `<details class="rounded-xl bg-slate-900/60 px-3 py-2"><summary class="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden text-xs"><span class="text-slate-400">Cotação atual</span><span class="font-mono text-slate-200">${formatMoney(pos.cotacaoAtual)} · Ajustar ▾</span></summary><div class="flex items-center gap-1.5 pt-2"><input type="number" step="any" id="quote-input-${pos.ticker}" value="${pos.cotacaoAtual}" aria-label="Cotação de ${esc(pos.ticker)}" class="flex-1 min-w-0 bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-2 text-xs font-mono text-white"/><button type="button" data-click="openCalculator" data-target="quote-input-${esc(pos.ticker)}" data-label="Cotação Atual ${esc(pos.ticker)}" class="p-2 rounded-xl bg-indigo-500/20 text-indigo-300 border border-indigo-500/30" aria-label="Calcular cotação" title="Calcular cotação"><i data-lucide="calculator" class="w-4 h-4"></i></button><button type="button" data-click="updateTickerQuote" data-arg="${esc(pos.ticker)}" class="px-3 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs">Atualizar</button></div></details>` : '';
     const historico = `<section><h5 class="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">Operações (${ops.length})</h5><div class="divide-y divide-slate-800/70">${ops.slice(0, 5).map(opRow).join('')}</div>${ops.length > 5 ? `<details class="mt-1"><summary class="text-xs text-indigo-300 cursor-pointer py-1.5">Ver todas as ${ops.length} operações</summary><div class="divide-y divide-slate-800/70 max-h-64 overflow-y-auto">${ops.slice(5).map(opRow).join('')}</div></details>` : ''}</section>`;
     return `
       <div class="glass-card rounded-2xl overflow-hidden border border-slate-800">
-        <button type="button" id="pos-head-${idx}" aria-expanded="false" aria-controls="pos-details-${idx}" onclick="togglePositionCard(${idx})" class="w-full text-left p-4 hover:bg-slate-800/40 transition space-y-2">
+        <button type="button" id="pos-head-${idx}" aria-expanded="false" aria-controls="pos-details-${idx}" data-click="togglePositionCard" data-arg="${idx}" class="w-full text-left p-4 hover:bg-slate-800/40 transition space-y-2">
           <div class="flex items-center justify-between gap-3">
             <div class="min-w-0"><span class="font-mono font-extrabold text-base text-white">${esc(pos.ticker)}</span><span class="block text-xs text-slate-400 truncate">${esc(pos.especificacao || '')}</span></div>
             <div class="flex items-center gap-2 shrink-0"><strong class="text-base font-mono text-white">${hasPosition ? formatMoney(pos.patrimonioAtual) : '—'}</strong><i data-lucide="chevron-down" id="pos-chevron-${idx}" class="w-4 h-4 text-slate-400 transition"></i></div>
@@ -548,7 +548,7 @@ function applyPositionsView() {
   lucide.createIcons();
 }
 
-function clearPositionsFilters() {
+export function clearPositionsFilters() {
   const search = document.getElementById('positionsSearch');
   const filter = document.getElementById('positionsFilter');
   const sort = document.getElementById('positionsSort');
@@ -559,12 +559,12 @@ function clearPositionsFilters() {
   applyPositionsView();
 }
 
-function setPositionsFilter(value) {
+export function setPositionsFilter(value) {
   const f = document.getElementById('positionsFilter');
   if (f) f.value = value;
   applyPositionsView();
 }
-function togglePositionCard(idx) {
+export function togglePositionCard(idx) {
   const details = document.getElementById(`pos-details-${idx}`);
   const chevron = document.getElementById(`pos-chevron-${idx}`);
   if (!details) return;
@@ -580,7 +580,7 @@ function togglePositionCard(idx) {
   }
 }
 
-async function updateTickerQuote(ticker) {
+export async function updateTickerQuote(ticker) {
   const input = document.getElementById(`quote-input-${ticker}`);
   if (!input) return;
   const val = parseFloat(input.value);
@@ -594,27 +594,11 @@ async function updateTickerQuote(ticker) {
   showToast(`Cotação de ${ticker} atualizada!`, 'success');
 }
 
-async function deleteSingleOperation(opId) {
+export async function deleteSingleOperation(opId) {
   db.run('DELETE FROM operacoes WHERE id = ?', [opId]);
   await persistSQLiteToIndexedDB();
   refreshAllViews();
   showToast('Operação removida.', 'info');
 }
 
-function setPositionsCorretora() { renderPositionsExpandableCards(); }
-
-// Compatibilidade apenas para handlers inline no HTML/templates.
-Object.assign(globalThis, {
-  setPositionsCorretora,
-  applyPositionsView,
-  classifyNextPending,
-  clearPositionsFilters,
-  deleteSingleOperation,
-  onQuotesBlockTap,
-  openSectorEditor,
-  setChartMode,
-  setPositionsFilter,
-  setProfitRange,
-  togglePositionCard,
-  updateTickerQuote
-});
+export function setPositionsCorretora() { renderPositionsExpandableCards(); }
