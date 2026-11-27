@@ -8,6 +8,7 @@ const CORE_SHELL = [
   "./index.html",
   "./manifest.json",
   "./changelog.js",
+  "./src/js/app.js",
   "./src/js/portfolio/sectors-data.js",
   "./src/js/portfolio/sectors.js",
   "./src/js/portfolio/calculations.js",

@@ -3,9 +3,18 @@
 //   - suba "version" e "build" (o build define o nome do cache do service worker);
 //   - acrescente uma entrada nova no INÍCIO de "entries" com as mudanças, em linguagem simples.
 globalThis.LEDGERLY_CHANGELOG = {
-  version: '1.4.25',
-  build: 49,
+  version: '1.4.26',
+  build: 50,
   entries: [
+    {
+      version: '1.4.26',
+      date: '2026-11-26',
+      notes: [
+        'Estrutura: scripts próprios do aplicativo convertidos para ES Modules, com ponto único de entrada e dependências carregadas em ordem controlada.',
+        'Compatibilidade: APIs compartilhadas preservadas para os eventos do HTML e integração entre módulos; inicializador síncrono do tema mantido para evitar flash visual.',
+        'PWA: novo ponto de entrada incluído no precache para garantir o carregamento offline dos módulos.'
+      ]
+    },
     {
       version: '1.4.25',
       date: '2026-11-26',

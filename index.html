@@ -21,8 +21,6 @@
   <link rel="stylesheet" href="./assets/tailwind.css">
 
   <!-- Lucide Icons -->
-  <script defer src="./changelog.js"></script>
-  <script defer src="./src/js/portfolio/sectors-data.js"></script>
   <script defer src="./vendor/lucide.min.js"></script>
   <!-- Chart.js -->
   <script defer src="./vendor/chart.umd.js"></script>
@@ -1534,27 +1532,7 @@
     <button id="updateBtn" type="button" class="px-3 py-2 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-white text-xs font-bold">Atualizar</button>
   </div>
 
-  <!-- ================= MÓDULOS UTILITÁRIOS (ES MODULES) ================= -->
-  <script type="module" src="./src/js/portfolio/sectors.js"></script>
-  <script type="module" src="./src/js/portfolio/calculations.js"></script>
-  <script type="module" src="./src/js/notes/pdf-reader.js"></script>
-  <script type="module" src="./src/js/notes/note-parser.js"></script>
-  <script type="module" src="./src/js/security/encryption.js"></script>
-  <script type="module" src="./src/js/reports/excel-export.js"></script>
-
-  <!-- ================= MÓDULOS DO APLICATIVO ================= -->
-  <script defer src="./src/js/core/state.js"></script>
-  <script defer src="./src/js/ui/navigation.js"></script>
-  <script defer src="./src/js/ui/calculator.js"></script>
-  <script defer src="./src/js/core/database.js"></script>
-  <script defer src="./src/js/security/lock-screen.js"></script>
-  <script defer src="./src/js/portfolio/positions.js"></script>
-  <script defer src="./src/js/portfolio/brapi.js"></script>
-  <script defer src="./src/js/notes/notes-manager.js"></script>
-  <script defer src="./src/js/reports/reports-view.js"></script>
-  <script defer src="./src/js/dividends/proventos.js"></script>
-  <script defer src="./src/js/sync/google-drive.js"></script>
-  <script defer src="./src/js/pwa/updates-and-sw.js"></script>
-  <script defer src="./src/js/core/bootstrap.js"></script>
+  <!-- Entrada única: todos os scripts próprios do aplicativo são ES Modules. -->
+  <script type="module" src="./src/js/app.js"></script>
 </body>
 </html>
