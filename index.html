@@ -110,6 +110,24 @@
       backdrop-filter: blur(12px);
       border: 1px solid rgb(var(--s-400) / 0.16);
     }
+    /* A calculadora precisa terminar acima da navegação fixa e permitir
+       rolagem interna em telas baixas, mantendo o botão Salvar acessível. */
+    #calculatorModal {
+      align-items:flex-end;
+      overflow-y:auto;
+      padding:calc(.75rem + env(safe-area-inset-top)) .75rem calc(5.5rem + env(safe-area-inset-bottom));
+      -webkit-overflow-scrolling:touch;
+    }
+    #calculatorModal > div {
+      max-height:calc(100dvh - 7rem - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+      overflow-y:auto;
+      overscroll-behavior:contain;
+      scrollbar-width:thin;
+    }
+    @media (min-width:640px) {
+      #calculatorModal { align-items:center; padding:1rem; }
+      #calculatorModal > div { max-height:calc(100dvh - 2rem); }
+    }
     .calc-btn {
       transition: all 0.12s ease;
       user-select: none;
