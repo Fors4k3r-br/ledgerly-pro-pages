@@ -19,7 +19,7 @@ export function setTodayDateOnManualForm() {
 // =========================================================================
 // 4. IMPORTAÇÃO DE NOTAS DE CORRETAGEM (PDF SINACOR + ANTI-DUPLICIDADE)
 // =========================================================================
-async function handlePdfSelection(event, mode) {
+export async function handlePdfSelection(event, mode) {
   const files = Array.from(event.target.files || []).filter(f => f.name.toLowerCase().endsWith('.pdf'));
   event.target.value = ''; // limpa o seletor para permitir reimportação
 
@@ -110,7 +110,7 @@ export function renderStagingScreen() {
         </div>
         <button
           type="button"
-          onclick="removeStagedNote(${nIdx})"
+          data-click="removeStagedNote" data-note-idx="${nIdx}"
           class="text-xs text-rose-400 hover:text-rose-300 flex items-center gap-1"
         >
           <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
@@ -131,7 +131,7 @@ export function renderStagingScreen() {
                 <input
                   type="text"
                   value="${op.ticker}"
-                  onchange="updateStagedOpField(${nIdx}, ${opIdx}, 'ticker', this.value.toUpperCase())"
+                  data-change="updateStagedOpField" data-note-idx="${nIdx}" data-op-idx="${opIdx}" data-field="ticker" data-parse="upper"
                   class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs font-mono uppercase text-white"
                 />
               </div>
@@ -140,14 +140,14 @@ export function renderStagingScreen() {
                 <input
                   type="text"
                   value="${op.especificacao}"
-                  onchange="updateStagedOpField(${nIdx}, ${opIdx}, 'especificacao', this.value)"
+                  data-change="updateStagedOpField" data-note-idx="${nIdx}" data-op-idx="${opIdx}" data-field="especificacao"
                   class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white"
                 />
               </div>
               <div>
                 <label class="block text-[11px] text-slate-400 mb-1">Tipo da Ordem</label>
                 <select
-                  onchange="updateStagedOpField(${nIdx}, ${opIdx}, 'tipo_ordem', this.value)"
+                  data-change="updateStagedOpField" data-note-idx="${nIdx}" data-op-idx="${opIdx}" data-field="tipo_ordem"
                   class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white"
                 >
                   <option value="C" ${op.tipo_ordem === 'C' ? 'selected' : ''}>Compra (C)</option>
@@ -165,12 +165,12 @@ export function renderStagingScreen() {
                     step="any"
                     id="stg-qtd-${nIdx}-${opIdx}"
                     value="${op.quantidade}"
-                    onchange="updateStagedOpField(${nIdx}, ${opIdx}, 'quantidade', parseFloat(this.value)||0)"
+                    data-change="updateStagedOpField" data-note-idx="${nIdx}" data-op-idx="${opIdx}" data-field="quantidade" data-parse="float"
                     class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs font-mono text-white"
                   />
                   <button
                     type="button"
-                    onclick="openCalculator('stg-qtd-${nIdx}-${opIdx}', 'Qtd (${op.ticker})')"
+                    data-click="openCalculator" data-target="stg-qtd-${nIdx}-${opIdx}" data-label="Qtd (${escapeSavedNoteText(op.ticker)})"
                     class="px-2 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30"
                   >
                     <i data-lucide="calculator" class="w-3.5 h-3.5"></i>
@@ -186,12 +186,12 @@ export function renderStagingScreen() {
                     step="any"
                     id="stg-preco-${nIdx}-${opIdx}"
                     value="${op.preco_unitario}"
-                    onchange="updateStagedOpField(${nIdx}, ${opIdx}, 'preco_unitario', parseFloat(this.value)||0)"
+                    data-change="updateStagedOpField" data-note-idx="${nIdx}" data-op-idx="${opIdx}" data-field="preco_unitario" data-parse="float"
                     class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs font-mono text-white"
                   />
                   <button
                     type="button"
-                    onclick="openCalculator('stg-preco-${nIdx}-${opIdx}', 'Preço Unit. (${op.ticker})')"
+                    data-click="openCalculator" data-target="stg-preco-${nIdx}-${opIdx}" data-label="Preço Unit. (${escapeSavedNoteText(op.ticker)})"
                     class="px-2 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30"
                   >
                     <i data-lucide="calculator" class="w-3.5 h-3.5"></i>
@@ -207,12 +207,12 @@ export function renderStagingScreen() {
                     step="any"
                     id="stg-valop-${nIdx}-${opIdx}"
                     value="${op.valor_operacao}"
-                    onchange="updateStagedOpField(${nIdx}, ${opIdx}, 'valor_operacao', parseFloat(this.value)||0)"
+                    data-change="updateStagedOpField" data-note-idx="${nIdx}" data-op-idx="${opIdx}" data-field="valor_operacao" data-parse="float"
                     class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs font-mono text-white"
                   />
                   <button
                     type="button"
-                    onclick="openCalculator('stg-valop-${nIdx}-${opIdx}', 'Valor Operação (${op.ticker})')"
+                    data-click="openCalculator" data-target="stg-valop-${nIdx}-${opIdx}" data-label="Valor Operação (${escapeSavedNoteText(op.ticker)})"
                     class="px-2 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30"
                   >
                     <i data-lucide="calculator" class="w-3.5 h-3.5"></i>
@@ -230,12 +230,12 @@ export function renderStagingScreen() {
                     step="any"
                     id="stg-cblc-${nIdx}-${opIdx}"
                     value="${op.taxa_cblc}"
-                    onchange="updateStagedOpField(${nIdx}, ${opIdx}, 'taxa_cblc', parseFloat(this.value)||0)"
+                    data-change="updateStagedOpField" data-note-idx="${nIdx}" data-op-idx="${opIdx}" data-field="taxa_cblc" data-parse="float"
                     class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs font-mono text-white"
                   />
                   <button
                     type="button"
-                    onclick="openCalculator('stg-cblc-${nIdx}-${opIdx}', 'Taxa CBLC (${op.ticker})')"
+                    data-click="openCalculator" data-target="stg-cblc-${nIdx}-${opIdx}" data-label="Taxa CBLC (${escapeSavedNoteText(op.ticker)})"
                     class="px-2 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30"
                   >
                     <i data-lucide="calculator" class="w-3.5 h-3.5"></i>
@@ -251,12 +251,12 @@ export function renderStagingScreen() {
                     step="any"
                     id="stg-bov-${nIdx}-${opIdx}"
                     value="${op.taxa_bovespa}"
-                    onchange="updateStagedOpField(${nIdx}, ${opIdx}, 'taxa_bovespa', parseFloat(this.value)||0)"
+                    data-change="updateStagedOpField" data-note-idx="${nIdx}" data-op-idx="${opIdx}" data-field="taxa_bovespa" data-parse="float"
                     class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs font-mono text-white"
                   />
                   <button
                     type="button"
-                    onclick="openCalculator('stg-bov-${nIdx}-${opIdx}', 'Taxa Bovespa (${op.ticker})')"
+                    data-click="openCalculator" data-target="stg-bov-${nIdx}-${opIdx}" data-label="Taxa Bovespa (${escapeSavedNoteText(op.ticker)})"
                     class="px-2 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30"
                   >
                     <i data-lucide="calculator" class="w-3.5 h-3.5"></i>
@@ -272,12 +272,12 @@ export function renderStagingScreen() {
                     step="any"
                     id="stg-corr-${nIdx}-${opIdx}"
                     value="${op.taxa_corretagem}"
-                    onchange="updateStagedOpField(${nIdx}, ${opIdx}, 'taxa_corretagem', parseFloat(this.value)||0)"
+                    data-change="updateStagedOpField" data-note-idx="${nIdx}" data-op-idx="${opIdx}" data-field="taxa_corretagem" data-parse="float"
                     class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs font-mono text-white"
                   />
                   <button
                     type="button"
-                    onclick="openCalculator('stg-corr-${nIdx}-${opIdx}', 'Corretagem (${op.ticker})')"
+                    data-click="openCalculator" data-target="stg-corr-${nIdx}-${opIdx}" data-label="Corretagem (${escapeSavedNoteText(op.ticker)})"
                     class="px-2 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30"
                   >
                     <i data-lucide="calculator" class="w-3.5 h-3.5"></i>
@@ -294,23 +294,23 @@ export function renderStagingScreen() {
   lucide.createIcons();
 }
 
-function updateStagedOpField(nIdx, opIdx, field, value) {
+export function updateStagedOpField(nIdx, opIdx, field, value) {
   if (!stagedNotesQueue[nIdx] || !stagedNotesQueue[nIdx].operacoes[opIdx]) return;
   stagedNotesQueue[nIdx].operacoes[opIdx][field] = value;
 }
 
-function removeStagedNote(nIdx) {
+export function removeStagedNote(nIdx) {
   stagedNotesQueue.splice(nIdx, 1);
   renderStagingScreen();
 }
 
-function cancelStaging() {
+export function cancelStaging() {
   setStagedNotesQueue([]);
   renderStagingScreen();
   showToast('Importação cancelada.', 'info');
 }
 
-async function commitStagedNotesToSQLite() {
+export async function commitStagedNotesToSQLite() {
   if (stagedNotesQueue.length === 0) return;
 
   let importedCount = 0;
@@ -432,12 +432,12 @@ function populateSavedNotesYears() {
   if (years.some(row => String(row.ano) === selectedYear)) yearSelect.value = selectedYear;
 }
 
-function filterSavedNotes(resetPage = true) {
+export function filterSavedNotes(resetPage = true) {
   if (resetPage) savedNotesCurrentPage = 0;
   renderSavedNotesHistory();
 }
 
-function changeSavedNotesPage(delta) {
+export function changeSavedNotesPage(delta) {
   const { where, params } = getSavedNotesFilters();
   const countRow = queryAll(`SELECT COUNT(*) AS total FROM notas_corretagem ${where}`, params)[0];
   const totalPages = Math.max(1, Math.ceil((Number(countRow?.total) || 0) / SAVED_NOTES_PAGE_SIZE));
@@ -452,7 +452,7 @@ function downloadPdfBytes(bytes, name) {
   document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 5000);
 }
 // Tela de leitura da nota salva: operações, taxas e o PDF original
-function viewSavedNote(id) {
+export function viewSavedNote(id) {
   const n = queryAll(`SELECT id, numero_controle, data_pregao, nome_arquivo, valor_operacoes, total_cblc_bruto, taxa_cblc, taxa_bovespa, taxa_corretagem, valor_liquido_nota, arquivo_base64,
     (SELECT nome FROM corretoras c WHERE c.id = notas_corretagem.corretora_id) AS corretora_nome FROM notas_corretagem WHERE id = ?`, [Number(id)])[0];
   if (!n) { showToast('Nota não encontrada.', 'error'); return; }
@@ -543,11 +543,11 @@ export function renderSavedNotesHistory() {
               <span class="text-[11px] text-slate-400 block">Líquido da Nota</span>
               <strong class="font-mono text-white">${formatMoney(n.valor_liquido_nota)}</strong>
             </div>
-            <button type="button" onclick="viewSavedNote(${Number(n.id)})"
+            <button type="button" data-click="viewSavedNote" data-arg="${Number(n.id)}"
               class="p-2 rounded-xl bg-indigo-500/15 hover:bg-indigo-500/25 text-indigo-300 transition" title="Ver nota" aria-label="Ver nota ${escapeSavedNoteText(n.numero_controle)}">
               <i data-lucide="eye" class="w-4 h-4"></i>
             </button>
-            <button type="button" onclick="deleteSavedNote(${Number(n.id)})"
+            <button type="button" data-click="deleteSavedNote" data-arg="${Number(n.id)}"
               class="p-2 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 transition" title="Excluir Nota e suas Operações" aria-label="Excluir nota ${escapeSavedNoteText(n.numero_controle)}">
               <i data-lucide="trash-2" class="w-4 h-4"></i>
             </button>
@@ -583,7 +583,7 @@ export function renderSavedNotesHistory() {
   if (window.lucide) lucide.createIcons();
 }
 
-async function deleteSavedNote(noteId) {
+export async function deleteSavedNote(noteId) {
   const note = queryAll('SELECT numero_controle FROM notas_corretagem WHERE id = ?', [noteId])[0];
   if (!note) return;
   db.run('DELETE FROM operacoes WHERE nota_id = ?', [noteId]);
@@ -594,7 +594,7 @@ async function deleteSavedNote(noteId) {
 }
 
 // Inserção Manual de Operação
-function autoCalcManualTotal() {
+export function autoCalcManualTotal() {
   const qtd = parseFloat(document.getElementById('manQuantidade').value) || 0;
   const preco = parseFloat(document.getElementById('manPrecoUnitario').value) || 0;
   if (qtd > 0 && preco > 0) {
@@ -602,7 +602,7 @@ function autoCalcManualTotal() {
   }
 }
 
-async function saveManualOperation(event) {
+export async function saveManualOperation(event) {
   event.preventDefault();
   const ticker = document.getElementById('manTicker').value.toUpperCase().trim().replace(/F$/, '');
   const especificacao = document.getElementById('manEspecificacao').value.trim() || ticker;
@@ -667,18 +667,3 @@ async function saveManualOperation(event) {
   showToast(`Lançamento manual de ${ticker} salvo no banco de dados!`, 'success');
   switchTab('carteira');
 }
-
-// Compatibilidade apenas para handlers inline no HTML/templates.
-Object.assign(globalThis, {
-  autoCalcManualTotal,
-  cancelStaging,
-  changeSavedNotesPage,
-  commitStagedNotesToSQLite,
-  deleteSavedNote,
-  filterSavedNotes,
-  handlePdfSelection,
-  removeStagedNote,
-  saveManualOperation,
-  updateStagedOpField,
-  viewSavedNote
-});
