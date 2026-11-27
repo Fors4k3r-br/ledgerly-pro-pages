@@ -34,12 +34,74 @@ function calcInput(token) {
 }
 
 function evaluateSafeMathExpression(expr) {
-  if (!expr) return 0;
-  const sanitized = expr.replace(/,/g, '.').replace(/[^0-9+\-*/().]/g, '');
-  if (!sanitized) return 0;
+  if (!expr || !String(expr).trim()) return 0;
+
+  // Avaliador próprio (sem eval/Function), compatível com a CSP do aplicativo.
+  // Gramática: números decimais, parênteses, sinais unários e + - * /.
+  const source = String(expr).replace(/,/g, '.').trim();
+  const tokens = [];
+  const tokenPattern = /\s*([0-9]+(?:\.[0-9]*)?|\.[0-9]+|[()+\-*/])\s*/gy;
+  let offset = 0;
+
+  while (offset < source.length) {
+    tokenPattern.lastIndex = offset;
+    const match = tokenPattern.exec(source);
+    if (!match) return null;
+    tokens.push(match[1]);
+    offset = tokenPattern.lastIndex;
+  }
+  if (!tokens.length) return 0;
+
+  let position = 0;
+  const parsePrimary = () => {
+    const token = tokens[position];
+    if (token === '(') {
+      position++;
+      const value = parseExpression();
+      if (tokens[position] !== ')') throw new Error('Parêntese não fechado');
+      position++;
+      return value;
+    }
+    if (token === undefined || !/^(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)$/.test(token)) {
+      throw new Error('Número esperado');
+    }
+    position++;
+    return Number(token);
+  };
+  const parseUnary = () => {
+    if (tokens[position] === '+') {
+      position++;
+      return parseUnary();
+    }
+    if (tokens[position] === '-') {
+      position++;
+      return -parseUnary();
+    }
+    return parsePrimary();
+  };
+  const parseTerm = () => {
+    let value = parseUnary();
+    while (tokens[position] === '*' || tokens[position] === '/') {
+      const operator = tokens[position++];
+      const right = parseUnary();
+      value = operator === '*' ? value * right : value / right;
+    }
+    return value;
+  };
+  const parseExpression = () => {
+    let value = parseTerm();
+    while (tokens[position] === '+' || tokens[position] === '-') {
+      const operator = tokens[position++];
+      const right = parseTerm();
+      value = operator === '+' ? value + right : value - right;
+    }
+    return value;
+  };
+
   try {
-    const result = Function(`"use strict"; return (${sanitized})`)();
-    return typeof result === 'number' && isFinite(result) ? Number(result.toFixed(4)) : 0;
+    const result = parseExpression();
+    if (position !== tokens.length || !Number.isFinite(result)) return null;
+    return Number(result.toFixed(4));
   } catch (_) {
     return null;
   }
