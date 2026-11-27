@@ -3,9 +3,25 @@
 //   - suba "version" e "build" (o build define o nome do cache do service worker);
 //   - acrescente uma entrada nova no INÍCIO de "entries" com as mudanças, em linguagem simples.
 globalThis.LEDGERLY_CHANGELOG = {
-  version: '1.4.29',
-  build: 53,
+  version: '1.4.31',
+  build: 55,
   entries: [
+    {
+      version: '1.4.31',
+      date: '2026-11-27',
+      notes: [
+        'Modularização: concluída a migração para ES Modules (import/export explícitos) em todos os módulos internos, removendo as 202 variáveis e funções desnecessárias do escopo global.',
+        'Compatibilidade: mantidas em globalThis apenas as 75 funções chamadas diretamente por eventos inline no HTML e templates.'
+      ]
+    },
+    {
+      version: '1.4.30',
+      date: '2026-11-27',
+      notes: [
+        'Modularização: concluída a remoção da ponte global nos módulos folha (sectors, pdf-reader, note-parser, encryption e excel-export), agora consumidos via import/export explícitos.',
+        'Visual e automação: reintegradas as classes Tailwind faltantes em assets/tailwind.css e aplicado controle de concorrência com alinhamento seguro de branch no workflow de dividendos.'
+      ]
+    },
     {
       version: '1.4.29',
       date: '2026-11-27',
