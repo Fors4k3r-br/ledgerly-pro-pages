@@ -1,9 +1,10 @@
 // Inicialização principal da aplicação (DOMContentLoaded) e controle do botão Voltar (popstate).
 
+import { refreshAllViews } from './events.js';
 import { getSetting, initSQLiteDatabase } from './database.js';
 import { setTodayDateOnManualForm } from '../notes/notes-manager.js';
 import { loadBrapiSettingsToUI, syncAllQuotesFromBrapi } from '../portfolio/brapi.js';
-import { captureDailyPortfolioSnapshot, refreshAllViews } from '../portfolio/positions.js';
+import { captureDailyPortfolioSnapshot } from '../portfolio/positions.js';
 import { maybeShowWhatsNew } from '../pwa/updates-and-sw.js';
 import { checkLockScreenOnStartup } from '../security/lock-screen.js';
 import { syncOnStart } from '../sync/google-drive.js';

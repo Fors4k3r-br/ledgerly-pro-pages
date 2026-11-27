@@ -11,12 +11,14 @@ export let db = null; // central.db: fonte principal da carteira
 export let dailyDb = null; // daily.db: histórico patrimonial independente
 export let isPrivacyMode = false;
 export let stagedNotesQueue = []; // Notas aguardando revisão na tela de staging
+export let allPositionsData = []; // Posições consolidadas da carteira para compartilhamento entre telas
 
 export function setSQL(value) { SQL = value; }
 export function setDb(value) { db = value; }
 export function setDailyDb(value) { dailyDb = value; }
 export function setIsPrivacyMode(value) { isPrivacyMode = value; }
 export function setStagedNotesQueue(value) { stagedNotesQueue = value; }
+export function setAllPositionsData(value) { allPositionsData = value; }
 
 // Constantes do IndexedDB para persistir o binário do SQLite
 export const IDB_NAME = 'Ledgerly_Database';
