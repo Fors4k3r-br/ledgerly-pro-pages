@@ -3,9 +3,10 @@
 import { extractTextFromPDFBuffer, renderPdfPages } from './pdf-reader.js';
 import { parseSinacorNote } from './note-parser.js';
 import { db, stagedNotesQueue, setStagedNotesQueue } from '../core/state.js';
+import { arrayBufferToBase64, escapeSavedNoteText, formatMoney, formatNumber } from '../core/utils.js';
+import { refreshAllViews } from '../core/events.js';
 import { ensureCorretora, onManCorretoraChange, persistSQLiteToIndexedDB, queryAll } from '../core/database.js';
-import { refreshAllViews } from '../portfolio/positions.js';
-import { arrayBufferToBase64, formatMoney, formatNumber, showToast, switchTab } from '../ui/navigation.js';
+import { showToast, switchTab } from '../ui/navigation.js';
 
 export function setTodayDateOnManualForm() {
   const hoje = new Date();
@@ -394,11 +395,6 @@ async function commitStagedNotesToSQLite() {
 const SAVED_NOTES_PAGE_SIZE = 20;
 let savedNotesCurrentPage = 0;
 
-export function escapeSavedNoteText(value) {
-  return String(value ?? '').replace(/[&<>"']/g, char => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-  })[char]);
-}
 
 function getSavedNotesFilters() {
   const search = (document.getElementById('savedNotesSearch')?.value || '').trim();
