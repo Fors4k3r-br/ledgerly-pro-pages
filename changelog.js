@@ -3,9 +3,16 @@
 //   - suba "version" e "build" (o build define o nome do cache do service worker);
 //   - acrescente uma entrada nova no INÍCIO de "entries" com as mudanças, em linguagem simples.
 globalThis.LEDGERLY_CHANGELOG = {
-  version: '1.4.28',
-  build: 52,
+  version: '1.4.29',
+  build: 53,
   entries: [
+    {
+      version: '1.4.29',
+      date: '2026-11-27',
+      notes: [
+        'Modularização: positions.js agora importa calculateConsolidatedPositions diretamente de calculations.js, removendo essa dependência global sem alterar a lógica dos cálculos.'
+      ]
+    },
     {
       version: '1.4.28',
       date: '2026-11-27',
