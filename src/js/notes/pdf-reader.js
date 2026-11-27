@@ -42,11 +42,3 @@ export async function renderPdfPages(container, bytes) {
     await page.render({ canvasContext: ctx, viewport }).promise;
   }
 }
-
-// Compatibilidade com os handlers clássicos do index.html.
-globalThis.extractTextFromPDFBuffer = extractTextFromPDFBuffer;
-globalThis.renderPdfPages = renderPdfPages;
-
-// Ponte de compatibilidade: mantém os nomes públicos acessíveis ao HTML e aos demais módulos.
-Object.defineProperty(globalThis, "extractTextFromPDFBuffer", { configurable: true, enumerable: true, get: () => extractTextFromPDFBuffer, set: value => { extractTextFromPDFBuffer = value; } });
-Object.defineProperty(globalThis, "renderPdfPages", { configurable: true, enumerable: true, get: () => renderPdfPages, set: value => { renderPdfPages = value; } });

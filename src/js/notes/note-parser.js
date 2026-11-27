@@ -275,10 +275,3 @@ export function parseSinacorNote(text, fileName, base64Pdf) {
         operacoes: operacoesComRateio
       };
     }
-
-
-// Compatibilidade com os handlers clássicos definidos no index.html.
-globalThis.parseSinacorNote = parseSinacorNote;
-
-// Ponte de compatibilidade: mantém os nomes públicos acessíveis ao HTML e aos demais módulos.
-Object.defineProperty(globalThis, "parseSinacorNote", { configurable: true, enumerable: true, get: () => parseSinacorNote, set: value => { parseSinacorNote = value; } });
