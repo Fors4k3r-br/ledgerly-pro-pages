@@ -254,8 +254,3 @@ export function updateDatabaseStats() {
   document.getElementById('statOperacoesCount').textContent = oCount;
   document.getElementById('statUltimoBackup').textContent = lastBkp;
 }
-
-// Compatibilidade apenas para handlers inline no HTML/templates.
-Object.assign(globalThis, {
-  onManCorretoraChange
-});

@@ -21,7 +21,7 @@ async function generateSQLiteBackupFileObject() {
   return { blob, fileName };
 }
 
-async function downloadLocalSQLiteBackup() {
+export async function downloadLocalSQLiteBackup() {
   const { blob, fileName } = await generateSQLiteBackupFileObject();
   const nowFormatted = new Date().toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
   await setSetting('ultimo_backup', nowFormatted);
@@ -33,7 +33,7 @@ async function downloadLocalSQLiteBackup() {
 
 // Exporta um banco SQLite convencional para consulta externa.
 // A cópia é sanitizada: remove configurações locais/sensíveis, sem alterar o banco ativo.
-async function downloadIndividualSQLiteDatabase(which) {
+export async function downloadIndividualSQLiteDatabase(which) {
   const database = which === 'daily' ? dailyDb : db;
   if (!database) { showToast('Banco de dados ainda não está disponível.', 'error'); return; }
   let copy = null;
@@ -64,7 +64,7 @@ function triggerBlobDownload(blob, fileName) {
   URL.revokeObjectURL(url);
 }
 
-async function requestRestoreDatabase() {
+export async function requestRestoreDatabase() {
   const choice = await ledgerlyModal({ title: 'Restaurar banco de dados', message: 'Escolha de onde deseja recuperar o conjunto central.db + daily.db.',
     buttons: [{ label: 'Arquivo deste aparelho (.lgp)', value: 'local', primary: true }, { label: 'Google Drive (nuvem)', value: 'cloud' }, { label: 'Cancelar', value: 'cancel' }] });
   if (choice.value === 'local') { document.getElementById('restoreDbInput')?.click(); return; }
@@ -108,7 +108,7 @@ async function restoreDatabaseFromDrive() {
   } finally { setPrefetched(null); }
 }
 
-async function handleRestoreSQLiteFile(event) {
+export async function handleRestoreSQLiteFile(event) {
   const file = event.target.files?.[0]; event.target.value = ''; if (!file) return;
   const fileHeader = new TextDecoder().decode(new Uint8Array(await file.slice(0, 4).arrayBuffer()));
   if (fileHeader === 'SQLi') { showToast('Este arquivo contém apenas um banco SQLite individual. Para restaurar a carteira, selecione o backup completo Ledgerly (.lgp).', 'info'); return; }
@@ -143,7 +143,7 @@ async function handleRestoreSQLiteFile(event) {
   openConfirmDialog({ title:'Restaurar conjunto de bancos', message:`Deseja substituir central.db e daily.db pelo conjunto de backup "${file.name}"?`, requirePin:Boolean(getSetting('security_pin_hash')), onConfirm:confirmAction });
 }
 
-async function requestWipeDatabase() {
+export async function requestWipeDatabase() {
   const choice = await ledgerlyModal({ title: 'Limpar todos os dados',
     message: 'Escolha o alcance da limpeza. O PIN, as configurações e o token da brapi serão mantidos.',
     buttons: [{ label: 'Somente neste aparelho', value: 'local', primary: true }, { label: 'Aparelho + Google Drive', value: 'all' }, { label: 'Cancelar', value: 'cancel' }] });
@@ -168,12 +168,3 @@ async function requestWipeDatabase() {
     }
   });
 }
-
-// Compatibilidade apenas para handlers inline no HTML/templates.
-Object.assign(globalThis, {
-  downloadIndividualSQLiteDatabase,
-  downloadLocalSQLiteBackup,
-  handleRestoreSQLiteFile,
-  requestRestoreDatabase,
-  requestWipeDatabase
-});
