@@ -51,7 +51,7 @@ function pinResetFails() {
   try { localStorage.removeItem('ledgerly_pin_fails'); localStorage.removeItem('ledgerly_pin_lock'); } catch (_) {}
 }
 
-async function handlePinManagementSubmit(event) {
+export async function handlePinManagementSubmit(event) {
   event.preventDefault();
   const existingPinHash = getSetting('security_pin_hash');
   const currentPinTyped = document.getElementById('currentPinInput').value.trim();
@@ -96,7 +96,7 @@ async function handlePinManagementSubmit(event) {
   showToast(existingPinHash ? 'PIN alterado com sucesso!' : 'PIN de segurança criado e ativado!', 'success');
 }
 
-async function toggleSmartphoneBiometrics() {
+export async function toggleSmartphoneBiometrics() {
   const pinHash = getSetting('security_pin_hash');
   if (!pinHash) {
     showToast('Cadastre primeiro um PIN acima antes de ativar a biometria.', 'error');
@@ -153,7 +153,7 @@ async function toggleSmartphoneBiometrics() {
   }
 }
 
-async function disableAppSecurity() {
+export async function disableAppSecurity() {
   openConfirmDialog({
     title: 'Desativar Bloqueio por PIN',
     message: 'Digite seu PIN atual para remover a proteção ao abrir o aplicativo:',
@@ -212,7 +212,7 @@ export function checkLockScreenOnStartup() {
   }
 }
 
-function lockAppNow() {
+export function lockAppNow() {
   const hasPin = Boolean(getSetting('security_pin_hash'));
   if (!hasPin) {
     switchTab('config');
@@ -255,7 +255,7 @@ function showLockScreen() {
   }
 }
 
-async function handleUnlockWithPin(event) {
+export async function handleUnlockWithPin(event) {
   event.preventDefault();
   const typed = document.getElementById('unlockPinInput').value.trim();
   const lockLeft = pinLockRemaining();
@@ -283,7 +283,7 @@ async function handleUnlockWithPin(event) {
   }
 }
 
-async function triggerBiometricUnlock() {
+export async function triggerBiometricUnlock() {
   const credentialIdBase64 = getSetting('biometrics_cred_id');
 
   if (!credentialIdBase64) {
@@ -326,13 +326,3 @@ async function triggerBiometricUnlock() {
 }
 
 registerPinVerifier(pin => verifyPin(pin, getSetting('security_pin_hash')));
-
-// Compatibilidade apenas para handlers inline no HTML/templates.
-Object.assign(globalThis, {
-  disableAppSecurity,
-  handlePinManagementSubmit,
-  handleUnlockWithPin,
-  lockAppNow,
-  toggleSmartphoneBiometrics,
-  triggerBiometricUnlock
-});
