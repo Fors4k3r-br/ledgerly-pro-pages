@@ -3,9 +3,17 @@
 //   - suba "version" e "build" (o build define o nome do cache do service worker);
 //   - acrescente uma entrada nova no INÍCIO de "entries" com as mudanças, em linguagem simples.
 globalThis.LEDGERLY_CHANGELOG = {
-  version: '1.4.31',
-  build: 55,
+  version: '1.4.32',
+  build: 56,
   entries: [
+    {
+      version: '1.4.32',
+      date: '2026-11-27',
+      notes: [
+        'Arquitetura: eliminados todos os ciclos de importação entre módulos JavaScript com a criação dos módulos core/events.js, core/utils.js, core/refresh.js e core/backup-restore.js.',
+        'PWA: novos módulos adicionados ao precache offline do service-worker.js com atualização do cache para o build 56.'
+      ]
+    },
     {
       version: '1.4.31',
       date: '2026-11-27',
