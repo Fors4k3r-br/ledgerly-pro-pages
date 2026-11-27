@@ -1,5 +1,13 @@
 // Relatórios auxiliares (IRPF, rendimentos e operações) e exportação para PDF e Excel.
 
+import { makeSheetXml, zipStore } from './excel-export.js';
+import { db } from '../core/state.js';
+import { queryAll } from '../core/database.js';
+import { PROV_TIPOS, isoToBR } from '../dividends/proventos.js';
+import { escapeSavedNoteText } from '../notes/notes-manager.js';
+import { toISODate } from '../portfolio/positions.js';
+import { showToast } from '../ui/navigation.js';
+
 // =========================================================================
 // RELATÓRIOS — base histórica por custo médio, independente da cotação atual
 // =========================================================================
@@ -101,7 +109,7 @@ function renderReportOperations(d) {
   <p class="text-[10px] leading-relaxed text-slate-500">Resultado estimado por preço médio ponderado e taxas cadastradas. Não separa day trade, mercado à vista, ETF, FII ou outras regras de tributação e não calcula DARF ou imposto devido.</p>`;
 }
 function setReportView(view) { reportView=['irpf','rendimentos','operacoes'].includes(view)?view:'irpf'; renderReports(); }
-function renderReports() {
+export function renderReports() {
   if (!db) return;
   initReportYearOptions();
   const year=Number(document.getElementById('reportCalendarYear')?.value)||new Date().getFullYear()-1;
@@ -132,20 +140,10 @@ function exportReportsExcel(){
   const blob=zipStore(files),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`Ledgerly_IRPF_${d.year}.xlsx`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),10000);showToast('Planilha Excel gerada.','success');
 }
 
-// Ponte de compatibilidade: mantém os nomes públicos acessíveis ao HTML e aos demais módulos.
-Object.defineProperty(globalThis, "reportView", { configurable: true, enumerable: true, get: () => reportView, set: value => { reportView = value; } });
-Object.defineProperty(globalThis, "reportCache", { configurable: true, enumerable: true, get: () => reportCache, set: value => { reportCache = value; } });
-Object.defineProperty(globalThis, "reportBRL", { configurable: true, enumerable: true, get: () => reportBRL });
-Object.defineProperty(globalThis, "reportQty", { configurable: true, enumerable: true, get: () => reportQty });
-Object.defineProperty(globalThis, "initReportYearOptions", { configurable: true, enumerable: true, get: () => initReportYearOptions, set: value => { initReportYearOptions = value; } });
-Object.defineProperty(globalThis, "buildReportDataset", { configurable: true, enumerable: true, get: () => buildReportDataset, set: value => { buildReportDataset = value; } });
-Object.defineProperty(globalThis, "reportSummaryCard", { configurable: true, enumerable: true, get: () => reportSummaryCard, set: value => { reportSummaryCard = value; } });
-Object.defineProperty(globalThis, "reportEmpty", { configurable: true, enumerable: true, get: () => reportEmpty, set: value => { reportEmpty = value; } });
-Object.defineProperty(globalThis, "renderReportIRPF", { configurable: true, enumerable: true, get: () => renderReportIRPF, set: value => { renderReportIRPF = value; } });
-Object.defineProperty(globalThis, "renderReportIncome", { configurable: true, enumerable: true, get: () => renderReportIncome, set: value => { renderReportIncome = value; } });
-Object.defineProperty(globalThis, "renderReportOperations", { configurable: true, enumerable: true, get: () => renderReportOperations, set: value => { renderReportOperations = value; } });
-Object.defineProperty(globalThis, "setReportView", { configurable: true, enumerable: true, get: () => setReportView, set: value => { setReportView = value; } });
-Object.defineProperty(globalThis, "renderReports", { configurable: true, enumerable: true, get: () => renderReports, set: value => { renderReports = value; } });
-Object.defineProperty(globalThis, "getReportExportData", { configurable: true, enumerable: true, get: () => getReportExportData, set: value => { getReportExportData = value; } });
-Object.defineProperty(globalThis, "exportReportsPDF", { configurable: true, enumerable: true, get: () => exportReportsPDF, set: value => { exportReportsPDF = value; } });
-Object.defineProperty(globalThis, "exportReportsExcel", { configurable: true, enumerable: true, get: () => exportReportsExcel, set: value => { exportReportsExcel = value; } });
+// Compatibilidade apenas para handlers inline no HTML/templates.
+Object.assign(globalThis, {
+  exportReportsExcel,
+  exportReportsPDF,
+  renderReports,
+  setReportView
+});
