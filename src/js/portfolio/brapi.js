@@ -1,15 +1,20 @@
 // Integração com a API brapi.dev para configuração de token e atualização de cotações online.
 
+import { db } from '../core/state.js';
+import { getSetting, persistSQLiteToIndexedDB, setSetting } from '../core/database.js';
+import { getConsolidatedPositions, refreshAllViews, updateQuotesLabel } from './positions.js';
+import { showToast } from '../ui/navigation.js';
+
 // =========================================================================
 // 7. INTEGRAÇÃO DE COTAÇÕES ONLINE (BRAPI.DEV)
 // =========================================================================
-function renderApiStatus() {
+export function renderApiStatus() {
   const b = document.getElementById('apiBrapiBadge'); if (!b) return;
   const ok = Boolean(getSetting('brapi_token'));
   b.textContent = ok ? 'Configurado' : 'Não configurado';
   b.className = 'inline-block mt-3 text-[11px] font-mono px-2.5 py-1 rounded-full border ' + (ok ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30' : 'bg-slate-800 text-slate-400 border-slate-700');
 }
-function loadBrapiSettingsToUI() {
+export function loadBrapiSettingsToUI() {
   const token = getSetting('brapi_token') || '';
   const autoSync = getSetting('brapi_auto_sync') === '1';
   const lastSync = getSetting('brapi_last_sync') || '';
@@ -63,7 +68,7 @@ async function testAndSyncBrapiConnection() {
   await syncAllQuotesFromBrapi(false, true);
 }
 
-async function syncAllQuotesFromBrapi(silent = false, isTestFromConfig = false) {
+export async function syncAllQuotesFromBrapi(silent = false, isTestFromConfig = false) {
   const token = getSetting('brapi_token') || '';
   const positions = getConsolidatedPositions().filter(p => p.qtdAtual > 0);
 
@@ -136,11 +141,11 @@ async function syncAllQuotesFromBrapi(silent = false, isTestFromConfig = false) 
   }
 }
 
-// Ponte de compatibilidade: mantém os nomes públicos acessíveis ao HTML e aos demais módulos.
-Object.defineProperty(globalThis, "renderApiStatus", { configurable: true, enumerable: true, get: () => renderApiStatus, set: value => { renderApiStatus = value; } });
-Object.defineProperty(globalThis, "loadBrapiSettingsToUI", { configurable: true, enumerable: true, get: () => loadBrapiSettingsToUI, set: value => { loadBrapiSettingsToUI = value; } });
-Object.defineProperty(globalThis, "toggleBrapiTokenVisibility", { configurable: true, enumerable: true, get: () => toggleBrapiTokenVisibility, set: value => { toggleBrapiTokenVisibility = value; } });
-Object.defineProperty(globalThis, "saveBrapiConfig", { configurable: true, enumerable: true, get: () => saveBrapiConfig, set: value => { saveBrapiConfig = value; } });
-Object.defineProperty(globalThis, "toggleBrapiAutoSync", { configurable: true, enumerable: true, get: () => toggleBrapiAutoSync, set: value => { toggleBrapiAutoSync = value; } });
-Object.defineProperty(globalThis, "testAndSyncBrapiConnection", { configurable: true, enumerable: true, get: () => testAndSyncBrapiConnection, set: value => { testAndSyncBrapiConnection = value; } });
-Object.defineProperty(globalThis, "syncAllQuotesFromBrapi", { configurable: true, enumerable: true, get: () => syncAllQuotesFromBrapi, set: value => { syncAllQuotesFromBrapi = value; } });
+// Compatibilidade apenas para handlers inline no HTML/templates.
+Object.assign(globalThis, {
+  saveBrapiConfig,
+  syncAllQuotesFromBrapi,
+  testAndSyncBrapiConnection,
+  toggleBrapiAutoSync,
+  toggleBrapiTokenVisibility
+});

@@ -1,11 +1,22 @@
 // Consolidação de custódia, snapshot diário, gráficos da carteira, setores na UI, onboarding e cards de posições.
 
 import { calculateConsolidatedPositions } from './calculations.js';
+import { setManualSectorClass, classifyTicker, subsetoresDe, setorOptions } from './sectors.js';
+import { db, dailyDb, isPrivacyMode } from '../core/state.js';
+import { fillCorretoraSelects, getSetting, persistSQLiteToIndexedDB, queryAll, rowsFromDatabase, updateDatabaseStats } from '../core/database.js';
+import { renderProventos, todayISO } from '../dividends/proventos.js';
+import { escapeSavedNoteText, renderSavedNotesHistory } from '../notes/notes-manager.js';
+import { renderApiStatus, syncAllQuotesFromBrapi } from './brapi.js';
+import { renderReports } from '../reports/reports-view.js';
+import { isLocalEmpty, syncState } from '../sync/google-drive.js';
+import { formatMoney, formatNumber, formatPercent, ledgerlyModal, renderThemeCard, showToast, switchTab, themeRgb } from '../ui/navigation.js';
+
+let portfolioChart = null;
 
 // =========================================================================
 // 2. CÁLCULO CONSOLIDADO DE CUSTÓDIA E PREÇO MÉDIO
 // =========================================================================
-function getConsolidatedPositions(corretoraId = null, asOfISO = null) {
+export function getConsolidatedPositions(corretoraId = null, asOfISO = null) {
   let ops = corretoraId === 'none'
     ? queryAll(`SELECT * FROM operacoes WHERE corretora_id IS NULL ORDER BY id ASC`)
     : corretoraId
@@ -34,7 +45,7 @@ function getConsolidatedPositions(corretoraId = null, asOfISO = null) {
 // 3. ATUALIZAÇÃO DA INTERFACE (CARTEIRA, GRÁFICO E ABA OCULTA POSIÇÕES)
 // =========================================================================
 // Registra/atualiza uma fotografia por dia local, após o banco estar pronto.
-async function captureDailyPortfolioSnapshot() {
+export async function captureDailyPortfolioSnapshot() {
   if (!db || !dailyDb) return;
   const today = isoFromDate(new Date());
   const positions = getConsolidatedPositions();
@@ -67,7 +78,7 @@ async function captureDailyPortfolioSnapshot() {
   } catch(error) { try { dailyDb.run('ROLLBACK;'); } catch(_) {} console.error('Não foi possível registrar o histórico patrimonial diário:',error); }
 }
 
-function refreshAllViews() {
+export function refreshAllViews() {
   const positions = getConsolidatedPositions();
   allPositionsData = positions;
   fillCorretoraSelects();
@@ -113,7 +124,7 @@ function refreshAllViews() {
 let profitChart = null, lastPortfolio = { patrimonio: 0, investido: 0 };
 let chartTooltipHideMs = 4000;   // balões dos gráficos somem sozinhos depois deste tempo
 // No toque, o balão do Chart.js ficaria aberto até tocar em outro lugar: este plugin o esconde depois de alguns segundos
-function autoHideTooltipPlugin() {
+export function autoHideTooltipPlugin() {
   return { id: 'autoHideTooltip',
     afterEvent(chart, args) {
       const e = args.event; if (!e || e.type === 'mouseout') return;
@@ -124,7 +135,7 @@ function autoHideTooltipPlugin() {
 }
 const PROFIT_RANGES = ['tudo', '1s', '1m', 'mes', '6m', 'sem', '12m', 'ano'];
 let profitRange = (() => { try { const r = localStorage.getItem('ledgerly_profit_range'); return PROFIT_RANGES.includes(r) ? r : 'tudo'; } catch (_) { return 'tudo'; } })();
-function toISODate(s) {
+export function toISODate(s) {
   s = String(s || '');
   let m = s.match(/^(\d{4})-(\d{2})-(\d{2})/); if (m) return `${m[1]}-${m[2]}-${m[3]}`;
   m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})/); return m ? `${m[3]}-${m[2]}-${m[1]}` : '';
@@ -219,8 +230,8 @@ function renderProfitChart() {
 function loadManualClass() {
   try {
     const rows = queryAll('SELECT codigo, setor, subsetor FROM classificacao_manual');
-    globalThis.setManualSectorClass(rows);
-  } catch (_) { globalThis.setManualSectorClass([]); }
+    setManualSectorClass(rows);
+  } catch (_) { setManualSectorClass([]); }
 }
 function pendingSectorTickers() {
   const seen = new Set(), out = [];
@@ -291,6 +302,7 @@ function openSectorEditor(ticker) {
 // ===== FIM DA CLASSIFICAÇÃO SETORIAL =====
 
 let chartMode = (() => { try { const v = localStorage.getItem('ledgerly_chart_mode'); return v === 'corretora' || v === 'setor' ? v : 'ativo'; } catch (_) { return 'ativo'; } })();
+export function resetChartPreferences() { profitRange = 'tudo'; chartMode = 'ativo'; }
 function setChartMode(m) { chartMode = (m === 'corretora' || m === 'setor') ? m : 'ativo'; try { localStorage.setItem('ledgerly_chart_mode', chartMode); } catch (_) {} refreshAllViews(); }
 function focusTicker(t) {
   const s = document.getElementById('positionsSearch'), f = document.getElementById('positionsFilter'), c = document.getElementById('positionsCorretora');
@@ -386,7 +398,7 @@ function renderPortfolioChart(activePositions, totalPatrimonio) {
 }
 
 // Primeiro uso: prioriza recuperação de um backup antes das configurações opcionais.
-function renderOnboarding() {
+export function renderOnboarding() {
   const card = document.getElementById('onboardingCard'), home = document.getElementById('homeContent');
   if (!card || !home) return;
   const empty = isLocalEmpty();
@@ -421,7 +433,7 @@ function relTime(iso) {
   if (min < 1440) return `há ${Math.round(min / 60)} h`;
   return `há ${Math.round(min / 1440)} d`;
 }
-function updateQuotesLabel() {
+export function updateQuotesLabel() {
   const el = document.getElementById('brapiLastSyncLabel'); if (!el || !db) return;
   const iso = getSetting('brapi_last_sync_iso'), old = getSetting('brapi_last_sync');
   if (iso) {
@@ -443,9 +455,9 @@ setInterval(() => { try { updateQuotesLabel(); } catch (_) {} }, 60000);
 
 // Renderiza os Retângulos Expansíveis na Aba Oculta "Posições"
 let latestPositionsData = [];
-let allPositionsData = [];
+export let allPositionsData = [];
 
-function renderPositionsExpandableCards(positions) {
+export function renderPositionsExpandableCards(positions) {
   const corrSel = document.getElementById('positionsCorretora');
   const corrId = corrSel ? corrSel.value : '';
   latestPositionsData = corrId ? getConsolidatedPositions(corrId) : (positions || getConsolidatedPositions());
@@ -618,48 +630,17 @@ async function deleteSingleOperation(opId) {
   showToast('Operação removida.', 'info');
 }
 
-// Ponte de compatibilidade: mantém os nomes públicos acessíveis ao HTML e aos demais módulos.
-Object.defineProperty(globalThis, "getConsolidatedPositions", { configurable: true, enumerable: true, get: () => getConsolidatedPositions, set: value => { getConsolidatedPositions = value; } });
-Object.defineProperty(globalThis, "captureDailyPortfolioSnapshot", { configurable: true, enumerable: true, get: () => captureDailyPortfolioSnapshot, set: value => { captureDailyPortfolioSnapshot = value; } });
-Object.defineProperty(globalThis, "refreshAllViews", { configurable: true, enumerable: true, get: () => refreshAllViews, set: value => { refreshAllViews = value; } });
-Object.defineProperty(globalThis, "profitChart", { configurable: true, enumerable: true, get: () => profitChart, set: value => { profitChart = value; } });
-Object.defineProperty(globalThis, "lastPortfolio", { configurable: true, enumerable: true, get: () => lastPortfolio, set: value => { lastPortfolio = value; } });
-Object.defineProperty(globalThis, "chartTooltipHideMs", { configurable: true, enumerable: true, get: () => chartTooltipHideMs, set: value => { chartTooltipHideMs = value; } });
-Object.defineProperty(globalThis, "autoHideTooltipPlugin", { configurable: true, enumerable: true, get: () => autoHideTooltipPlugin, set: value => { autoHideTooltipPlugin = value; } });
-Object.defineProperty(globalThis, "PROFIT_RANGES", { configurable: true, enumerable: true, get: () => PROFIT_RANGES });
-Object.defineProperty(globalThis, "profitRange", { configurable: true, enumerable: true, get: () => profitRange, set: value => { profitRange = value; } });
-Object.defineProperty(globalThis, "toISODate", { configurable: true, enumerable: true, get: () => toISODate, set: value => { toISODate = value; } });
-Object.defineProperty(globalThis, "isoFromDate", { configurable: true, enumerable: true, get: () => isoFromDate, set: value => { isoFromDate = value; } });
-Object.defineProperty(globalThis, "setProfitRange", { configurable: true, enumerable: true, get: () => setProfitRange, set: value => { setProfitRange = value; } });
-Object.defineProperty(globalThis, "profitRangeStart", { configurable: true, enumerable: true, get: () => profitRangeStart, set: value => { profitRangeStart = value; } });
-Object.defineProperty(globalThis, "buildProfitSeries", { configurable: true, enumerable: true, get: () => buildProfitSeries, set: value => { buildProfitSeries = value; } });
-Object.defineProperty(globalThis, "renderProfitChart", { configurable: true, enumerable: true, get: () => renderProfitChart, set: value => { renderProfitChart = value; } });
-Object.defineProperty(globalThis, "loadManualClass", { configurable: true, enumerable: true, get: () => loadManualClass, set: value => { loadManualClass = value; } });
-Object.defineProperty(globalThis, "pendingSectorTickers", { configurable: true, enumerable: true, get: () => pendingSectorTickers, set: value => { pendingSectorTickers = value; } });
-Object.defineProperty(globalThis, "fillSetorSelect", { configurable: true, enumerable: true, get: () => fillSetorSelect, set: value => { fillSetorSelect = value; } });
-Object.defineProperty(globalThis, "renderSectorPending", { configurable: true, enumerable: true, get: () => renderSectorPending, set: value => { renderSectorPending = value; } });
-Object.defineProperty(globalThis, "classifyNextPending", { configurable: true, enumerable: true, get: () => classifyNextPending, set: value => { classifyNextPending = value; } });
-Object.defineProperty(globalThis, "focusSetor", { configurable: true, enumerable: true, get: () => focusSetor, set: value => { focusSetor = value; } });
-Object.defineProperty(globalThis, "openSectorEditor", { configurable: true, enumerable: true, get: () => openSectorEditor, set: value => { openSectorEditor = value; } });
-Object.defineProperty(globalThis, "chartMode", { configurable: true, enumerable: true, get: () => chartMode, set: value => { chartMode = value; } });
-Object.defineProperty(globalThis, "setChartMode", { configurable: true, enumerable: true, get: () => setChartMode, set: value => { setChartMode = value; } });
-Object.defineProperty(globalThis, "focusTicker", { configurable: true, enumerable: true, get: () => focusTicker, set: value => { focusTicker = value; } });
-Object.defineProperty(globalThis, "focusCorretora", { configurable: true, enumerable: true, get: () => focusCorretora, set: value => { focusCorretora = value; } });
-Object.defineProperty(globalThis, "outrosAtivos", { configurable: true, enumerable: true, get: () => outrosAtivos, set: value => { outrosAtivos = value; } });
-Object.defineProperty(globalThis, "outrosTotal", { configurable: true, enumerable: true, get: () => outrosTotal, set: value => { outrosTotal = value; } });
-Object.defineProperty(globalThis, "showOutrosAtivos", { configurable: true, enumerable: true, get: () => showOutrosAtivos, set: value => { showOutrosAtivos = value; } });
-Object.defineProperty(globalThis, "renderPortfolioChart", { configurable: true, enumerable: true, get: () => renderPortfolioChart, set: value => { renderPortfolioChart = value; } });
-Object.defineProperty(globalThis, "renderOnboarding", { configurable: true, enumerable: true, get: () => renderOnboarding, set: value => { renderOnboarding = value; } });
-Object.defineProperty(globalThis, "relTime", { configurable: true, enumerable: true, get: () => relTime, set: value => { relTime = value; } });
-Object.defineProperty(globalThis, "updateQuotesLabel", { configurable: true, enumerable: true, get: () => updateQuotesLabel, set: value => { updateQuotesLabel = value; } });
-Object.defineProperty(globalThis, "lastQuoteTap", { configurable: true, enumerable: true, get: () => lastQuoteTap, set: value => { lastQuoteTap = value; } });
-Object.defineProperty(globalThis, "onQuotesBlockTap", { configurable: true, enumerable: true, get: () => onQuotesBlockTap, set: value => { onQuotesBlockTap = value; } });
-Object.defineProperty(globalThis, "latestPositionsData", { configurable: true, enumerable: true, get: () => latestPositionsData, set: value => { latestPositionsData = value; } });
-Object.defineProperty(globalThis, "allPositionsData", { configurable: true, enumerable: true, get: () => allPositionsData, set: value => { allPositionsData = value; } });
-Object.defineProperty(globalThis, "renderPositionsExpandableCards", { configurable: true, enumerable: true, get: () => renderPositionsExpandableCards, set: value => { renderPositionsExpandableCards = value; } });
-Object.defineProperty(globalThis, "applyPositionsView", { configurable: true, enumerable: true, get: () => applyPositionsView, set: value => { applyPositionsView = value; } });
-Object.defineProperty(globalThis, "clearPositionsFilters", { configurable: true, enumerable: true, get: () => clearPositionsFilters, set: value => { clearPositionsFilters = value; } });
-Object.defineProperty(globalThis, "setPositionsFilter", { configurable: true, enumerable: true, get: () => setPositionsFilter, set: value => { setPositionsFilter = value; } });
-Object.defineProperty(globalThis, "togglePositionCard", { configurable: true, enumerable: true, get: () => togglePositionCard, set: value => { togglePositionCard = value; } });
-Object.defineProperty(globalThis, "updateTickerQuote", { configurable: true, enumerable: true, get: () => updateTickerQuote, set: value => { updateTickerQuote = value; } });
-Object.defineProperty(globalThis, "deleteSingleOperation", { configurable: true, enumerable: true, get: () => deleteSingleOperation, set: value => { deleteSingleOperation = value; } });
+// Compatibilidade apenas para handlers inline no HTML/templates.
+Object.assign(globalThis, {
+  applyPositionsView,
+  classifyNextPending,
+  clearPositionsFilters,
+  deleteSingleOperation,
+  onQuotesBlockTap,
+  openSectorEditor,
+  setChartMode,
+  setPositionsFilter,
+  setProfitRange,
+  togglePositionCard,
+  updateTickerQuote
+});

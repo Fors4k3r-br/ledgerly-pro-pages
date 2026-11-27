@@ -3,6 +3,8 @@
  * Mantém a regra de precedência: correção manual > cadastro B3 > regra automática.
  * A camada SQLite continua no app principal; este módulo recebe apenas os registros.
  */
+import './sectors-data.js';
+
 const setorDb = globalThis.LEDGERLY_SETORES || {
   setores: [],
   subsetores: [],
@@ -70,22 +72,3 @@ export function subsetoresDe(setor) {
 export function setorOptions() {
   return setorDb.setores.concat(setoresEspeciais);
 }
-
-// Compatibilidade temporária com as funções e handlers ainda definidos no index.html.
-Object.assign(globalThis, {
-  tickerCode,
-  setManualSectorClass,
-  classifyTicker,
-  subsetoresDe,
-  setorOptions
-});
-
-// Ponte de compatibilidade: mantém os nomes públicos acessíveis ao HTML e aos demais módulos.
-Object.defineProperty(globalThis, "setorDb", { configurable: true, enumerable: true, get: () => setorDb });
-Object.defineProperty(globalThis, "setoresEspeciais", { configurable: true, enumerable: true, get: () => setoresEspeciais });
-Object.defineProperty(globalThis, "classificacaoManual", { configurable: true, enumerable: true, get: () => classificacaoManual, set: value => { classificacaoManual = value; } });
-Object.defineProperty(globalThis, "tickerCode", { configurable: true, enumerable: true, get: () => tickerCode, set: value => { tickerCode = value; } });
-Object.defineProperty(globalThis, "setManualSectorClass", { configurable: true, enumerable: true, get: () => setManualSectorClass, set: value => { setManualSectorClass = value; } });
-Object.defineProperty(globalThis, "classifyTicker", { configurable: true, enumerable: true, get: () => classifyTicker, set: value => { classifyTicker = value; } });
-Object.defineProperty(globalThis, "subsetoresDe", { configurable: true, enumerable: true, get: () => subsetoresDe, set: value => { subsetoresDe = value; } });
-Object.defineProperty(globalThis, "setorOptions", { configurable: true, enumerable: true, get: () => setorOptions, set: value => { setorOptions = value; } });
