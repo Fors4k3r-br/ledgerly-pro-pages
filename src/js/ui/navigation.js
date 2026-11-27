@@ -1,9 +1,7 @@
 // Navegação entre abas/menu, temas em runtime, formatação, diálogos, modais e notificações toast.
 
 import { isPrivacyMode, setIsPrivacyMode } from '../core/state.js';
-import { getSetting } from '../core/database.js';
-import { refreshAllViews } from '../portfolio/positions.js';
-import { verifyPin } from '../security/lock-screen.js';
+import { refreshAllViews, verifyAppPin } from '../core/events.js';
 
 // Temas
 const THEMES = { default: { name: 'Padrão (atual)', meta: '#090d16' }, dark: { name: 'Escuro', meta: '#050505' }, light: { name: 'Claro', meta: '#f1f5f9' } };
@@ -107,32 +105,6 @@ function togglePrivacyMode() {
   refreshAllViews();
 }
 
-export function formatMoney(value) {
-  if (isPrivacyMode) return 'R$ •••••';
-  const num = Number(value) || 0;
-  return num.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-}
-
-export function formatPercent(value) {
-  if (isPrivacyMode) return '•••%';
-  const num = Number(value) || 0;
-  return `${num.toFixed(2).replace('.', ',')}%`;
-}
-
-export function formatNumber(value) {
-  const num = Number(value) || 0;
-  return num.toLocaleString('pt-BR', { maximumFractionDigits: 4 });
-}
-
-export function arrayBufferToBase64(buffer) {
-  let binary = '';
-  const bytes = new Uint8Array(buffer);
-  const len = bytes.byteLength;
-  for (let i = 0; i < len; i++) {
-    binary += String.fromCharCode(bytes[i]);
-  }
-  return window.btoa(binary);
-}
 
 // Modal de Confirmação com suporte a verificação de senha
 export function openConfirmDialog({ title, message, requirePin = false, onConfirm }) {
@@ -157,7 +129,7 @@ export function openConfirmDialog({ title, message, requirePin = false, onConfir
 
   document.getElementById('dialogConfirmBtn').onclick = async () => {
     if (requirePin) {
-      if (!(await verifyPin(pinInput.value.trim(), getSetting('security_pin_hash')))) {
+      if (!(await verifyAppPin(pinInput.value.trim()))) {
         showToast('Senha incorreta! Operação negada.', 'error');
         return;
       }
