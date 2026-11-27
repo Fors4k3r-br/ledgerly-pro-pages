@@ -16,14 +16,14 @@ function parseMoneyField(v) {
   const n = s.includes(',') ? parseFloat(s.replace(/\./g, '').replace(',', '.')) : parseFloat(s);
   return isFinite(n) ? n : NaN;
 }
-function provAutoTax() {
+export function provAutoTax() {
   const imp = document.getElementById('provImposto');
   if (!imp || imp.dataset.manual === '1') return;
   const bruto = parseMoneyField(document.getElementById('provBruto').value);
   const jcp = document.getElementById('provTipo').value === 'JCP';
   imp.value = jcp && bruto > 0 ? (bruto * 0.15).toFixed(2).replace('.', ',') : '';
 }
-function onProvTickerChange() {
+export function onProvTickerChange() {
   const t = document.getElementById('provTicker').value;
   // Sugere a corretora onde o ativo tem a maior custódia atual
   const rows = queryAll(`SELECT corretora_id, SUM(CASE WHEN tipo_ordem = 'C' THEN quantidade ELSE -quantidade END) AS q FROM operacoes WHERE ticker = ? GROUP BY corretora_id ORDER BY q DESC`, [t]);
@@ -31,13 +31,13 @@ function onProvTickerChange() {
   sel.value = (rows.length && rows[0].corretora_id != null) ? String(rows[0].corretora_id) : '';
   onProvCorretoraChange();
 }
-function onProvCorretoraChange() {
+export function onProvCorretoraChange() {
   const t = document.getElementById('provTicker').value;
   const c = document.getElementById('provCorretora').value;
   const pos = getConsolidatedPositions(c || null).find(p => p.ticker === t);
   if (pos && pos.qtdAtual > 0) document.getElementById('provQtd').value = String(pos.qtdAtual).replace('.', ',');
 }
-async function saveProvento(event) {
+export async function saveProvento(event) {
   event.preventDefault();
   const ticker = document.getElementById('provTicker').value;
   const tipo = document.getElementById('provTipo').value;
@@ -59,12 +59,12 @@ async function saveProvento(event) {
   refreshAllViews();
   showToast(`Provento de ${ticker} registrado!`, 'success');
 }
-function openProvSheet() {
+export function openProvSheet() {
   const s = document.getElementById('provSheet'); if (!s) return;
   s.classList.remove('hidden');
   const el = document.getElementById('provBruto'); if (el) setTimeout(() => el.focus(), 50);
 }
-function closeProvSheet() { const s = document.getElementById('provSheet'); if (s) s.classList.add('hidden'); }
+export function closeProvSheet() { const s = document.getElementById('provSheet'); if (s) s.classList.add('hidden'); }
 let provChart = null;
 function renderProvMonthlyChart(rows) {
   const canvas = document.getElementById('provMonthlyChart'); if (!canvas || typeof Chart === 'undefined') return;
@@ -88,7 +88,7 @@ function renderProvMonthlyChart(rows) {
       scales: { x: { ticks: { color: themeRgb(400), font: { size: 11 } }, grid: { display: false } }, y: { display: false, beginAtZero: true } } }
   });
 }
-function deleteProvento(id) {
+export function deleteProvento(id) {
   openConfirmDialog({
     title: 'Excluir provento',
     message: 'Deseja excluir este lançamento de provento?',
@@ -162,20 +162,8 @@ export function renderProventos() {
         <strong class="block font-mono text-sm text-emerald-400">${formatMoney(r.valor_liquido)}</strong>
         <span class="block text-[11px] text-slate-500 font-mono">bruto ${formatMoney(r.valor_bruto)}</span>
       </div>
-      <button type="button" onclick="deleteProvento(${Number(r.id)})" aria-label="Excluir provento de ${esc(r.ticker)}" class="p-2 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 transition shrink-0"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+      <button type="button" data-click="deleteProvento" data-arg="${Number(r.id)}" aria-label="Excluir provento de ${esc(r.ticker)}" class="p-2 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 transition shrink-0"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
     </div>`).join('') : '<div class="glass-card rounded-2xl p-6 text-center text-xs text-slate-400">Nenhum lançamento para exibir.</div>';
   renderProvMonthlyChart(rows);
   if (window.lucide) lucide.createIcons();
 }
-
-// Compatibilidade apenas para handlers inline no HTML/templates.
-Object.assign(globalThis, {
-  closeProvSheet,
-  deleteProvento,
-  onProvCorretoraChange,
-  onProvTickerChange,
-  openProvSheet,
-  provAutoTax,
-  renderProventos,
-  saveProvento
-});
