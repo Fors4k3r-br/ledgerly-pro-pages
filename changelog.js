@@ -3,9 +3,17 @@
 //   - suba "version" e "build" (o build define o nome do cache do service worker);
 //   - acrescente uma entrada nova no INÍCIO de "entries" com as mudanças, em linguagem simples.
 globalThis.LEDGERLY_CHANGELOG = {
-  version: '1.4.34',
-  build: 58,
+  version: '1.4.35',
+  build: 59,
   entries: [
+    {
+      version: '1.4.35',
+      date: '2026-11-27',
+      notes: [
+        'Conferência da carteira: nova tela no menu com auditoria automática do SQLite (saldo descoberto, divergência em notas, duplicidades, integridade física e pendências de organização).',
+        'Batimento de custódia: comparação linha a linha por corretora com checklist local e importação offline de arquivos de posição (.xlsx e .csv da B3 ou corretoras) com detecção automática de colunas.'
+      ]
+    },
     {
       version: '1.4.34',
       date: '2026-11-27',
