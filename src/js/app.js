@@ -17,6 +17,7 @@ import './pwa/updates-and-sw.js';
 import './portfolio/positions.js';
 import './portfolio/brapi.js';
 import './dividends/proventos.js';
+import './portfolio/audit-view.js';
 import './core/backup-restore.js';
 import './core/refresh.js';
 import './ui/actions.js';
