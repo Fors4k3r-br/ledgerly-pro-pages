@@ -936,7 +936,7 @@
     </section>
 
     <!-- ===============================================================
-         ABA: CONFERÊNCIA DA CARTEIRA (AUDITORIA + BATIMENTO DE CUSTÓDIA)
+         ABA: CONFERÊNCIA DA CARTEIRA (AUDITORIA + COMPARAR SALDO B3)
     ================================================================ -->
     <section id="tab-conferencia" class="space-y-4 hidden">
       <div class="glass-card rounded-3xl p-5 space-y-4">
@@ -946,7 +946,7 @@
               <i data-lucide="clipboard-check" class="w-5 h-5 text-emerald-400"></i>
               Conferência da carteira
             </h2>
-            <p class="text-xs text-slate-400 mt-0.5">Auditoria automática do SQLite e batimento de custódia com B3 ou corretora.</p>
+            <p class="text-xs text-slate-400 mt-0.5">Auditoria automática do SQLite e comparação de saldo com a B3 ou corretora.</p>
           </div>
         </div>
 
@@ -955,9 +955,9 @@
             <i data-lucide="shield-check" class="w-4 h-4"></i>
             <span>Auditoria</span>
           </button>
-          <button type="button" id="auditTab-batimento" data-click="setAuditSubView" data-arg="batimento" class="py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 text-slate-300 hover:bg-slate-800/70">
+          <button type="button" id="auditTab-comparar" data-click="setAuditSubView" data-arg="comparar" class="py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 text-slate-300 hover:bg-slate-800/70">
             <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
-            <span>Batimento</span>
+            <span>Comparar saldo B3</span>
           </button>
         </div>
       </div>
@@ -982,8 +982,8 @@
         <div id="auditDiagnosticsContainer" class="space-y-4"></div>
       </div>
 
-      <!-- SUB-ABA 2: BATIMENTO DE CUSTÓDIA (MANUAL OU CSV/EXCEL) -->
-      <div id="auditPanel-batimento" class="space-y-4 hidden">
+      <!-- SUB-ABA 2: COMPARAR SALDO B3 (MANUAL OU CSV/EXCEL) -->
+      <div id="auditPanel-comparar" class="space-y-4 hidden">
         <div class="glass-card rounded-3xl p-5 space-y-3.5">
           <div class="flex flex-col sm:flex-row sm:items-center gap-2.5">
             <div class="flex-1 min-w-0">
@@ -1027,7 +1027,7 @@
             </div>
           </div>
 
-          <!-- Progresso do checklist -->
+          <!-- Progresso da comparação -->
           <div class="space-y-2 pt-1 border-t border-slate-800/80">
             <div class="flex items-center justify-between gap-2 text-xs">
               <span id="auditProgressSummary" class="font-semibold text-slate-200">0 de 0 conferidos</span>
@@ -1036,17 +1036,38 @@
             <div class="h-2 rounded-full bg-slate-800 overflow-hidden">
               <div id="auditProgressBar" class="h-2 rounded-full bg-emerald-500 transition-all" style="width:0%"></div>
             </div>
-            <div class="flex flex-wrap gap-2 pt-1">
-              <button type="button" data-click="markAllMatchingChecked" class="px-3 py-1.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-[11px] font-semibold transition flex items-center gap-1.5">
-                <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
-                <span>Marcar iguais como conferidos</span>
-              </button>
+            <div id="auditClearChecklistWrap" class="hidden flex flex-wrap gap-2 pt-1">
               <button type="button" data-click="clearAuditChecklist" class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-slate-200 text-[11px] font-semibold transition flex items-center gap-1.5">
                 <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
                 <span>Limpar marcações</span>
               </button>
             </div>
           </div>
+        </div>
+
+        <!-- Comparação de valor atualizado (somente leitura, exibida quando o arquivo traz preços/valores) -->
+        <div id="auditValueCompareCard" class="hidden glass-card rounded-2xl p-4 space-y-2.5 border border-slate-800">
+          <div class="flex items-center justify-between gap-2">
+            <h3 class="text-xs font-bold text-white">Valor atualizado (somente leitura)</h3>
+            <span class="text-[10px] text-slate-500">App × Arquivo B3</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <div class="rounded-xl bg-slate-950/80 border border-slate-800/80 p-2.5 space-y-0.5">
+              <span class="block text-[10px] text-slate-400">No app</span>
+              <strong id="auditValApp" class="block text-sm font-extrabold font-mono text-white">R$ 0,00</strong>
+            </div>
+            <div class="rounded-xl bg-slate-950/80 border border-slate-800/80 p-2.5 space-y-0.5">
+              <span class="block text-[10px] text-slate-400">Na B3</span>
+              <strong id="auditValExt" class="block text-sm font-extrabold font-mono text-white">R$ 0,00</strong>
+            </div>
+            <div class="rounded-xl bg-slate-950/80 border border-slate-800/80 p-2.5 space-y-0.5">
+              <span class="block text-[10px] text-slate-400">Diferença</span>
+              <strong id="auditValDiff" class="block text-sm font-extrabold font-mono text-emerald-400">R$ 0,00</strong>
+            </div>
+          </div>
+          <p class="text-[10px] text-slate-500 leading-relaxed">
+            Diferenças de valor com quantidades iguais refletem apenas a variação entre a cotação salva no app e o preço de fechamento da planilha.
+          </p>
         </div>
 
         <div id="auditReconciliationList" class="space-y-2.5"></div>
