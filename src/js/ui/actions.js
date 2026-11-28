@@ -20,7 +20,8 @@ import {
   renderProventos,
   saveProvento,
   setProvCalFilter,
-  setProvSubView
+  setProvSubView,
+  toggleHiddenCalendarItems
 } from '../dividends/proventos.js';
 import {
   autoCalcManualTotal,
@@ -191,6 +192,7 @@ const CLICK_ACTIONS = {
   setProvCalFilter: el => setProvCalFilter(el.dataset.arg),
   refreshDividendCalendar: () => refreshDividendCalendar(),
   confirmCalendarProvento: el => confirmCalendarProvento(el.dataset.arg),
+  toggleHiddenCalendarItems: () => toggleHiddenCalendarItems(),
 
   // Conferência da carteira
   setAuditSubView: el => setAuditSubView(el.dataset.arg),
