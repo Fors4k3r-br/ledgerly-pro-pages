@@ -56,6 +56,17 @@ import {
   togglePositionCard,
   updateTickerQuote
 } from '../portfolio/positions.js';
+import {
+  clearAuditChecklist,
+  clearAuditImportedFile,
+  handleAuditFileImport,
+  markAllMatchingChecked,
+  onAuditCorretoraChange,
+  onAuditFileInstChange,
+  setAuditManualQty,
+  setAuditSubView,
+  toggleAuditChecked
+} from '../portfolio/audit-view.js';
 import { checkForUpdate, showUpdateDialog } from '../pwa/updates-and-sw.js';
 import {
   exportReportsExcel,
@@ -174,6 +185,13 @@ const CLICK_ACTIONS = {
   closeProvSheet: () => closeProvSheet(),
   deleteProvento: el => deleteProvento(Number(el.dataset.arg)),
 
+  // Conferência da carteira
+  setAuditSubView: el => setAuditSubView(el.dataset.arg),
+  clearAuditImportedFile: () => clearAuditImportedFile(),
+  toggleAuditChecked: el => toggleAuditChecked(el.dataset.arg),
+  markAllMatchingChecked: () => markAllMatchingChecked(),
+  clearAuditChecklist: () => clearAuditChecklist(),
+
   // Relatórios
   exportReportsPDF: () => exportReportsPDF(),
   exportReportsExcel: () => exportReportsExcel(),
@@ -210,6 +228,10 @@ const CHANGE_ACTIONS = {
   setTheme: el => setTheme(el.dataset.arg),
   setConflictMode: el => setConflictMode(el.dataset.arg),
   handleRestoreSQLiteFile: (_el, event) => handleRestoreSQLiteFile(event),
+  onAuditCorretoraChange: () => onAuditCorretoraChange(),
+  onAuditFileInstChange: () => onAuditFileInstChange(),
+  handleAuditFileImport: (_el, event) => handleAuditFileImport(event),
+  commitAuditManualQty: el => setAuditManualQty(el.dataset.ticker, el.value, true),
   updateStagedOpField: el => {
     const nIdx = Number(el.dataset.noteIdx);
     const opIdx = Number(el.dataset.opIdx);
@@ -229,7 +251,8 @@ const INPUT_ACTIONS = {
   filterSavedNotes: el => filterSavedNotes(el.dataset.arg === 'true'),
   autoCalcManualTotal: () => autoCalcManualTotal(),
   provAutoTax: () => provAutoTax(),
-  markManual: el => { el.dataset.manual = '1'; }
+  markManual: el => { el.dataset.manual = '1'; },
+  setAuditManualQty: el => setAuditManualQty(el.dataset.ticker, el.value, false)
 };
 
 const SUBMIT_ACTIONS = {

@@ -77,7 +77,7 @@ document.addEventListener('keydown', event => { if (event.key === 'Escape') togg
 export function switchTab(tabId, pushHistory = true) {
   toggleSideMenu(false);
   clearToolbarFocus();
-  const tabs = ['carteira', 'posicoes', 'adicionar', 'relatorios', 'proventos', 'config', 'banco', 'seguranca', 'apis', 'api-brapi', 'temas', 'sync', 'sobre'];
+  const tabs = ['carteira', 'posicoes', 'adicionar', 'relatorios', 'proventos', 'conferencia', 'config', 'banco', 'seguranca', 'apis', 'api-brapi', 'temas', 'sync', 'sobre'];
   tabs.forEach(t => {
     const section = document.getElementById(`tab-${t}`);
     if (section) {
