@@ -13,6 +13,7 @@ import { openConfirmDialog, showToast, themeRgb } from '../ui/navigation.js';
 // =========================================================================
 let activeProvSubView = 'recebidos'; // 'recebidos' | 'calendario'
 let activeCalFilter = 'todos'; // 'todos' | 'a_confirmar' | 'previsto' | 'a_definir' | 'registrado'
+let showHiddenCalendarItems = false;
 const dividendFeedState = { status: 'idle', feed: null, errorMsg: '' };
 let dividendFeedPromise = null;
 let lastCalendarItems = [];
@@ -108,6 +109,12 @@ export function setProvCalFilter(filter) {
   if (window.lucide) lucide.createIcons();
 }
 
+export function toggleHiddenCalendarItems() {
+  showHiddenCalendarItems = !showHiddenCalendarItems;
+  renderDividendCalendarSection();
+  if (window.lucide) lucide.createIcons();
+}
+
 function updateProvSubViewUI() {
   const btnRec = document.getElementById('provTab-recebidos');
   const btnCal = document.getElementById('provTab-calendario');
@@ -192,7 +199,7 @@ function renderDividendCalendarSection() {
   const syncEl = document.getElementById('provCalSyncMeta');
   const warnEl = document.getElementById('provCalFeedWarning');
   const chipsEl = document.getElementById('provCalFilterChips');
-  const noteEl = document.getElementById('provCalNote');
+  const hiddenWrap = document.getElementById('provCalHiddenWrap');
   if (!db) return;
 
   const esc = escapeSavedNoteText;
@@ -209,7 +216,7 @@ function renderDividendCalendarSection() {
     if (syncEl) syncEl.textContent = 'Agenda indisponível';
     if (kpisEl) kpisEl.innerHTML = '';
     if (chipsEl) chipsEl.innerHTML = '';
-    if (noteEl) noteEl.classList.add('hidden');
+    if (hiddenWrap) { hiddenWrap.innerHTML = ''; hiddenWrap.classList.add('hidden'); }
     if (listEl) {
       listEl.innerHTML = `
         <div class="glass-card rounded-2xl p-5 border border-amber-500/30 bg-amber-500/10 text-center space-y-2">
@@ -289,14 +296,68 @@ function renderDividendCalendarSection() {
     }).join('');
   }
 
-  if (noteEl) {
-    if (cal.summary.ignoredBeforePurchase > 0) {
-      const n = cal.summary.ignoredBeforePurchase;
-      noteEl.textContent = `${n} ${n === 1 ? 'anúncio de ativo da carteira com data-com anterior à sua compra foi desconsiderado.' : 'anúncios de ativos da carteira com data-com anterior à sua compra foram desconsiderados.'}`;
-      noteEl.classList.remove('hidden');
+  if (hiddenWrap) {
+    const hidden = cal.hiddenItems || [];
+    if (hidden.length > 0) {
+      const n = hidden.length;
+      const tCount = cal.summary.hiddenTickerCount || 0;
+      const countText = n === 1 ? '1 provento ocultado' : `${n} proventos ocultados`;
+      const assetsText = (tCount > 0 && tCount !== n)
+        ? ` (${tCount} ${tCount === 1 ? 'ativo' : 'ativos'})`
+        : '';
+      const toggleLabel = showHiddenCalendarItems ? 'Ocultar' : 'Ver quais';
+      const chevronIcon = showHiddenCalendarItems ? 'chevron-up' : 'chevron-down';
+
+      const cardsHtml = showHiddenCalendarItems
+        ? `<div class="space-y-2.5">${hidden.map(h => `
+            <article class="glass-card rounded-2xl p-3.5 border border-slate-800 space-y-2.5">
+              <div class="flex items-start justify-between gap-2">
+                <div class="min-w-0 flex items-center gap-1.5 flex-wrap">
+                  <strong class="font-mono text-sm font-extrabold text-slate-200">${esc(h.ticker)}</strong>
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-800 text-slate-300">${esc(PROV_TIPOS[h.tipoCode] || h.tipoRaw)}</span>
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-800 text-slate-400">Sem direito</span>
+                </div>
+                <span class="shrink-0 font-mono text-[11px] text-slate-400 whitespace-nowrap">${esc(formatUnitValueBR(h.valorUnitario))}/cota</span>
+              </div>
+              <dl class="rounded-xl bg-slate-950/80 border border-slate-800/80 px-3 divide-y divide-slate-800/70">
+                <div class="flex items-baseline justify-between gap-2 py-1.5 text-[11px]">
+                  <dt class="text-slate-400">Prazo para ter direito (data-com)</dt>
+                  <dd class="font-mono text-slate-200 whitespace-nowrap">${esc(h.dataComBR)}</dd>
+                </div>
+                <div class="flex items-baseline justify-between gap-2 py-1.5 text-[11px]">
+                  <dt class="text-slate-400">${esc(h.purchaseDateLabel)}</dt>
+                  <dd class="font-mono text-slate-200 whitespace-nowrap">${esc(h.purchaseDateBR)}</dd>
+                </div>
+                <div class="flex items-baseline justify-between gap-2 py-1.5 text-[11px]">
+                  <dt class="text-slate-400">Pagamento</dt>
+                  <dd class="font-mono text-slate-400 whitespace-nowrap">${esc(h.pagamentoBR)}</dd>
+                </div>
+              </dl>
+            </article>`).join('')}</div>`
+        : '';
+
+      hiddenWrap.innerHTML = `
+        <button
+          type="button"
+          data-click="toggleHiddenCalendarItems"
+          aria-expanded="${showHiddenCalendarItems ? 'true' : 'false'}"
+          class="w-full glass-card rounded-2xl p-3.5 border border-slate-800 hover:bg-slate-800/40 text-left transition flex items-center justify-between gap-3"
+        >
+          <span class="text-[11px] text-slate-400 leading-relaxed min-w-0">
+            <strong class="text-slate-200 font-semibold">${esc(countText + assetsText)}:</strong>
+            o prazo para ter direito foi antes da sua compra.
+          </span>
+          <span class="shrink-0 inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 whitespace-nowrap">
+            <span>${toggleLabel}</span>
+            <i data-lucide="${chevronIcon}" class="w-4 h-4"></i>
+          </span>
+        </button>
+        ${cardsHtml}`;
+      hiddenWrap.classList.remove('hidden');
     } else {
-      noteEl.textContent = '';
-      noteEl.classList.add('hidden');
+      showHiddenCalendarItems = false;
+      hiddenWrap.innerHTML = '';
+      hiddenWrap.classList.add('hidden');
     }
   }
 
@@ -361,7 +422,17 @@ function renderDividendCalendarSection() {
               ${milestoneTag ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-500/15 text-indigo-300">${esc(milestoneTag)}</span>` : ''}
             </div>
             <p class="text-[11px] text-slate-400 font-mono">
-              ${esc(formatNumber(item.qtdNaDataCom))} ${item.isFutureCom ? 'cotas atuais' : 'cotas na data-com'} · ${esc(formatUnitValueBR(item.valorUnitario))}
+              ${esc(
+                item.isFutureCom
+                  ? `${formatNumber(item.qtdNaDataCom)} cotas atuais`
+                  : item.isSoldAfterCom
+                    ? `${formatNumber(item.qtdNaDataCom)} cotas na data limite (posição encerrada)`
+                    : item.isPartialRight && item.qtdAtual > item.qtdNaDataCom
+                      ? `${formatNumber(item.qtdNaDataCom)} de ${formatNumber(item.qtdAtual)} cotas tinham direito na data limite`
+                      : item.isPartialRight
+                        ? `${formatNumber(item.qtdNaDataCom)} cotas na data limite (atual: ${formatNumber(item.qtdAtual)})`
+                        : `${formatNumber(item.qtdNaDataCom)} cotas na data limite`
+              )} · ${esc(formatUnitValueBR(item.valorUnitario))}
             </p>
           </div>
           <div class="text-right shrink-0">
@@ -372,7 +443,7 @@ function renderDividendCalendarSection() {
 
         <dl class="rounded-xl bg-slate-950/80 border border-slate-800/80 px-3 divide-y divide-slate-800/70">
           <div class="flex items-baseline justify-between gap-2 py-1.5 text-[11px]">
-            <dt class="text-slate-400">Data-com (registro)</dt>
+            <dt class="text-slate-400">Data limite (data-com)</dt>
             <dd class="font-mono text-slate-200 whitespace-nowrap">${esc(item.dataComBR)}</dd>
           </div>
           <div class="flex items-baseline justify-between gap-2 py-1.5 text-[11px]">

@@ -138,7 +138,7 @@ export function buildDividendCalendar({
   const matchedProvIds = new Set();
 
   const items = [];
-  let ignoredBeforePurchase = 0;
+  const hiddenItems = [];
 
   for (const [rawTicker, rawList] of Object.entries(acoes)) {
     const ticker = String(rawTicker || '').toUpperCase().trim();
@@ -146,6 +146,8 @@ export function buildDividendCalendar({
 
     const tickerOps = opsByTicker.get(ticker);
     const currentCustody = computeCustodyAsOf(tickerOps, todayIso || '9999-12-31');
+    const buyOps = tickerOps.filter(op => op.tipo === 'C' && op.qtd > 0);
+    const firstBuyIso = buyOps.length ? buyOps[0].dataIso : '';
 
     rawList.forEach(entry => {
       if (!entry || typeof entry !== 'object') return;
@@ -156,30 +158,61 @@ export function buildDividendCalendar({
 
       const pagamentoIndefinido = isUndefinedPaymentDate(entry.pagamento);
       const pagamentoIso = pagamentoIndefinido ? '' : toISODate(entry.pagamento);
-
-      // Para data-com futura, projeta com a custódia atual; para data-com passada ou hoje, usa a custódia exata na data-com.
-      const cutoffIso = (todayIso && dataComIso > todayIso) ? todayIso : dataComIso;
-      const custody = computeCustodyAsOf(tickerOps, cutoffIso);
-      if (!(custody.quantidade > 0)) {
-        if (currentCustody.quantidade > 0) ignoredBeforePurchase++;
-        return;
-      }
-
       const tipoCode = normalizeDividendType(entry.tipo);
-      const valorBruto = Number((custody.quantidade * valorUnitario).toFixed(2));
-      const imposto = tipoCode === 'JCP' ? Number((valorBruto * 0.15).toFixed(2)) : 0;
-      const valorLiquido = Number((valorBruto - imposto).toFixed(2));
+      const tipoRaw = String(entry.tipo || '').trim() || tipoCode;
       const dataComBR = isoToBR(dataComIso);
       const dataExBR = dataExIso ? isoToBR(dataExIso) : '—';
       const pagamentoBR = pagamentoIso ? isoToBR(pagamentoIso) : 'A definir';
 
+      // Para data-com futura, projeta com a custódia atual; para data-com passada ou hoje, usa a custódia exata na data-com.
+      const isFutureCom = Boolean(todayIso && dataComIso > todayIso);
+      const cutoffIso = isFutureCom ? todayIso : dataComIso;
+      const custody = computeCustodyAsOf(tickerOps, cutoffIso);
+
+      if (!(custody.quantidade > 0)) {
+        if (currentCustody.quantidade > 0) {
+          const hadBuyOnOrBeforeCom = buyOps.some(op => op.dataIso <= dataComIso);
+          const nextBuyAfterCom = buyOps.find(op => op.dataIso > dataComIso);
+          const purchaseDateIso = nextBuyAfterCom ? nextBuyAfterCom.dataIso : firstBuyIso;
+          hiddenItems.push({
+            key: `hidden|${ticker}|${tipoCode}|${dataComIso}|${pagamentoIso || 'indefinido'}|${valorUnitario.toFixed(6)}`,
+            ticker,
+            tipoRaw,
+            tipoCode,
+            valorUnitario,
+            dataComIso,
+            dataComBR,
+            dataExIso,
+            dataExBR,
+            pagamentoIso,
+            pagamentoBR,
+            pagamentoIndefinido,
+            purchaseDateIso,
+            purchaseDateBR: purchaseDateIso ? isoToBR(purchaseDateIso) : '—',
+            purchaseDateLabel: hadBuyOnOrBeforeCom ? 'Sua compra posterior' : 'Sua primeira compra',
+            qtdAtual: currentCustody.quantidade
+          });
+        }
+        return;
+      }
+
+      const valorBruto = Number((custody.quantidade * valorUnitario).toFixed(2));
+      const imposto = tipoCode === 'JCP' ? Number((valorBruto * 0.15).toFixed(2)) : 0;
+      const valorLiquido = Number((valorBruto - imposto).toFixed(2));
+      const qtdAtual = currentCustody.quantidade;
+      const isSoldAfterCom = !isFutureCom && qtdAtual <= 1e-6;
+      const isPartialRight = !isFutureCom && qtdAtual > 1e-6 && Math.abs(qtdAtual - custody.quantidade) > 1e-6;
+
       const candidate = {
         key: `${ticker}|${tipoCode}|${dataComIso}|${pagamentoIso || 'indefinido'}|${valorUnitario.toFixed(6)}`,
         ticker,
-        tipoRaw: String(entry.tipo || '').trim() || tipoCode,
+        tipoRaw,
         tipoCode,
         valorUnitario,
         qtdNaDataCom: custody.quantidade,
+        qtdAtual,
+        isPartialRight,
+        isSoldAfterCom,
         corretoraId: custody.corretoraId,
         valorBruto,
         imposto,
@@ -191,7 +224,7 @@ export function buildDividendCalendar({
         pagamentoIso,
         pagamentoBR,
         pagamentoIndefinido,
-        isFutureCom: Boolean(todayIso && dataComIso > todayIso),
+        isFutureCom,
         daysToCom: todayIso ? diffDaysISO(todayIso, dataComIso) : null,
         daysToEx: (todayIso && dataExIso) ? diffDaysISO(todayIso, dataExIso) : null,
         daysToPay: (todayIso && pagamentoIso) ? diffDaysISO(todayIso, pagamentoIso) : null
@@ -234,6 +267,13 @@ export function buildDividendCalendar({
     return a.ticker.localeCompare(b.ticker);
   });
 
+  hiddenItems.sort((a, b) => {
+    if (a.dataComIso !== b.dataComIso) return b.dataComIso.localeCompare(a.dataComIso);
+    return a.ticker.localeCompare(b.ticker);
+  });
+
+  const hiddenTickers = new Set(hiddenItems.map(h => h.ticker));
+
   const summary = {
     total: items.length,
     countAConfirmar: 0,
@@ -242,7 +282,8 @@ export function buildDividendCalendar({
     countRegistrado: 0,
     totalPrevistoLiquido: 0,
     totalAConfirmarLiquido: 0,
-    ignoredBeforePurchase,
+    ignoredBeforePurchase: hiddenItems.length,
+    hiddenTickerCount: hiddenTickers.size,
     proximoPagamento: null
   };
 
@@ -267,6 +308,7 @@ export function buildDividendCalendar({
 
   return {
     items,
+    hiddenItems,
     summary,
     meta: {
       atualizadoEm: feed?.atualizado_em || feed?.ultima_execucao || null,
