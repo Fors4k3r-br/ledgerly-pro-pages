@@ -1,14 +1,402 @@
-// Cadastro, listagem, gráfico mensal e totalização de proventos recebidos.
+// Cadastro, listagem, gráfico mensal, totalização e calendário automático de proventos (dividendos.json).
 
 import { db, isPrivacyMode, allPositionsData } from '../core/state.js';
 import { PROV_TIPOS, autoHideTooltipPlugin, escapeSavedNoteText, formatMoney, formatNumber, formatPercent, isoToBR, todayISO } from '../core/utils.js';
 import { refreshAllViews } from '../core/events.js';
 import { getSetting, persistSQLiteToIndexedDB, queryAll } from '../core/database.js';
 import { getConsolidatedPositions } from '../portfolio/positions.js';
+import { buildDividendCalendar } from './calendar.js';
 import { openConfirmDialog, showToast, themeRgb } from '../ui/navigation.js';
 
 // =========================================================================
-// PROVENTOS (dividendos, JCP, rendimentos) vinculados ao ticker de cada ativo
+// ESTADO DO CALENDÁRIO DE PROVENTOS (agenda via dividendos.json)
+// =========================================================================
+let activeProvSubView = 'recebidos'; // 'recebidos' | 'calendario'
+let activeCalFilter = 'todos'; // 'todos' | 'a_confirmar' | 'previsto' | 'a_definir' | 'registrado'
+const dividendFeedState = { status: 'idle', feed: null, errorMsg: '' };
+let dividendFeedPromise = null;
+let lastCalendarItems = [];
+
+function formatUnitValueBR(val) {
+  const n = Number(val) || 0;
+  return 'R$ ' + n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 6 });
+}
+
+function formatIsoTimestampBR(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  return d.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+}
+
+function relativeDateLabel(days, prefix) {
+  if (days === null || days === undefined) return '';
+  if (days === 0) return `${prefix} hoje`;
+  if (days === 1) return `${prefix} amanhã`;
+  if (days > 1 && days <= 30) return `${prefix} em ${days}d`;
+  return '';
+}
+
+export async function loadDividendCalendarFeed(forceRefresh = false) {
+  if (dividendFeedPromise && !forceRefresh) return dividendFeedPromise;
+  dividendFeedState.status = 'loading';
+  dividendFeedState.errorMsg = '';
+  renderDividendCalendarSection();
+
+  const run = (async () => {
+    try {
+      const resp = await fetch('./dividendos.json', { cache: forceRefresh ? 'no-cache' : 'default' });
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const data = await resp.json();
+      if (!data || typeof data !== 'object' || Array.isArray(data) || !data.acoes || typeof data.acoes !== 'object') {
+        throw new Error('Formato inesperado em dividendos.json.');
+      }
+      if (data.status === 'offline' && !Object.keys(data.acoes).length) {
+        dividendFeedState.status = 'error';
+        dividendFeedState.feed = data;
+        dividendFeedState.errorMsg = 'Sem conexão para baixar a agenda de proventos pela primeira vez.';
+      } else {
+        dividendFeedState.status = 'ready';
+        dividendFeedState.feed = data;
+        dividendFeedState.errorMsg = '';
+      }
+      return true;
+    } catch (err) {
+      console.warn('Falha ao carregar dividendos.json:', err);
+      if (dividendFeedState.feed && dividendFeedState.feed.acoes && Object.keys(dividendFeedState.feed.acoes).length) {
+        dividendFeedState.status = 'ready';
+        dividendFeedState.errorMsg = 'Não foi possível atualizar agora; exibindo última cópia carregada.';
+      } else {
+        dividendFeedState.status = 'error';
+        dividendFeedState.errorMsg = 'Não foi possível carregar dividendos.json. Verifique a conexão e tente novamente.';
+      }
+      return false;
+    } finally {
+      dividendFeedPromise = null;
+      renderDividendCalendarSection();
+      if (window.lucide) lucide.createIcons();
+    }
+  })();
+
+  dividendFeedPromise = run;
+  return run;
+}
+
+export async function refreshDividendCalendar() {
+  const ok = await loadDividendCalendarFeed(true);
+  if (ok && dividendFeedState.status === 'ready') {
+    showToast('Agenda de proventos atualizada.', 'success');
+  } else {
+    showToast(dividendFeedState.errorMsg || 'Não foi possível atualizar a agenda.', 'error');
+  }
+}
+
+export function setProvSubView(view) {
+  activeProvSubView = view === 'calendario' ? 'calendario' : 'recebidos';
+  updateProvSubViewUI();
+  if (activeProvSubView === 'calendario') {
+    if (dividendFeedState.status === 'idle') loadDividendCalendarFeed(false);
+    else renderDividendCalendarSection();
+  }
+  if (window.lucide) lucide.createIcons();
+}
+
+export function setProvCalFilter(filter) {
+  const allowed = ['todos', 'a_confirmar', 'previsto', 'a_definir', 'registrado'];
+  activeCalFilter = allowed.includes(filter) ? filter : 'todos';
+  renderDividendCalendarSection();
+  if (window.lucide) lucide.createIcons();
+}
+
+function updateProvSubViewUI() {
+  const btnRec = document.getElementById('provTab-recebidos');
+  const btnCal = document.getElementById('provTab-calendario');
+  const panelRec = document.getElementById('provPanel-recebidos');
+  const panelCal = document.getElementById('provPanel-calendario');
+  if (!btnRec || !btnCal || !panelRec || !panelCal) return;
+
+  const isRec = activeProvSubView === 'recebidos';
+  panelRec.classList.toggle('hidden', !isRec);
+  panelCal.classList.toggle('hidden', isRec);
+  btnRec.className = 'py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 '
+    + (isRec ? 'bg-emerald-500 text-slate-950 shadow-md' : 'text-slate-300 hover:bg-slate-800/70');
+  btnCal.className = 'py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 '
+    + (!isRec ? 'bg-emerald-500 text-slate-950 shadow-md' : 'text-slate-300 hover:bg-slate-800/70');
+}
+
+function updateProvCalendarBadge(count) {
+  const badge = document.getElementById('provCalBadge');
+  if (!badge) return;
+  if (count > 0) {
+    badge.textContent = String(count);
+    badge.classList.remove('hidden');
+  } else {
+    badge.textContent = '';
+    badge.classList.add('hidden');
+  }
+}
+
+export function confirmCalendarProvento(eventKey) {
+  const item = lastCalendarItems.find(x => x.key === eventKey);
+  if (!item) {
+    showToast('Evento não encontrado na agenda atual.', 'error');
+    return;
+  }
+
+  const selT = document.getElementById('provTicker');
+  if (selT) {
+    if (!Array.from(selT.options).some(o => o.value === item.ticker)) {
+      const opt = document.createElement('option');
+      opt.value = item.ticker;
+      opt.textContent = item.ticker;
+      selT.appendChild(opt);
+    }
+    selT.value = item.ticker;
+  }
+
+  const selTipo = document.getElementById('provTipo');
+  if (selTipo) selTipo.value = item.tipoCode;
+
+  const selCorr = document.getElementById('provCorretora');
+  if (selCorr) {
+    const corrVal = item.corretoraId != null ? String(item.corretoraId) : '';
+    selCorr.value = Array.from(selCorr.options).some(o => o.value === corrVal) ? corrVal : '';
+  }
+
+  const dataEl = document.getElementById('provData');
+  if (dataEl) dataEl.value = item.pagamentoIso || todayISO();
+
+  const qtdEl = document.getElementById('provQtd');
+  if (qtdEl) qtdEl.value = String(item.qtdNaDataCom).replace('.', ',');
+
+  const brutoEl = document.getElementById('provBruto');
+  if (brutoEl) brutoEl.value = item.valorBruto.toFixed(2).replace('.', ',');
+
+  const impEl = document.getElementById('provImposto');
+  if (impEl) {
+    delete impEl.dataset.manual;
+    impEl.value = item.imposto > 0 ? item.imposto.toFixed(2).replace('.', ',') : '';
+  }
+
+  const obsEl = document.getElementById('provObs');
+  if (obsEl) {
+    obsEl.value = `Data-com ${item.dataComBR} · ${formatUnitValueBR(item.valorUnitario)}/cota`.slice(0, 120);
+  }
+
+  openProvSheet(true);
+}
+
+function renderDividendCalendarSection() {
+  const listEl = document.getElementById('provCalList');
+  const kpisEl = document.getElementById('provCalKpis');
+  const syncEl = document.getElementById('provCalSyncMeta');
+  const warnEl = document.getElementById('provCalFeedWarning');
+  const chipsEl = document.getElementById('provCalFilterChips');
+  const noteEl = document.getElementById('provCalNote');
+  if (!db) return;
+
+  const esc = escapeSavedNoteText;
+
+  if (dividendFeedState.status === 'loading' && !dividendFeedState.feed) {
+    if (syncEl) syncEl.textContent = 'Carregando agenda de dividendos.json…';
+    if (listEl) {
+      listEl.innerHTML = '<div class="glass-card rounded-2xl p-6 text-center text-xs text-slate-400">Carregando calendário de proventos…</div>';
+    }
+    return;
+  }
+
+  if (dividendFeedState.status === 'error' && !dividendFeedState.feed) {
+    if (syncEl) syncEl.textContent = 'Agenda indisponível';
+    if (kpisEl) kpisEl.innerHTML = '';
+    if (chipsEl) chipsEl.innerHTML = '';
+    if (noteEl) noteEl.classList.add('hidden');
+    if (listEl) {
+      listEl.innerHTML = `
+        <div class="glass-card rounded-2xl p-5 border border-amber-500/30 bg-amber-500/10 text-center space-y-2">
+          <p class="text-xs font-semibold text-amber-300">${esc(dividendFeedState.errorMsg)}</p>
+          <button type="button" data-click="refreshDividendCalendar" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-xs font-semibold text-white transition">Tentar novamente</button>
+        </div>`;
+    }
+    return;
+  }
+
+  const ops = queryAll('SELECT id, data_operacao, ticker, tipo_ordem, quantidade, corretora_id FROM operacoes ORDER BY id ASC');
+  const registeredProventos = queryAll('SELECT id, ticker, tipo, data_pagamento, valor_bruto, valor_liquido, observacao FROM proventos');
+  const cal = buildDividendCalendar({
+    feed: dividendFeedState.feed,
+    ops,
+    registeredProventos,
+    todayIso: todayISO()
+  });
+
+  lastCalendarItems = cal.items;
+  updateProvCalendarBadge(cal.summary.countAConfirmar + cal.summary.countPrevisto + cal.summary.countADefinir);
+
+  if (syncEl) {
+    const ts = formatIsoTimestampBR(cal.meta.atualizadoEm);
+    syncEl.textContent = ts
+      ? `Agenda atualizada em ${ts} · ${cal.meta.totalAtivosFeed} ativos monitorados`
+      : `${cal.meta.totalAtivosFeed} ativos monitorados em dividendos.json`;
+  }
+
+  if (warnEl) {
+    const warnMsg = dividendFeedState.errorMsg
+      || (cal.meta.erro ? `Última coleta automática reportou aviso: ${cal.meta.erro}` : '');
+    if (warnMsg) {
+      warnEl.textContent = warnMsg;
+      warnEl.classList.remove('hidden');
+    } else {
+      warnEl.textContent = '';
+      warnEl.classList.add('hidden');
+    }
+  }
+
+  if (kpisEl) {
+    const nextSub = cal.summary.proximoPagamento
+      ? `Próx.: ${cal.summary.proximoPagamento.ticker} em ${cal.summary.proximoPagamento.pagamentoBR}`
+      : (cal.summary.countADefinir > 0 ? `${cal.summary.countADefinir} com pagamento a definir` : 'Sem pagamentos futuros');
+    const confirmSub = cal.summary.countAConfirmar > 0
+      ? `${cal.summary.countAConfirmar} ${cal.summary.countAConfirmar === 1 ? 'pagamento vencido' : 'pagamentos vencidos'}`
+      : 'Tudo em dia';
+
+    kpisEl.innerHTML = `
+      <div class="glass-card rounded-2xl p-3.5 min-w-0 space-y-1">
+        <span class="block text-[11px] text-slate-400">Previsto a receber</span>
+        <strong class="block text-sm font-extrabold font-mono text-emerald-400 truncate">${formatMoney(cal.summary.totalPrevistoLiquido)}</strong>
+        <span class="block text-[10px] text-slate-500 truncate">${esc(nextSub)}</span>
+      </div>
+      <div class="glass-card rounded-2xl p-3.5 min-w-0 space-y-1">
+        <span class="block text-[11px] text-slate-400">A confirmar</span>
+        <strong class="block text-sm font-extrabold font-mono ${cal.summary.countAConfirmar > 0 ? 'text-amber-300' : 'text-white'} truncate">${formatMoney(cal.summary.totalAConfirmarLiquido)}</strong>
+        <span class="block text-[10px] text-slate-500 truncate">${esc(confirmSub)}</span>
+      </div>`;
+  }
+
+  if (chipsEl) {
+    const defs = [
+      ['todos', `Todos (${cal.summary.total})`],
+      ['a_confirmar', `A confirmar (${cal.summary.countAConfirmar})`],
+      ['previsto', `Previstos (${cal.summary.countPrevisto})`],
+      ['a_definir', `A definir (${cal.summary.countADefinir})`],
+      ['registrado', `Lançados (${cal.summary.countRegistrado})`]
+    ];
+    chipsEl.innerHTML = defs.map(([id, label]) => {
+      const on = activeCalFilter === id;
+      const cls = on
+        ? 'bg-emerald-500 text-slate-950 border-emerald-500 font-bold'
+        : 'bg-slate-900 hover:bg-slate-800 text-slate-300 border-slate-800 font-semibold';
+      return `<button type="button" data-click="setProvCalFilter" data-arg="${id}" class="shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full border text-[11px] transition ${cls}">${esc(label)}</button>`;
+    }).join('');
+  }
+
+  if (noteEl) {
+    if (cal.summary.ignoredBeforePurchase > 0) {
+      const n = cal.summary.ignoredBeforePurchase;
+      noteEl.textContent = `${n} ${n === 1 ? 'anúncio de ativo da carteira com data-com anterior à sua compra foi desconsiderado.' : 'anúncios de ativos da carteira com data-com anterior à sua compra foram desconsiderados.'}`;
+      noteEl.classList.remove('hidden');
+    } else {
+      noteEl.textContent = '';
+      noteEl.classList.add('hidden');
+    }
+  }
+
+  if (!listEl) return;
+
+  if (!ops.length) {
+    listEl.innerHTML = `
+      <div class="glass-card rounded-2xl p-6 text-center space-y-1.5">
+        <p class="text-sm font-semibold text-slate-300">Nenhum ativo na carteira ainda</p>
+        <p class="text-xs text-slate-500">Importe uma nota de corretagem ou lance uma compra para cruzar automaticamente com a agenda de proventos.</p>
+      </div>`;
+    return;
+  }
+
+  const filtered = activeCalFilter === 'todos'
+    ? cal.items
+    : cal.items.filter(item => item.status === activeCalFilter);
+
+  if (!filtered.length) {
+    const emptyMsg = cal.items.length === 0
+      ? 'Nenhum provento previsto encontrado em dividendos.json para a sua custódia atual.'
+      : 'Nenhum evento encontrado neste filtro.';
+    listEl.innerHTML = `<div class="glass-card rounded-2xl p-6 text-center text-xs text-slate-400">${esc(emptyMsg)}</div>`;
+    return;
+  }
+
+  listEl.innerHTML = filtered.map(item => {
+    let statusBadge = '';
+    let borderCls = 'border-slate-800';
+    if (item.status === 'a_confirmar') {
+      statusBadge = '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/15 text-amber-300">A confirmar</span>';
+      borderCls = 'border-amber-500/30';
+    } else if (item.status === 'previsto') {
+      const soon = relativeDateLabel(item.daysToPay, 'Paga');
+      statusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-300">${esc(soon || 'Previsto')}</span>`;
+      borderCls = 'border-emerald-500/30';
+    } else if (item.status === 'a_definir') {
+      statusBadge = '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/15 text-indigo-300">Data a definir</span>';
+      borderCls = 'border-indigo-500/30';
+    } else {
+      statusBadge = '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-800 text-slate-400">Lançado</span>';
+    }
+
+    const comSoon = relativeDateLabel(item.daysToCom, 'Com');
+    const exSoon = relativeDateLabel(item.daysToEx, 'Ex');
+    const milestoneTag = comSoon || exSoon;
+
+    const actionBtn = item.status === 'registrado'
+      ? ''
+      : item.status === 'a_confirmar'
+        ? `<button type="button" data-click="confirmCalendarProvento" data-arg="${esc(item.key)}" class="w-full py-2.5 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition flex items-center justify-center gap-1.5"><i data-lucide="calendar-check" class="w-4 h-4"></i><span>Confirmar recebimento</span></button>`
+        : `<button type="button" data-click="confirmCalendarProvento" data-arg="${esc(item.key)}" class="w-full py-2 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 font-semibold text-xs transition flex items-center justify-center gap-1.5"><i data-lucide="plus" class="w-3.5 h-3.5"></i><span>Lançar provento</span></button>`;
+
+    return `
+      <article class="glass-card rounded-2xl p-4 border ${borderCls} space-y-3">
+        <div class="flex items-start justify-between gap-2">
+          <div class="min-w-0 space-y-1">
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <strong class="font-mono text-sm font-extrabold text-white">${esc(item.ticker)}</strong>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-800 text-slate-300">${esc(PROV_TIPOS[item.tipoCode] || item.tipoRaw)}</span>
+              ${statusBadge}
+              ${milestoneTag ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-500/15 text-indigo-300">${esc(milestoneTag)}</span>` : ''}
+            </div>
+            <p class="text-[11px] text-slate-400 font-mono">
+              ${esc(formatNumber(item.qtdNaDataCom))} ${item.isFutureCom ? 'cotas atuais' : 'cotas na data-com'} · ${esc(formatUnitValueBR(item.valorUnitario))}
+            </p>
+          </div>
+          <div class="text-right shrink-0">
+            <strong class="block font-mono text-sm font-extrabold ${item.status === 'registrado' ? 'text-slate-300' : 'text-emerald-400'} whitespace-nowrap">${formatMoney(item.valorLiquido)}</strong>
+            <span class="block text-[10px] text-slate-500 font-mono whitespace-nowrap">${item.imposto > 0 ? `líq. (IR ${formatMoney(item.imposto)})` : 'líquido estimado'}</span>
+          </div>
+        </div>
+
+        <dl class="rounded-xl bg-slate-950/80 border border-slate-800/80 px-3 divide-y divide-slate-800/70">
+          <div class="flex items-baseline justify-between gap-2 py-1.5 text-[11px]">
+            <dt class="text-slate-400">Data-com (registro)</dt>
+            <dd class="font-mono text-slate-200 whitespace-nowrap">${esc(item.dataComBR)}</dd>
+          </div>
+          <div class="flex items-baseline justify-between gap-2 py-1.5 text-[11px]">
+            <dt class="text-slate-400">Data-ex</dt>
+            <dd class="font-mono text-slate-200 whitespace-nowrap">${esc(item.dataExBR)}</dd>
+          </div>
+          <div class="flex items-baseline justify-between gap-2 py-1.5 text-[11px]">
+            <dt class="text-slate-400">Pagamento</dt>
+            <dd class="font-mono font-semibold ${item.pagamentoIndefinido ? 'text-indigo-300' : 'text-white'} whitespace-nowrap">${esc(item.pagamentoBR)}</dd>
+          </div>
+          ${item.imposto > 0 ? `
+          <div class="flex items-baseline justify-between gap-2 py-1.5 text-[11px]">
+            <dt class="text-slate-400">Bruto / IR JCP (15%)</dt>
+            <dd class="font-mono text-slate-300 whitespace-nowrap">${formatMoney(item.valorBruto)} · −${formatMoney(item.imposto)}</dd>
+          </div>` : ''}
+        </dl>
+
+        ${actionBtn}
+      </article>`;
+  }).join('');
+}
+
+// =========================================================================
+// PROVENTOS RECEBIDOS (cadastro, listagem, gráfico mensal e totalização)
 // =========================================================================
 function parseMoneyField(v) {
   const s = String(v || '').trim().replace(/\s/g, '');
@@ -59,8 +447,10 @@ export async function saveProvento(event) {
   refreshAllViews();
   showToast(`Provento de ${ticker} registrado!`, 'success');
 }
-export function openProvSheet() {
+export function openProvSheet(prefilled = false) {
   const s = document.getElementById('provSheet'); if (!s) return;
+  const titleEl = document.getElementById('provSheetTitle');
+  if (titleEl) titleEl.textContent = prefilled ? 'Confirmar provento' : 'Novo provento';
   s.classList.remove('hidden');
   const el = document.getElementById('provBruto'); if (el) setTimeout(() => el.focus(), 50);
 }
@@ -104,6 +494,8 @@ export function deleteProvento(id) {
 export function renderProventos() {
   const root = document.getElementById('tab-proventos');
   if (!root || !db) return;
+  updateProvSubViewUI();
+
   const esc = escapeSavedNoteText;
   const opsTickers = queryAll('SELECT DISTINCT ticker FROM operacoes ORDER BY ticker').map(r => r.ticker);
   const allTickers = Array.from(new Set(opsTickers.concat(queryAll('SELECT DISTINCT ticker FROM proventos').map(r => r.ticker)))).sort();
@@ -165,5 +557,14 @@ export function renderProventos() {
       <button type="button" data-click="deleteProvento" data-arg="${Number(r.id)}" aria-label="Excluir provento de ${esc(r.ticker)}" class="p-2 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 transition shrink-0"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
     </div>`).join('') : '<div class="glass-card rounded-2xl p-6 text-center text-xs text-slate-400">Nenhum lançamento para exibir.</div>';
   renderProvMonthlyChart(rows);
+
+  // Carrega a agenda automaticamente ao abrir a aba Proventos (ou redesenha se já carregada)
+  const isProvTabVisible = !root.classList.contains('hidden');
+  if (dividendFeedState.status === 'idle' && isProvTabVisible) {
+    loadDividendCalendarFeed(false);
+  } else if (dividendFeedState.status !== 'idle') {
+    renderDividendCalendarSection();
+  }
+
   if (window.lucide) lucide.createIcons();
 }
