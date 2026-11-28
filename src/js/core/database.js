@@ -143,6 +143,7 @@ export function fillCorretoraSelects() {
   };
   const temSemCorretora = Number(queryAll('SELECT COUNT(*) AS n FROM operacoes WHERE corretora_id IS NULL')[0].n) > 0;
   set('positionsCorretora', '<option value="">Todas as corretoras</option>' + (temSemCorretora ? '<option value="none">Sem corretora</option>' : '') + opts);
+  set('auditCorretora', '<option value="">Todas as corretoras</option>' + (temSemCorretora ? '<option value="none">Sem corretora</option>' : '') + opts);
   set('savedNotesCorretora', '<option value="">Todas as corretoras</option>' + opts);
   set('provCorretora', '<option value="">Não informada</option>' + opts);
   set('provFilterCorretora', '<option value="">Todas as corretoras</option>' + opts);

@@ -8,6 +8,7 @@ import { renderApiStatus } from '../portfolio/brapi.js';
 import { renderSavedNotesHistory } from '../notes/notes-manager.js';
 import { renderProventos } from '../dividends/proventos.js';
 import { renderReports } from '../reports/reports-view.js';
+import { renderAuditView } from '../portfolio/audit-view.js';
 import { updateSecurityUIState } from '../security/lock-screen.js';
 import { renderThemeCard } from '../ui/navigation.js';
 
@@ -22,6 +23,9 @@ export function runRefreshAllViews() {
   renderProventos();
   if (document.getElementById('tab-relatorios') && !document.getElementById('tab-relatorios').classList.contains('hidden')) {
     renderReports();
+  }
+  if (document.getElementById('tab-conferencia') && !document.getElementById('tab-conferencia').classList.contains('hidden')) {
+    renderAuditView();
   }
   updateDatabaseStats();
   updateSecurityUIState();
