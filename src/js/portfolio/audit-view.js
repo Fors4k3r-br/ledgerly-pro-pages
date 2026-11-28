@@ -244,7 +244,7 @@ function renderValueComparisonCard(summary) {
   if (diffEl) {
     const d = summary.totalValueDiff || 0;
     diffEl.textContent = formatSignedMoney(d);
-    diffEl.className = 'block text-sm font-extrabold font-mono '
+    diffEl.className = 'text-sm font-extrabold font-mono text-right whitespace-nowrap '
       + (Math.abs(d) < 0.01 ? 'text-emerald-400' : 'text-amber-300');
   }
   card.classList.remove('hidden');
