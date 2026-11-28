@@ -3,9 +3,16 @@
 //   - suba "version" e "build" (o build define o nome do cache do service worker);
 //   - acrescente uma entrada nova no INÍCIO de "entries" com as mudanças, em linguagem simples.
 globalThis.LEDGERLY_CHANGELOG = {
-  version: '1.4.38',
-  build: 62,
+  version: '1.4.39',
+  build: 63,
   entries: [
+    {
+      version: '1.4.39',
+      date: '2026-11-28',
+      notes: [
+        'Calendário de proventos: linguagem simplificada com rótulo "Data limite (data-com)", destaque quando apenas parte das cotas tinha direito na data limite e bloco recolhível "Ver quais" para inspecionar os proventos ocultados com a data limite e a data da compra.'
+      ]
+    },
     {
       version: '1.4.38',
       date: '2026-11-28',
