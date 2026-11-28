@@ -60,7 +60,6 @@ import {
   clearAuditChecklist,
   clearAuditImportedFile,
   handleAuditFileImport,
-  markAllMatchingChecked,
   onAuditCorretoraChange,
   onAuditFileInstChange,
   setAuditManualQty,
@@ -189,7 +188,6 @@ const CLICK_ACTIONS = {
   setAuditSubView: el => setAuditSubView(el.dataset.arg),
   clearAuditImportedFile: () => clearAuditImportedFile(),
   toggleAuditChecked: el => toggleAuditChecked(el.dataset.arg),
-  markAllMatchingChecked: () => markAllMatchingChecked(),
   clearAuditChecklist: () => clearAuditChecklist(),
 
   // Relatórios
