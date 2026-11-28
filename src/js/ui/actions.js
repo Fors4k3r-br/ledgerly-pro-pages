@@ -10,13 +10,17 @@ import {
 import { onManCorretoraChange } from '../core/database.js';
 import {
   closeProvSheet,
+  confirmCalendarProvento,
   deleteProvento,
   onProvCorretoraChange,
   onProvTickerChange,
   openProvSheet,
   provAutoTax,
+  refreshDividendCalendar,
   renderProventos,
-  saveProvento
+  saveProvento,
+  setProvCalFilter,
+  setProvSubView
 } from '../dividends/proventos.js';
 import {
   autoCalcManualTotal,
@@ -180,9 +184,13 @@ const CLICK_ACTIONS = {
   deleteSavedNote: el => deleteSavedNote(Number(el.dataset.arg)),
 
   // Proventos
-  openProvSheet: () => openProvSheet(),
+  openProvSheet: () => openProvSheet(false),
   closeProvSheet: () => closeProvSheet(),
   deleteProvento: el => deleteProvento(Number(el.dataset.arg)),
+  setProvSubView: el => setProvSubView(el.dataset.arg),
+  setProvCalFilter: el => setProvCalFilter(el.dataset.arg),
+  refreshDividendCalendar: () => refreshDividendCalendar(),
+  confirmCalendarProvento: el => confirmCalendarProvento(el.dataset.arg),
 
   // Conferência da carteira
   setAuditSubView: el => setAuditSubView(el.dataset.arg),
