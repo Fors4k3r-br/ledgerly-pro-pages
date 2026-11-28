@@ -3,9 +3,16 @@
 //   - suba "version" e "build" (o build define o nome do cache do service worker);
 //   - acrescente uma entrada nova no INÍCIO de "entries" com as mudanças, em linguagem simples.
 globalThis.LEDGERLY_CHANGELOG = {
-  version: '1.4.36',
-  build: 60,
+  version: '1.4.37',
+  build: 61,
   entries: [
+    {
+      version: '1.4.37',
+      date: '2026-11-27',
+      notes: [
+        'Conferência da carteira: reorganizado o card de "Valor atualizado" em linhas alinhadas à direita para evitar corte de valores em telas estreitas.'
+      ]
+    },
     {
       version: '1.4.36',
       date: '2026-11-27',

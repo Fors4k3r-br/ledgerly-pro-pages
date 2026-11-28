@@ -1046,27 +1046,27 @@
         </div>
 
         <!-- Comparação de valor atualizado (somente leitura, exibida quando o arquivo traz preços/valores) -->
-        <div id="auditValueCompareCard" class="hidden glass-card rounded-2xl p-4 space-y-2.5 border border-slate-800">
-          <div class="flex items-center justify-between gap-2">
-            <h3 class="text-xs font-bold text-white">Valor atualizado (somente leitura)</h3>
-            <span class="text-[10px] text-slate-500">App × Arquivo B3</span>
+        <div id="auditValueCompareCard" class="hidden glass-card rounded-2xl p-4 space-y-3 border border-slate-800">
+          <div class="flex items-baseline justify-between gap-2">
+            <h3 class="text-xs font-bold text-white">Valor atualizado</h3>
+            <span class="text-[10px] text-slate-500 whitespace-nowrap shrink-0">App × Arquivo B3</span>
           </div>
-          <div class="grid grid-cols-3 gap-2">
-            <div class="rounded-xl bg-slate-950/80 border border-slate-800/80 p-2.5 space-y-0.5">
-              <span class="block text-[10px] text-slate-400">No app</span>
-              <strong id="auditValApp" class="block text-sm font-extrabold font-mono text-white">R$ 0,00</strong>
+          <dl class="rounded-xl bg-slate-950/80 border border-slate-800/80 px-3.5 divide-y divide-slate-800/70">
+            <div class="flex items-baseline justify-between gap-3 py-2.5">
+              <dt class="text-xs text-slate-400">No app</dt>
+              <dd id="auditValApp" class="text-sm font-extrabold font-mono text-white text-right whitespace-nowrap">R$ 0,00</dd>
             </div>
-            <div class="rounded-xl bg-slate-950/80 border border-slate-800/80 p-2.5 space-y-0.5">
-              <span class="block text-[10px] text-slate-400">Na B3</span>
-              <strong id="auditValExt" class="block text-sm font-extrabold font-mono text-white">R$ 0,00</strong>
+            <div class="flex items-baseline justify-between gap-3 py-2.5">
+              <dt class="text-xs text-slate-400">Na B3</dt>
+              <dd id="auditValExt" class="text-sm font-extrabold font-mono text-white text-right whitespace-nowrap">R$ 0,00</dd>
             </div>
-            <div class="rounded-xl bg-slate-950/80 border border-slate-800/80 p-2.5 space-y-0.5">
-              <span class="block text-[10px] text-slate-400">Diferença</span>
-              <strong id="auditValDiff" class="block text-sm font-extrabold font-mono text-emerald-400">R$ 0,00</strong>
+            <div class="flex items-baseline justify-between gap-3 py-2.5">
+              <dt class="text-xs text-slate-400">Diferença</dt>
+              <dd id="auditValDiff" class="text-sm font-extrabold font-mono text-emerald-400 text-right whitespace-nowrap">R$ 0,00</dd>
             </div>
-          </div>
+          </dl>
           <p class="text-[10px] text-slate-500 leading-relaxed">
-            Diferenças de valor com quantidades iguais refletem apenas a variação entre a cotação salva no app e o preço de fechamento da planilha.
+            Somente leitura. Diferenças de valor com quantidades iguais refletem apenas a variação entre a cotação salva no app e o preço de fechamento da planilha.
           </p>
         </div>
 
