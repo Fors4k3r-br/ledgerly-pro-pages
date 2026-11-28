@@ -1,4 +1,4 @@
-// Motor puro de auditoria da carteira e batimento de custódia (sem acesso ao DOM ou SQLite).
+// Motor puro de auditoria da carteira e comparação de saldo com a B3/corretora (sem acesso ao DOM ou SQLite).
 
 import { formatMoney, formatNumber, toISODate } from '../core/utils.js';
 import { classifyTicker } from './sectors.js';
@@ -192,7 +192,7 @@ export function runPortfolioAudit({
       id: 'ops-no-broker',
       category: 'Organização',
       title: `${opsSemCorretora.length} ${opsSemCorretora.length === 1 ? 'operação sem corretora' : 'operações sem corretora'}`,
-      detail: 'Vincular corretora facilita o batimento por instituição e a declaração anual.',
+      detail: 'Vincular corretora facilita a comparação de saldo por instituição e a declaração anual.',
       action: 'focusCorretora',
       actionArg: 'none',
       actionLabel: 'Filtrar ativos'
@@ -295,11 +295,16 @@ export function buildCustodyReconciliation({
   let pendentes = 0;
   let somenteArquivo = 0;
   let somenteApp = 0;
+  let totalAppValue = 0;
+  let totalExtValue = 0;
+  let extValuesCount = 0;
 
   allTickers.forEach(ticker => {
     const appPos = activeMap.get(ticker) || null;
     const ext = externalMap ? (externalMap[ticker] || null) : null;
     const qtdApp = appPos ? Number(appPos.qtdAtual) || 0 : 0;
+    const cotacaoApp = appPos ? Number(appPos.cotacaoAtual) || 0 : 0;
+    const patrimonioApp = appPos ? Number(appPos.patrimonioAtual) || 0 : 0;
 
     const hasManual = Object.prototype.hasOwnProperty.call(manualMap, ticker)
       && manualMap[ticker] !== '' && manualMap[ticker] !== null && manualMap[ticker] !== undefined;
@@ -328,12 +333,35 @@ export function buildCustodyReconciliation({
       divergentes++;
       if (onlyInFile) somenteArquivo++;
       if (onlyInAppWithFile) somenteApp++;
-    } else if (manualChecked || isMatch) {
+    } else if (isMatch || manualChecked) {
       status = 'ok';
       conferidos++;
     } else {
       pendentes++;
     }
+
+    const extPrice = (ext && Number.isFinite(Number(ext.preco)) && Number(ext.preco) > 0)
+      ? Number(ext.preco)
+      : null;
+    let extMarketValue = null;
+    if (ext && Number.isFinite(Number(ext.valorAtualizado)) && Number(ext.valorAtualizado) > 0) {
+      extMarketValue = Number(Number(ext.valorAtualizado).toFixed(2));
+    } else if (ext && extPrice !== null && Number.isFinite(Number(ext.quantidade)) && Number(ext.quantidade) > 0) {
+      extMarketValue = Number((Number(ext.quantidade) * extPrice).toFixed(2));
+    }
+
+    totalAppValue += patrimonioApp;
+    if (extMarketValue !== null) {
+      totalExtValue += extMarketValue;
+      extValuesCount++;
+    }
+
+    const valueDiff = extMarketValue !== null
+      ? Number((patrimonioApp - extMarketValue).toFixed(2))
+      : null;
+    const priceDiff = (extPrice !== null && appPos)
+      ? Number((cotacaoApp - extPrice).toFixed(4))
+      : null;
 
     rows.push({
       ticker,
@@ -341,6 +369,8 @@ export function buildCustodyReconciliation({
       qtdApp,
       precoMedio: appPos ? (Number(appPos.precoMedio) || 0) : 0,
       valorInvestido: appPos ? (Number(appPos.valorInvestido) || 0) : 0,
+      cotacaoApp,
+      patrimonioApp,
       qtdRef,
       refSource,
       diff,
@@ -350,7 +380,10 @@ export function buildCustodyReconciliation({
       onlyInAppWithFile,
       manualChecked,
       status,
-      extPrice: ext?.preco ?? null,
+      extPrice,
+      extMarketValue,
+      valueDiff,
+      priceDiff,
       extAvgPrice: ext?.precoMedio ?? null,
       extInstitutions: ext?.instituicoes || []
     });
@@ -362,6 +395,13 @@ export function buildCustodyReconciliation({
     return a.ticker.localeCompare(b.ticker);
   });
 
+  const hasExternalValues = extValuesCount > 0;
+  totalAppValue = Number(totalAppValue.toFixed(2));
+  totalExtValue = Number(totalExtValue.toFixed(2));
+  const totalValueDiff = hasExternalValues
+    ? Number((totalAppValue - totalExtValue).toFixed(2))
+    : null;
+
   return {
     rows,
     summary: {
@@ -370,7 +410,12 @@ export function buildCustodyReconciliation({
       divergentes,
       pendentes,
       somenteArquivo,
-      somenteApp
+      somenteApp,
+      hasExternalValues,
+      extValuesCount,
+      totalAppValue,
+      totalExtValue,
+      totalValueDiff
     }
   };
 }

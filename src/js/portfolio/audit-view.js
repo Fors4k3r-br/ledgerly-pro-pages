@@ -1,6 +1,6 @@
-// Tela de Conferência da carteira: auditoria automática do banco e batimento de custódia (manual ou CSV/Excel).
+// Tela de Conferência da carteira: auditoria automática do banco e comparação de saldo com a B3 ou corretora.
 
-import { db, dailyDb } from '../core/state.js';
+import { db, dailyDb, isPrivacyMode } from '../core/state.js';
 import { escapeSavedNoteText, formatMoney, formatNumber } from '../core/utils.js';
 import { getSetting, queryAll, rowsFromDatabase } from '../core/database.js';
 import { getConsolidatedPositions } from './positions.js';
@@ -10,7 +10,7 @@ import { showToast } from '../ui/navigation.js';
 
 const AUDIT_LS_KEY = 'ledgerly_audit_state_v1';
 
-let activeAuditSubView = 'auditoria'; // 'auditoria' | 'batimento'
+let activeAuditSubView = 'auditoria'; // 'auditoria' | 'comparar'
 let importedPositionData = null; // mantido em memória durante a sessão de conferência
 
 function loadAuditState() {
@@ -31,6 +31,14 @@ function saveAuditState(state) {
   try {
     localStorage.setItem(AUDIT_LS_KEY, JSON.stringify(state));
   } catch (_) {}
+}
+
+function formatSignedMoney(value) {
+  if (isPrivacyMode) return 'R$ •••••';
+  const num = Number(value) || 0;
+  if (Math.abs(num) < 0.005) return formatMoney(0);
+  const sign = num > 0 ? '+' : '−';
+  return `${sign}${formatMoney(Math.abs(num))}`;
 }
 
 function getDbIntegrityStatus() {
@@ -219,11 +227,35 @@ function renderImportedFileBanner() {
   }
 }
 
+function renderValueComparisonCard(summary) {
+  const card = document.getElementById('auditValueCompareCard');
+  if (!card) return;
+  if (!summary.hasExternalValues) {
+    card.classList.add('hidden');
+    return;
+  }
+
+  const appEl = document.getElementById('auditValApp');
+  const extEl = document.getElementById('auditValExt');
+  const diffEl = document.getElementById('auditValDiff');
+
+  if (appEl) appEl.textContent = formatMoney(summary.totalAppValue);
+  if (extEl) extEl.textContent = formatMoney(summary.totalExtValue);
+  if (diffEl) {
+    const d = summary.totalValueDiff || 0;
+    diffEl.textContent = formatSignedMoney(d);
+    diffEl.className = 'block text-sm font-extrabold font-mono '
+      + (Math.abs(d) < 0.01 ? 'text-emerald-400' : 'text-amber-300');
+  }
+  card.classList.remove('hidden');
+}
+
 function renderReconciliationSection() {
   const listEl = document.getElementById('auditReconciliationList');
   const summaryEl = document.getElementById('auditProgressSummary');
   const barEl = document.getElementById('auditProgressBar');
   const lastEl = document.getElementById('auditLastCheckedLabel');
+  const clearWrap = document.getElementById('auditClearChecklistWrap');
   if (!listEl || !db) return;
 
   renderImportedFileBanner();
@@ -241,11 +273,13 @@ function renderReconciliationSection() {
     checkedMap: state.checked
   });
 
+  renderValueComparisonCard(summary);
+
   const pct = summary.total > 0 ? Math.round((summary.conferidos / summary.total) * 100) : 0;
   if (summaryEl) {
     summaryEl.textContent = summary.total > 0
       ? `${summary.conferidos} de ${summary.total} conferidos · ${summary.divergentes} ${summary.divergentes === 1 ? 'divergência' : 'divergências'}`
-      : 'Nenhum ativo aberto para conferir';
+      : 'Nenhum ativo aberto para comparar';
   }
   if (barEl) {
     barEl.style.width = `${pct}%`;
@@ -255,12 +289,16 @@ function renderReconciliationSection() {
       ? `Última conferência: ${new Date(state.lastCheckedAt).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}`
       : 'Nenhuma conferência marcada ainda';
   }
+  if (clearWrap) {
+    const hasManualState = Object.keys(state.checked).length > 0 || Object.keys(state.manual).length > 0;
+    clearWrap.classList.toggle('hidden', !hasManualState);
+  }
 
   if (!rows.length) {
     listEl.innerHTML = `
       <div class="glass-card rounded-2xl p-6 text-center space-y-2">
         <p class="text-sm font-semibold text-slate-300">Nenhum ativo em custódia neste filtro</p>
-        <p class="text-xs text-slate-500">Importe um arquivo CSV/Excel da B3 ou corretora, ou selecione "Todas as corretoras" para iniciar o batimento.</p>
+        <p class="text-xs text-slate-500">Importe um arquivo CSV/Excel da B3 ou corretora, ou selecione "Todas as corretoras" para iniciar a comparação.</p>
       </div>`;
     return;
   }
@@ -299,9 +337,44 @@ function renderReconciliationSection() {
     }
 
     const inputVal = row.qtdRef !== null ? String(row.qtdRef) : '';
+    const showManualToggle = row.qtdRef === null && !row.onlyInAppWithFile;
     const checkBtnCls = row.manualChecked
       ? 'bg-emerald-500 text-slate-950 border-emerald-500 font-bold'
       : 'bg-slate-900 hover:bg-slate-800 text-slate-300 border-slate-700 font-semibold';
+
+    let valueCompareBlock = '';
+    if (row.extMarketValue !== null || row.extPrice !== null) {
+      const appValLine = row.qtdApp > 0
+        ? `${formatMoney(row.cotacaoApp)} · ${formatMoney(row.patrimonioApp)}`
+        : 'Sem posição';
+      const extParts = [];
+      if (row.extPrice !== null) extParts.push(formatMoney(row.extPrice));
+      if (row.extMarketValue !== null) extParts.push(formatMoney(row.extMarketValue));
+      const extValLine = extParts.join(' · ');
+
+      let valDiffHtml = '';
+      if (row.valueDiff !== null) {
+        const absDiff = Math.abs(row.valueDiff);
+        const valDiffCls = absDiff < 0.01 ? 'text-emerald-400' : 'text-amber-300';
+        const valDiffLabel = absDiff < 0.01
+          ? 'Valor atualizado confere'
+          : `Diferença de valor (app − B3): ${formatSignedMoney(row.valueDiff)}`;
+        valDiffHtml = `<p class="text-[10px] font-mono ${valDiffCls} pt-1 border-t border-slate-800/80">${esc(valDiffLabel)}</p>`;
+      }
+
+      valueCompareBlock = `
+        <div class="rounded-xl bg-slate-950/80 border border-slate-800/80 px-3 py-2 space-y-1">
+          <div class="flex items-center justify-between gap-2 text-[11px]">
+            <span class="text-slate-400">App (cotação · valor)</span>
+            <span class="font-mono text-slate-200">${esc(appValLine)}</span>
+          </div>
+          <div class="flex items-center justify-between gap-2 text-[11px]">
+            <span class="text-slate-400">B3 (fech. · valor)</span>
+            <span class="font-mono text-slate-200">${esc(extValLine)}</span>
+          </div>
+          ${valDiffHtml}
+        </div>`;
+    }
 
     return `
       <div class="glass-card rounded-2xl p-3.5 border ${cardBorder} space-y-2.5" data-audit-row="${esc(row.ticker)}">
@@ -335,6 +408,7 @@ function renderReconciliationSection() {
               class="w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-3 py-2 text-xs font-mono text-white outline-none"
             />
           </div>
+          ${showManualToggle ? `
           <div class="pt-4 shrink-0">
             <button
               type="button"
@@ -345,9 +419,10 @@ function renderReconciliationSection() {
               <i data-lucide="check" class="w-3.5 h-3.5"></i>
               <span>${row.manualChecked ? 'OK' : 'Conferir'}</span>
             </button>
-          </div>
+          </div>` : ''}
         </div>
         <p class="text-[11px] font-mono ${diffCls}" data-audit-diff="${esc(row.ticker)}">${esc(diffText)}</p>
+        ${valueCompareBlock}
       </div>`;
   }).join('');
 }
@@ -356,17 +431,17 @@ export function renderAuditView() {
   if (!db) return;
 
   const btnAud = document.getElementById('auditTab-auditoria');
-  const btnBat = document.getElementById('auditTab-batimento');
+  const btnComp = document.getElementById('auditTab-comparar');
   const panelAud = document.getElementById('auditPanel-auditoria');
-  const panelBat = document.getElementById('auditPanel-batimento');
+  const panelComp = document.getElementById('auditPanel-comparar');
 
-  if (btnAud && btnBat && panelAud && panelBat) {
+  if (btnAud && btnComp && panelAud && panelComp) {
     const isAud = activeAuditSubView === 'auditoria';
     panelAud.classList.toggle('hidden', !isAud);
-    panelBat.classList.toggle('hidden', isAud);
+    panelComp.classList.toggle('hidden', isAud);
     btnAud.className = 'py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 '
       + (isAud ? 'bg-emerald-500 text-slate-950 shadow-md' : 'text-slate-300 hover:bg-slate-800/70');
-    btnBat.className = 'py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 '
+    btnComp.className = 'py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 '
       + (!isAud ? 'bg-emerald-500 text-slate-950 shadow-md' : 'text-slate-300 hover:bg-slate-800/70');
   }
 
@@ -376,7 +451,7 @@ export function renderAuditView() {
 }
 
 export function setAuditSubView(view) {
-  activeAuditSubView = view === 'batimento' ? 'batimento' : 'auditoria';
+  activeAuditSubView = view === 'comparar' ? 'comparar' : 'auditoria';
   renderAuditView();
 }
 
@@ -402,8 +477,9 @@ export async function handleAuditFileImport(event) {
     // Limpa sobreescritas manuais anteriores para refletir os números recém-importados do arquivo
     const state = loadAuditState();
     state.manual = {};
+    state.lastCheckedAt = new Date().toISOString();
     saveAuditState(state);
-    activeAuditSubView = 'batimento';
+    activeAuditSubView = 'comparar';
     renderAuditView();
     showToast(`${parsed.totalTickers} ativo(s) carregado(s) de ${parsed.fileName}.`, 'success');
   } catch (err) {
@@ -477,36 +553,6 @@ export function toggleAuditChecked(ticker) {
   saveAuditState(state);
   renderReconciliationSection();
   if (window.lucide) lucide.createIcons();
-}
-
-export function markAllMatchingChecked() {
-  const corrSel = document.getElementById('auditCorretora');
-  const corrId = corrSel ? corrSel.value : '';
-  const positions = corrId ? getConsolidatedPositions(corrId) : getConsolidatedPositions();
-  const state = loadAuditState();
-  const { rows } = buildCustodyReconciliation({
-    positions,
-    externalMap: getActiveExternalMap(),
-    manualMap: state.manual,
-    checkedMap: state.checked
-  });
-
-  let marked = 0;
-  rows.forEach(r => {
-    if (r.isMatch && !state.checked[r.ticker]) {
-      state.checked[r.ticker] = true;
-      marked++;
-    }
-  });
-  if (marked > 0) {
-    state.lastCheckedAt = new Date().toISOString();
-    saveAuditState(state);
-    renderReconciliationSection();
-    if (window.lucide) lucide.createIcons();
-    showToast(`${marked} ativo(s) marcados como conferidos.`, 'success');
-  } else {
-    showToast('Nenhum ativo adicional com quantidade idêntica para marcar.', 'info');
-  }
 }
 
 export function clearAuditChecklist() {

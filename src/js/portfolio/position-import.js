@@ -400,6 +400,16 @@ function scoreAvgPriceHeader(h) {
   return 0;
 }
 
+function scoreMarketValueHeader(h) {
+  if (!h) return 0;
+  if (h.includes('unitario') || h.includes('medio') || h.includes('custo') || h.includes('bruto') || h.includes('liquido')) return 0;
+  if (h === 'valor atualizado' || h === 'valor de mercado' || h === 'saldo atualizado' || h === 'valor atual') return 100;
+  if (h === 'valor total' || h === 'patrimonio' || h === 'total atualizado') return 85;
+  if (h.includes('atualizado') && h.includes('valor')) return 90;
+  if (h.includes('valor') && h.includes('mercado')) return 90;
+  return 0;
+}
+
 function detectColumnsInSheet(rows) {
   const limit = Math.min(rows.length, 20);
   let best = null;
@@ -412,8 +422,9 @@ function detectColumnsInSheet(rows) {
     let fallbackTickerIdx = -1, fallbackTickerScore = 0;
     let qtyIdx = -1, qtyScore = 0, qtyLabel = '';
     let instIdx = -1, instScore = 0, instLabel = '';
-    let priceIdx = -1, priceScore = 0;
+    let priceIdx = -1, priceScore = 0, priceLabel = '';
     let avgIdx = -1, avgScore = 0;
+    let valIdx = -1, valScore = 0, valLabel = '';
 
     for (let c = 0; c < row.length; c++) {
       const cell = row[c];
@@ -454,12 +465,20 @@ function detectColumnsInSheet(rows) {
       if (ps > priceScore) {
         priceScore = ps;
         priceIdx = c;
+        priceLabel = rawLabel;
       }
 
       const as = scoreAvgPriceHeader(h);
       if (as > avgScore) {
         avgScore = as;
         avgIdx = c;
+      }
+
+      const vs = scoreMarketValueHeader(h);
+      if (vs > valScore) {
+        valScore = vs;
+        valIdx = c;
+        valLabel = rawLabel;
       }
     }
 
@@ -474,9 +493,12 @@ function detectColumnsInSheet(rows) {
           instIdx,
           priceIdx,
           avgIdx,
+          valIdx,
           tickerLabel,
           qtyLabel,
           instLabel,
+          priceLabel,
+          valLabel,
           totalScore
         };
       }
@@ -519,6 +541,10 @@ function extractPositionsFromSheets(sheets, fileName, format) {
       const inst = cols.instIdx >= 0 ? String(row[cols.instIdx]?.raw ?? '').replace(/\s+/g, ' ').trim() : '';
       const price = cols.priceIdx >= 0 ? parseCellNumber(row[cols.priceIdx]) : NaN;
       const avgPrice = cols.avgIdx >= 0 ? parseCellNumber(row[cols.avgIdx]) : NaN;
+      const rawVal = cols.valIdx >= 0 ? parseCellNumber(row[cols.valIdx]) : NaN;
+      const rowMarketValue = (Number.isFinite(rawVal) && rawVal > 0)
+        ? rawVal
+        : ((Number.isFinite(price) && price > 0) ? Number((qty * price).toFixed(2)) : NaN);
 
       sheetValidCount++;
       if (inst) institutions.add(inst);
@@ -529,12 +555,16 @@ function extractPositionsFromSheets(sheets, fileName, format) {
           quantidade: 0,
           preco: Number.isFinite(price) && price > 0 ? price : null,
           precoMedio: Number.isFinite(avgPrice) && avgPrice > 0 ? avgPrice : null,
+          valorAtualizado: null,
           instituicoes: new Set(),
           sheets: new Set()
         };
         cur.quantidade = Number((cur.quantidade + qty).toFixed(8));
         if (cur.preco === null && Number.isFinite(price) && price > 0) cur.preco = price;
         if (cur.precoMedio === null && Number.isFinite(avgPrice) && avgPrice > 0) cur.precoMedio = avgPrice;
+        if (Number.isFinite(rowMarketValue) && rowMarketValue > 0) {
+          cur.valorAtualizado = Number(((cur.valorAtualizado || 0) + rowMarketValue).toFixed(2));
+        }
         if (inst) cur.instituicoes.add(inst);
         cur.sheets.add(sheet.name);
         targetMap.set(key, cur);
@@ -552,6 +582,8 @@ function extractPositionsFromSheets(sheets, fileName, format) {
       if (cols.tickerLabel) detectedColumnLabels.add(cols.tickerLabel);
       if (cols.qtyLabel) detectedColumnLabels.add(cols.qtyLabel);
       if (cols.instLabel) detectedColumnLabels.add(cols.instLabel);
+      if (cols.priceLabel) detectedColumnLabels.add(cols.priceLabel);
+      if (cols.valLabel) detectedColumnLabels.add(cols.valLabel);
     }
   }
 
@@ -567,6 +599,7 @@ function extractPositionsFromSheets(sheets, fileName, format) {
         quantidade: item.quantidade,
         preco: item.preco,
         precoMedio: item.precoMedio,
+        valorAtualizado: item.valorAtualizado,
         instituicoes: Array.from(item.instituicoes).sort((a, b) => a.localeCompare(b, 'pt-BR')),
         sheets: Array.from(item.sheets)
       };
