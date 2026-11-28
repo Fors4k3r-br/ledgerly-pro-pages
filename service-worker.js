@@ -34,6 +34,7 @@ const CORE_SHELL = [
   "./src/js/portfolio/audit-view.js",
   "./src/js/notes/notes-manager.js",
   "./src/js/reports/reports-view.js",
+  "./src/js/dividends/calendar.js",
   "./src/js/dividends/proventos.js",
   "./src/js/sync/google-drive.js",
   "./src/js/pwa/updates-and-sw.js",
@@ -141,12 +142,12 @@ self.addEventListener('fetch', event => {
       const cache = await caches.open(CACHE_NAME);
       try {
         const response = await fetch(request, { cache: 'no-cache' });
-        if (response && response.ok) await cache.put(request, response.clone());
+        if (response && response.ok) await cache.put('./dividendos.json', response.clone());
         return response;
       } catch (_) {
-        const cached = await cache.match(request);
+        const cached = (await cache.match('./dividendos.json')) || (await cache.match(request));
         if (cached) return cached;
-        return new Response('[]', { headers: { 'Content-Type': 'application/json' } });
+        return new Response('{"status":"offline","acoes":{}}', { headers: { 'Content-Type': 'application/json' } });
       }
     })());
     return;

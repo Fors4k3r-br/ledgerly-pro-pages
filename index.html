@@ -887,35 +887,78 @@
     <!-- ===============================================================
          ABA 3: CONFIGURAÇÕES (API BRAPI.DEV + BACKUP + SEGURANÇA / PIN)
     ================================================================ -->
-    <section id="tab-proventos" class="space-y-5 hidden">
-      <div class="glass-card rounded-2xl p-3.5">
-        <h2 class="text-base font-bold text-white flex items-center gap-2"><i data-lucide="coins" class="w-5 h-5 text-emerald-400"></i>Proventos recebidos</h2>
-        <p class="text-[11px] text-slate-400 mt-1">Dividendos, JCP e rendimentos vinculados a cada ativo da carteira.</p>
-      </div>
-      <button type="button" data-click="openProvSheet" class="w-full py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-sm shadow-lg shadow-emerald-500/20 transition flex items-center justify-center gap-2"><i data-lucide="plus" class="w-5 h-5"></i><span>Novo provento</span></button>
-      <div id="provKpis" class="grid grid-cols-2 gap-2"></div>
-      <div class="glass-card rounded-2xl p-4 space-y-2">
-        <h3 class="text-sm font-bold text-white">Proventos por mês</h3>
-        <div id="provChartWrap" class="relative h-44"><canvas id="provMonthlyChart"></canvas></div>
-        <p id="provChartEmpty" class="hidden text-xs text-slate-500 py-6 text-center">Sem proventos nos últimos 12 meses.</p>
-      </div>
-
-
-      <div class="glass-card rounded-2xl p-4 space-y-2">
-        <h3 class="text-sm font-bold text-white">Por ativo</h3>
-        <div id="provByTicker" class="space-y-2"></div>
-      </div>
-
-      <div class="space-y-3">
-        <div class="flex items-center justify-between gap-3">
-          <h3 class="text-sm font-bold text-white">Histórico</h3>
-          <div class="flex gap-2 min-w-0"><select id="provFilterCorretora" data-change="renderProventos" aria-label="Filtrar por corretora" class="min-w-0 max-w-[9.5rem] bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none"><option value="">Todas as corretoras</option></select><select id="provFilter" data-change="renderProventos" aria-label="Filtrar por ativo" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-white outline-none"></select></div>
+    <section id="tab-proventos" class="space-y-4 hidden">
+      <div class="glass-card rounded-3xl p-5 space-y-4">
+        <div>
+          <h2 class="text-base font-bold text-white flex items-center gap-2"><i data-lucide="coins" class="w-5 h-5 text-emerald-400"></i>Proventos</h2>
+          <p class="text-xs text-slate-400 mt-0.5">Histórico recebido e calendário automático via dividendos.json.</p>
         </div>
-        <div id="provList" class="space-y-2"></div>
+
+        <div class="grid grid-cols-2 gap-2 p-1 rounded-2xl bg-slate-900 border border-slate-800">
+          <button type="button" id="provTab-recebidos" data-click="setProvSubView" data-arg="recebidos" class="py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 bg-emerald-500 text-slate-950 shadow-md">
+            <i data-lucide="coins" class="w-4 h-4"></i>
+            <span>Recebidos</span>
+          </button>
+          <button type="button" id="provTab-calendario" data-click="setProvSubView" data-arg="calendario" class="py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 text-slate-300 hover:bg-slate-800/70">
+            <i data-lucide="calendar-days" class="w-4 h-4"></i>
+            <span>Calendário</span>
+            <span id="provCalBadge" class="hidden px-1.5 py-0.5 rounded-full text-[10px] font-mono font-extrabold bg-slate-950/80 text-emerald-300"></span>
+          </button>
+        </div>
       </div>
+
+      <!-- SUB-ABA 1: PROVENTOS RECEBIDOS -->
+      <div id="provPanel-recebidos" class="space-y-4">
+        <button type="button" data-click="openProvSheet" class="w-full py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-sm shadow-lg shadow-emerald-500/20 transition flex items-center justify-center gap-2"><i data-lucide="plus" class="w-5 h-5"></i><span>Novo provento</span></button>
+        <div id="provKpis" class="grid grid-cols-2 gap-2"></div>
+        <div class="glass-card rounded-2xl p-4 space-y-2">
+          <h3 class="text-sm font-bold text-white">Proventos por mês</h3>
+          <div id="provChartWrap" class="relative h-44"><canvas id="provMonthlyChart"></canvas></div>
+          <p id="provChartEmpty" class="hidden text-xs text-slate-500 py-6 text-center">Sem proventos nos últimos 12 meses.</p>
+        </div>
+
+        <div class="glass-card rounded-2xl p-4 space-y-2">
+          <h3 class="text-sm font-bold text-white">Por ativo</h3>
+          <div id="provByTicker" class="space-y-2"></div>
+        </div>
+
+        <div class="space-y-3">
+          <div class="flex items-center justify-between gap-3">
+            <h3 class="text-sm font-bold text-white">Histórico</h3>
+            <div class="flex gap-2 min-w-0"><select id="provFilterCorretora" data-change="renderProventos" aria-label="Filtrar por corretora" class="min-w-0 max-w-[9.5rem] bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none"><option value="">Todas as corretoras</option></select><select id="provFilter" data-change="renderProventos" aria-label="Filtrar por ativo" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-white outline-none"></select></div>
+          </div>
+          <div id="provList" class="space-y-2"></div>
+        </div>
+      </div>
+
+      <!-- SUB-ABA 2: CALENDÁRIO DE PROVENTOS (dividendos.json) -->
+      <div id="provPanel-calendario" class="space-y-4 hidden">
+        <div class="glass-card rounded-2xl p-4 space-y-2.5">
+          <div class="flex items-center justify-between gap-2">
+            <div class="min-w-0">
+              <h3 class="text-xs font-bold text-white">Agenda automática</h3>
+              <p id="provCalSyncMeta" class="text-[11px] text-slate-400 truncate">Carregando agenda…</p>
+            </div>
+            <button type="button" data-click="refreshDividendCalendar" class="shrink-0 px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs font-semibold transition flex items-center gap-1.5">
+              <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+              <span>Atualizar</span>
+            </button>
+          </div>
+          <p id="provCalFeedWarning" class="hidden rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-[11px] text-amber-300"></p>
+        </div>
+
+        <div id="provCalKpis" class="grid grid-cols-2 gap-2.5"></div>
+
+        <div id="provCalFilterChips" class="flex items-center gap-2 overflow-x-auto pb-1"></div>
+
+        <div id="provCalList" class="space-y-3"></div>
+
+        <p id="provCalNote" class="hidden text-[11px] text-slate-500 text-center px-2"></p>
+      </div>
+
       <div id="provSheet" class="hidden fixed inset-0 z-[150] bg-black/60 flex items-end sm:items-center justify-center sm:p-4" data-click-self="closeProvSheet" role="dialog" aria-modal="true" aria-label="Novo provento">
       <form data-submit="saveProvento" class="glass-card w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 space-y-3 max-h-[92vh] overflow-y-auto border border-slate-700">
-        <div class="flex items-center justify-between"><h3 class="text-base font-bold text-white">Novo provento</h3><button type="button" data-click="closeProvSheet" aria-label="Fechar" class="p-1.5 rounded-lg text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button></div>
+        <div class="flex items-center justify-between"><h3 id="provSheetTitle" class="text-base font-bold text-white">Novo provento</h3><button type="button" data-click="closeProvSheet" aria-label="Fechar" class="p-1.5 rounded-lg text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button></div>
         <div class="grid grid-cols-2 gap-3">
           <div><label for="provTicker" class="block text-[11px] font-semibold text-slate-300 mb-1">Ativo *</label><select id="provTicker" data-change="onProvTickerChange" required class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none font-mono"></select></div>
           <div><label for="provTipo" class="block text-[11px] font-semibold text-slate-300 mb-1">Tipo *</label>

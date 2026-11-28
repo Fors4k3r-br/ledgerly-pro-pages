@@ -3,9 +3,17 @@
 //   - suba "version" e "build" (o build define o nome do cache do service worker);
 //   - acrescente uma entrada nova no INÍCIO de "entries" com as mudanças, em linguagem simples.
 globalThis.LEDGERLY_CHANGELOG = {
-  version: '1.4.37',
-  build: 61,
+  version: '1.4.38',
+  build: 62,
   entries: [
+    {
+      version: '1.4.38',
+      date: '2026-11-28',
+      notes: [
+        'Calendário de proventos: nova sub-aba em Proventos integrada ao dividendos.json, cruzando anúncios com a custódia exata na data-com, cálculo automático de bruto, IR de JCP (15%) e líquido estimado.',
+        'Confirmação em 1 toque: pagamentos vencidos e previstos podem ser pré-preenchidos direto no formulário de proventos com detecção automática de itens já lançados e suporte a datas de pagamento "A definir".'
+      ]
+    },
     {
       version: '1.4.37',
       date: '2026-11-27',
